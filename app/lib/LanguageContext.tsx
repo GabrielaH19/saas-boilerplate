@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import { t, Locale } from "./translations";
 
 type LanguageContextType = {
@@ -16,12 +16,13 @@ const LanguageContext = createContext<LanguageContextType>({
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("ro");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("tp_lang") as Locale;
-    if (saved && t[saved]) setLocaleState(saved);
-  }, []);
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("tp_lang") as Locale;
+      if (saved && t[saved]) return saved;
+    }
+    return "ro";
+  });
 
   const setLocale = (l: Locale) => {
     setLocaleState(l);
