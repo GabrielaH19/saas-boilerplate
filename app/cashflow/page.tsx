@@ -1,0 +1,339 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { auth, db } from "../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import {
+  collection, query, where, getDocs,
+  addDoc, updateDoc, deleteDoc, doc, serverTimestamp
+} from "firebase/firestore";
+import Link from "next/link";
+
+interface Invoice {
+  id: string;
+  clientId: string;
+  clientName: string;
+  tripId?: string;
+  amount: number;
+  paidAmount: number;
+  issuedDate: string;
+  dueDate: string;
+  status: "unpaid" | "partial" | "paid" | "overdue";
+  notes: string;
+}
+
+type InvoiceForm = Omit<Invoice, "id">;
+
+const emptyInvoice = (): InvoiceForm => ({
+  clientName: "",
+  clientId: "",
+  tripId: "",
+  amount: 0,
+  paidAmount: 0,
+  issuedDate: new Date().toISOString().slice(0, 10),
+  dueDate: "",
+  status: "unpaid",
+  notes: "",
+});
+
+function statusStyle(s: string) {
+  if (s === "paid") return "bg-green-900 text-green-400 border-green-800";
+  if (s === "partial") return "bg-blue-900 text-blue-400 border-blue-800";
+  if (s === "overdue") return "bg-red-900 text-red-400 border-red-800";
+  return "bg-[#1f1500] text-[#f5a623] border-yellow-800";
+}
+
+function statusLabel(s: string) {
+  if (s === "paid") return "Încasat";
+  if (s === "partial") return "Parțial";
+  if (s === "overdue") return "Întârziat";
+  return "Neîncasat";
+}
+
+function daysUntil(date: string) {
+  return Math.ceil((new Date(date).getTime() - Date.now()) / 86400000);
+}
+
+export default function CashflowPage() {
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<InvoiceForm>(emptyInvoice());
+  const [saving, setSaving] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (!u) { router.push("/login"); return; }
+      setUserId(u.uid);
+      await loadInvoices(u.uid);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  const loadInvoices = async (uid: string) => {
+    const snap = await getDocs(query(collection(db, "invoices"), where("userId", "==", uid)));
+    const today = new Date().toISOString().slice(0, 10);
+    const list: Invoice[] = snap.docs.map(d => {
+      const data = d.data() as Invoice;
+      const status: Invoice["status"] = (data.status === "unpaid" && data.dueDate < today)
+        ? "overdue"
+        : data.status;
+      return { ...data, id: d.id, status };
+    });
+    list.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    setInvoices(list);
+  };
+
+  const computeStatus = (f: InvoiceForm): Invoice["status"] => {
+    const today = new Date().toISOString().slice(0, 10);
+    if (f.paidAmount >= f.amount && f.amount > 0) return "paid";
+    if (f.paidAmount > 0) return "partial";
+    if (f.dueDate && f.dueDate < today) return "overdue";
+    return "unpaid";
+  };
+
+  const handleSave = async () => {
+    if (!userId) return;
+    if (!form.clientName || !form.amount || !form.dueDate) {
+      return alert("Completează client, sumă și dată scadență.");
+    }
+    setSaving(true);
+    try {
+      const status = computeStatus(form);
+      const data: InvoiceForm = { ...form, status };
+      if (editingId) {
+        await updateDoc(doc(db, "invoices", editingId), { ...data, updatedAt: serverTimestamp() });
+      } else {
+        await addDoc(collection(db, "invoices"), {
+          ...data, userId,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+      }
+      await loadInvoices(userId);
+      setShowForm(false);
+      setEditingId(null);
+      setForm(emptyInvoice());
+    } catch (e) { console.error(e); }
+    setSaving(false);
+  };
+
+  const handleMarkPaid = async (invoice: Invoice) => {
+    await updateDoc(doc(db, "invoices", invoice.id), {
+      status: "paid" as Invoice["status"],
+      paidAmount: invoice.amount,
+      updatedAt: serverTimestamp(),
+    });
+    if (userId) await loadInvoices(userId);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Ștergi această factură?")) return;
+    await deleteDoc(doc(db, "invoices", id));
+    if (userId) await loadInvoices(userId);
+  };
+
+  const handleEdit = (inv: Invoice) => {
+    setForm({
+      clientName: inv.clientName,
+      clientId: inv.clientId,
+      tripId: inv.tripId || "",
+      amount: inv.amount,
+      paidAmount: inv.paidAmount,
+      issuedDate: inv.issuedDate,
+      dueDate: inv.dueDate,
+      status: inv.status,
+      notes: inv.notes,
+    });
+    setEditingId(inv.id);
+    setShowForm(true);
+  };
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/login");
+  };
+
+  const unpaid = invoices.filter(i => i.status !== "paid");
+  const totalReceivable = unpaid.reduce((s, i) => s + (i.amount - i.paidAmount), 0);
+  const totalOverdue = invoices.filter(i => i.status === "overdue").reduce((s, i) => s + i.amount, 0);
+  const in14days = new Date();
+  in14days.setDate(in14days.getDate() + 14);
+  const dueSoon = unpaid.filter(i => i.dueDate <= in14days.toISOString().slice(0, 10));
+  const dueSoonAmount = dueSoon.reduce((s, i) => s + (i.amount - i.paidAmount), 0);
+
+  const inp = "w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#f5a623]";
+  const lbl = "block text-xs text-gray-400 mb-1";
+
+  if (loading) return (
+    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
+      <p className="text-gray-400">Se încarcă...</p>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#0d0d0d] text-white">
+      <nav className="bg-[#161616] border-b border-[#2e2e2e] px-6 py-4 flex items-center justify-between">
+        <h1 className="text-xl font-bold">Trip<span className="text-[#f5a623]">Profit</span></h1>
+        <div className="flex items-center gap-6 text-sm text-gray-400">
+          <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
+          <Link href="/trip/new" className="hover:text-white">Cursă nouă</Link>
+          <Link href="/history" className="hover:text-white">Istoric</Link>
+          <Link href="/clients" className="hover:text-white">Clienți</Link>
+          <Link href="/cashflow" className="text-white">Cashflow</Link>
+          <Link href="/truck" className="hover:text-white">Camioane</Link>
+          <button onClick={handleLogout} className="hover:text-white">Ieși</button>
+        </div>
+      </nav>
+
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">Cashflow</h2>
+            <p className="text-gray-400 text-sm mt-1">Urmărește facturile și știi exact când rămâi fără bani.</p>
+          </div>
+          <button
+            onClick={() => { setForm(emptyInvoice()); setEditingId(null); setShowForm(true); }}
+            className="bg-[#f5a623] text-black font-semibold px-4 py-2 rounded-lg text-sm hover:bg-[#e8951a] transition"
+          >
+            + Adaugă factură
+          </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
+            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Total de încasat</div>
+            <div className="text-2xl font-bold text-green-400">{totalReceivable.toLocaleString()} €</div>
+          </div>
+          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
+            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Întârziate</div>
+            <div className={`text-2xl font-bold ${totalOverdue > 0 ? "text-red-400" : "text-white"}`}>
+              {totalOverdue.toLocaleString()} €
+            </div>
+          </div>
+          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
+            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Scadent în 14 zile</div>
+            <div className={`text-2xl font-bold ${dueSoonAmount > 0 ? "text-[#f5a623]" : "text-white"}`}>
+              {dueSoonAmount.toLocaleString()} €
+            </div>
+          </div>
+        </div>
+
+        {totalOverdue > 0 && (
+          <div className="bg-red-900 bg-opacity-30 border border-red-800 rounded-xl px-5 py-4 mb-6">
+            <div className="text-red-400 font-semibold mb-1">Facturi întârziate</div>
+            <div className="text-sm text-gray-400">
+              Ai {totalOverdue.toLocaleString()}€ neîncasați cu termenul depășit. Contactează clienții.
+            </div>
+          </div>
+        )}
+
+        {invoices.length === 0 && !showForm ? (
+          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-12 text-center">
+            <div className="text-4xl text-gray-600 mb-4">📄</div>
+            <p className="text-gray-400 mb-2">Nu ai adăugat nicio factură încă.</p>
+            <p className="text-gray-600 text-sm">Adaugă facturi pentru a urmări cashflow-ul firmei.</p>
+          </div>
+        ) : (
+          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl overflow-hidden mb-6">
+            <div className="grid grid-cols-6 gap-4 px-5 py-3 border-b border-[#2e2e2e] text-xs text-gray-500 uppercase tracking-wider">
+              <div className="col-span-2">Client</div>
+              <div>Sumă</div>
+              <div>Scadent</div>
+              <div>Status</div>
+              <div></div>
+            </div>
+            {invoices.map(inv => {
+              const days = daysUntil(inv.dueDate);
+              return (
+                <div key={inv.id} className="grid grid-cols-6 gap-4 px-5 py-4 border-b border-[#1e1e1e] last:border-0 items-center hover:bg-[#1a1a1a] transition">
+                  <div className="col-span-2">
+                    <div className="text-sm font-medium text-white">{inv.clientName}</div>
+                    {inv.notes && <div className="text-xs text-gray-500 mt-0.5">{inv.notes}</div>}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-white">{inv.amount.toLocaleString()} €</div>
+                    {inv.paidAmount > 0 && inv.paidAmount < inv.amount && (
+                      <div className="text-xs text-gray-500">Încasat: {inv.paidAmount.toLocaleString()}€</div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-sm text-white">{inv.dueDate}</div>
+                    <div className={`text-xs mt-0.5 ${days < 0 ? "text-red-400" : days <= 7 ? "text-[#f5a623]" : "text-gray-500"}`}>
+                      {days < 0 ? `${Math.abs(days)} zile întârziere` : days === 0 ? "Scadent azi" : `în ${days} zile`}
+                    </div>
+                  </div>
+                  <div>
+                    <span className={`text-xs px-2 py-1 rounded border font-semibold ${statusStyle(inv.status)}`}>
+                      {statusLabel(inv.status)}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                    {inv.status !== "paid" && (
+                      <button onClick={() => handleMarkPaid(inv)} className="text-xs text-green-400 hover:text-green-300 border border-green-800 px-2 py-1 rounded">
+                        ✓ Încasat
+                      </button>
+                    )}
+                    <button onClick={() => handleEdit(inv)} className="text-xs text-gray-400 hover:text-white border border-[#2e2e2e] px-2 py-1 rounded">
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(inv.id)} className="text-xs text-red-400 hover:text-red-300 border border-[#2e2e2e] px-2 py-1 rounded">
+                      ×
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {showForm && (
+          <div className="bg-[#161616] border border-[#f5a623] rounded-xl p-6">
+            <h3 className="font-semibold text-white mb-5">
+              {editingId ? "Editează factură" : "Factură nouă"}
+            </h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2">
+                <label className={lbl}>Client / firmă</label>
+                <input className={inp} value={form.clientName} onChange={e => setForm(f => ({ ...f, clientName: e.target.value }))} placeholder="ex: Trans Logistics SRL" />
+              </div>
+              <div>
+                <label className={lbl}>Sumă (€)</label>
+                <input type="number" className={inp} value={form.amount || ""} onChange={e => setForm(f => ({ ...f, amount: +e.target.value }))} placeholder="4200" />
+              </div>
+              <div>
+                <label className={lbl}>Sumă încasată (€)</label>
+                <input type="number" className={inp} value={form.paidAmount || ""} onChange={e => setForm(f => ({ ...f, paidAmount: +e.target.value }))} placeholder="0" />
+              </div>
+              <div>
+                <label className={lbl}>Data emiterii</label>
+                <input type="date" className={inp} value={form.issuedDate} onChange={e => setForm(f => ({ ...f, issuedDate: e.target.value }))} />
+              </div>
+              <div>
+                <label className={lbl}>Data scadentă</label>
+                <input type="date" className={inp} value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
+              </div>
+              <div className="col-span-2">
+                <label className={lbl}>Observații (opțional)</label>
+                <input className={inp} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="ex: Cursă București-München din 20 mar" />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={handleSave} disabled={saving} className="bg-[#f5a623] text-black font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-[#e8951a] transition disabled:opacity-50">
+                {saving ? "Se salvează..." : editingId ? "Salvează modificările" : "Adaugă factură"}
+              </button>
+              <button onClick={() => { setShowForm(false); setEditingId(null); setForm(emptyInvoice()); }} className="text-gray-400 hover:text-white px-6 py-2.5 rounded-lg text-sm border border-[#2e2e2e]">
+                Anulează
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
