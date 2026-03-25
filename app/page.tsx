@@ -7,7 +7,8 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-white">
 
       {/* NAV */}
-      <nav className="border-b border-[#1e1e1e] px-10 py-4 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-10 py-4 flex items-center justify-between">
+
         <div className="text-lg font-semibold">Trip<span className="text-[#f5a623]">Profit</span></div>
         <div className="flex items-center gap-6">
           <a href="#functii" className="text-sm text-gray-400 hover:text-white transition">Funcții</a>
