@@ -6,14 +6,12 @@ import { auth, db } from "../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
-import { useLang } from "../lib/LanguageContext";
-import LangSwitcher from "../lib/LangSwitcher";
 
 export default function PricingPage() {
   const [user, setUser] = useState<any>(null);
   const [currentPlan, setCurrentPlan] = useState("free");
+  const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
-  const { tr } = useLang();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -25,93 +23,133 @@ export default function PricingPage() {
     return () => unsub();
   }, []);
 
+  const handleCheckout = async (plan: string) => {
+    if (!user) return;
+    setLoading(plan);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan,
+          userId: user.uid,
+          email: user.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Eroare la procesarea plății. Încearcă din nou.");
+      }
+    } catch (e) {
+      alert("Eroare la procesarea plății. Încearcă din nou.");
+    }
+    setLoading(null);
+  };
+
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/login");
   };
+
+  const plans = [
+    {
+      id: "basic",
+      name: "Basic",
+      price: 30,
+      desc: "Pentru firmele care vor să elimine cursele neprofitabile",
+      features: ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric curse"],
+      missing: ["Raport per camion", "Raport per client", "Cashflow tracking"],
+      highlight: false,
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: 49,
+      desc: "Pentru firmele care vor vizibilitate completă asupra finanțelor",
+      features: ["Tot ce include Basic", "Camioane nelimitate", "Raport per camion", "Raport per client cu scor de risc", "Dashboard general firmă", "Alerte automate costuri depășite"],
+      missing: ["Cashflow tracking"],
+      highlight: true,
+    },
+    {
+      id: "premium",
+      name: "Premium",
+      price: 79,
+      desc: "Pentru firmele care vor control financiar complet",
+      features: ["Tot ce include Pro", "Cashflow tracking", "Alertă blocaj de lichiditate", "Scor de risc detaliat per client", "Simulări financiare", "Recomandări automate", "Asistență prioritară"],
+      missing: [],
+      highlight: false,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <nav className="bg-[#161616] border-b border-[#2e2e2e] px-6 py-4 flex items-center justify-between">
         <h1 className="text-xl font-bold">Trip<span className="text-[#f5a623]">Profit</span></h1>
         <div className="flex items-center gap-6 text-sm text-gray-400">
-          <Link href="/dashboard" className="hover:text-white">{tr.dashboard}</Link>
-          <Link href="/trip/new" className="hover:text-white">{tr.newTrip}</Link>
-          <Link href="/history" className="hover:text-white">{tr.history}</Link>
-          <Link href="/report" className="hover:text-white">{tr.report}</Link>
-          <Link href="/truck" className="hover:text-white">{tr.truck}</Link>
-          <Link href="/pricing" className="text-white">{tr.pricingNav}</Link>
-          <button onClick={handleLogout} className="hover:text-white">{tr.logout}</button>
+          <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
+          <Link href="/trip/new" className="hover:text-white">Cursă nouă</Link>
+          <Link href="/history" className="hover:text-white">Istoric</Link>
+          <Link href="/clients" className="hover:text-white">Clienți</Link>
+          <Link href="/cashflow" className="hover:text-white">Cashflow</Link>
+          <Link href="/truck" className="hover:text-white">Camioane</Link>
+          <Link href="/pricing" className="text-white">Prețuri</Link>
+          <button onClick={handleLogout} className="hover:text-white">Ieși</button>
         </div>
-        <LangSwitcher />
       </nav>
 
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-3">{tr.pricingTitle}</h2>
-          <p className="text-gray-400">{tr.pricingSub}</p>
+          <h2 className="text-3xl font-bold mb-3">Alege planul potrivit firmei tale</h2>
+          <p className="text-gray-400">30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare.</p>
+          {currentPlan && currentPlan !== "free" && (
+            <div className="mt-4 inline-block bg-green-900 border border-green-700 text-green-400 text-sm px-4 py-2 rounded-lg">
+              Plan activ: <strong className="capitalize">{currentPlan}</strong>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-6">
-          {/* FREE */}
-          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-8 relative">
-            <div className="text-sm text-gray-400 uppercase tracking-wider font-mono mb-2">{tr.pricingFree}</div>
-            <div className="text-4xl font-bold font-mono mb-1">0 <span className="text-sm font-normal text-gray-400">{tr.pricingMonth}</span></div>
-            <p className="text-gray-500 text-xs mb-6">{tr.pricingFreeDesc}</p>
-            <ul className="space-y-2 mb-8">
-              {tr.pricingFreeF.map((f: string, j: number) => (
-                <li key={j} className="flex items-center gap-2 text-sm"><span className="text-green-400 font-bold">✓</span>{f}</li>
-              ))}
-              {tr.pricingFreeNo.map((f: string, j: number) => (
-                <li key={j} className="flex items-center gap-2 text-sm text-gray-600"><span>✗</span>{f}</li>
-              ))}
-            </ul>
-            <button disabled className="w-full py-3 rounded-lg font-semibold text-sm bg-[#2a2a2a] text-gray-500 cursor-not-allowed">
-              {currentPlan === "free" ? tr.pricingCurrent : tr.pricingFree}
-            </button>
-          </div>
-
-          {/* PRO */}
-          <div className="bg-[#1e1b4b] border-2 border-[#6366f1] rounded-xl p-8 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#f5a623] text-black text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">{tr.pricingPopular}</div>
-            <div className="text-sm text-gray-400 uppercase tracking-wider font-mono mb-2">{tr.pricingPro}</div>
-            <div className="text-4xl font-bold font-mono mb-1">7 <span className="text-sm font-normal text-gray-400">{tr.pricingMonth}</span></div>
-            <p className="text-gray-400 text-xs mb-6">{tr.pricingProDesc}</p>
-            <ul className="space-y-2 mb-8">
-              {tr.pricingProF.map((f: string, j: number) => (
-                <li key={j} className="flex items-center gap-2 text-sm"><span className="text-green-400 font-bold">✓</span>{f}</li>
-              ))}
-            </ul>
-            <button disabled={currentPlan === "pro"}
-              className={`w-full py-3 rounded-lg font-semibold text-sm transition ${currentPlan === "pro" ? "bg-[#2a2a2a] text-gray-500 cursor-not-allowed" : "bg-[#f5a623] text-black hover:bg-[#e8951a]"}`}>
-              {currentPlan === "pro" ? tr.pricingCurrent : tr.pricingUpgrade}
-            </button>
-          </div>
-
-          {/* FLEET */}
-          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-8 relative">
-            <div className="text-sm text-gray-400 uppercase tracking-wider font-mono mb-2">{tr.pricingFleet}</div>
-            <div className="text-4xl font-bold font-mono mb-1">29 <span className="text-sm font-normal text-gray-400">{tr.pricingMonth}</span></div>
-            <p className="text-gray-500 text-xs mb-6">{tr.pricingFleetDesc}</p>
-            <ul className="space-y-2 mb-8">
-              {tr.pricingFleetF.map((f: string, j: number) => (
-                <li key={j} className="flex items-center gap-2 text-sm"><span className="text-green-400 font-bold">✓</span>{f}</li>
-              ))}
-            </ul>
-            <a href="mailto:tripprofit.contact@gmail.com"
-              className="w-full py-3 rounded-lg font-semibold text-sm border border-[#334155] text-white hover:bg-[#1e293b] transition block text-center">
-              {tr.pricingContact}
-            </a>
-          </div>
+          {plans.map((plan) => (
+            <div key={plan.id} className={`rounded-xl p-8 relative ${plan.highlight ? "bg-[#16143a] border-2 border-[#4f46e5]" : "bg-[#161616] border border-[#2a2a2a]"}`}>
+              {plan.highlight && (
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#f5a623] text-black text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
+                  Cel mai ales
+                </div>
+              )}
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">{plan.name}</div>
+              <div className="text-5xl font-semibold text-white mb-1">
+                <sup className="text-xl">€</sup>{plan.price}<sub className="text-sm font-normal text-gray-500">/lună</sub>
+              </div>
+              <div className="text-sm text-gray-400 mb-6 mt-2">{plan.desc}</div>
+              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
+                {plan.features.map((f) => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
+                ))}
+                {plan.missing.map((f) => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
+                ))}
+              </div>
+              {currentPlan === plan.id ? (
+                <button disabled className="w-full py-3 rounded-lg text-sm font-semibold bg-[#2a2a2a] text-gray-500 cursor-not-allowed">
+                  Plan activ
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleCheckout(plan.id)}
+                  disabled={loading === plan.id}
+                  className={`w-full py-3 rounded-lg text-sm font-semibold transition disabled:opacity-50 ${plan.highlight ? "bg-[#4f46e5] text-white hover:bg-[#4338ca]" : "border border-[#333] text-white hover:bg-[#1e1e1e]"}`}
+                >
+                  {loading === plan.id ? "Se procesează..." : "Activează planul"}
+                </button>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* REFERRAL */}
-        <div className="mt-12 bg-[#161616] border border-[#2e2e2e] rounded-xl p-6 text-center">
-          <h3 className="text-lg font-bold mb-2">{tr.pricingRefTitle}</h3>
-          <p className="text-gray-400 text-sm mb-4">{tr.pricingRefSub}</p>
-          <div className="bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 font-mono text-sm text-[#f5a623] inline-block">
-            tripprofit.com/ref/{user?.uid?.slice(0, 8)}
-          </div>
+        <div className="mt-8 bg-[#161616] border border-[#2a2a2a] rounded-xl p-5 text-center text-sm text-gray-400">
+          Plata se procesează securizat prin <strong className="text-white">Stripe</strong>. Poți anula oricând. Datele tale rămân intacte indiferent de planul ales.
         </div>
       </div>
     </div>
