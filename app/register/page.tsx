@@ -30,6 +30,14 @@ export default function RegisterPage() {
         createdAt: new Date().toISOString(),
         plan: "free",
       });
+
+      // Email bun venit
+      await fetch("/api/email/welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      });
+
       router.push("/dashboard");
     } catch (err: any) {
       if (err.code === "auth/email-already-in-use") {
