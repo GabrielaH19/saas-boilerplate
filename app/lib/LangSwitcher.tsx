@@ -5,12 +5,7 @@ import { Locale } from "./translations";
 
 const LANGS: { code: Locale; flag: string; label: string }[] = [
   { code: "ro", flag: "🇷🇴", label: "RO" },
-  { code: "en", flag: "🇬🇧", label: "EN" },
-  { code: "de", flag: "🇩🇪", label: "DE" },
   { code: "it", flag: "🇮🇹", label: "IT" },
-  { code: "pl", flag: "🇵🇱", label: "PL" },
-  { code: "hu", flag: "🇭🇺", label: "HU" },
-  { code: "bg", flag: "🇧🇬", label: "BG" },
 ];
 
 export default function LangSwitcher() {
