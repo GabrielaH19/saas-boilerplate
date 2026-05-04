@@ -1,4 +1,5 @@
 ﻿"use client";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
@@ -17,8 +18,8 @@ export default function AppNav({ active }: { active?: string }) {
         <Link href="/dashboard" className={active==="dashboard"?"text-white":"hover:text-white"}>{tr.dashboard}</Link>
         <Link href="/trip/new" className={active==="trip"?"text-white":"hover:text-white"}>{tr.newTrip}</Link>
         <Link href="/history" className={active==="history"?"text-white":"hover:text-white"}>{tr.history}</Link>
-        <Link href="/clients" className={active==="clients"?"text-white":"hover:text-white"}>Clien&#x21B;i</Link>
-        <Link href="/cashflow" className={active==="cashflow"?"text-white":"hover:text-white"}>Cashflow</Link>
+        <Link href="/clients" className={active==="clients"?"text-white":"hover:text-white"}>{tr.clients}</Link>
+        <Link href="/cashflow" className={active==="cashflow"?"text-white":"hover:text-white"}>{tr.cashflow}</Link>
         <Link href="/truck" className={active==="truck"?"text-white":"hover:text-white"}>{tr.truck}</Link>
         <LangSwitcher />
         <button onClick={handleLogout} className="hover:text-white">{tr.logout}</button>
