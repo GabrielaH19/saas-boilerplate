@@ -1,13 +1,13 @@
-export const t = {
+﻿export const t = {
   ro: {
-    // Nav
     dashboard: "Dashboard",
     newTrip: "Cursă nouă",
     history: "Istoric",
     report: "Raport",
     truck: "Camion",
+    clients: "Clienți",
+    cashflow: "Cashflow",
     logout: "Ieși",
-    // Auth
     loginTitle: "Intră în contul tău",
     registerTitle: "Creează-ți contul gratuit",
     email: "Email",
@@ -21,7 +21,6 @@ export const t = {
     signIn: "Intră în cont",
     minChars: "minim 6 caractere",
     loading: "Se încarcă...",
-    // Dashboard
     totalTrips: "Curse totale",
     totalProfit: "Profit net total",
     avgProfitKm: "Medie profit/km",
@@ -30,7 +29,6 @@ export const t = {
     noTrips: "Nicio cursă încă.",
     addFirstTrip: "+ Adaugă prima cursă",
     distribution: "Distribuție curse",
-    // Calculator
     newTripTitle: "Cursă nouă",
     newTripSub: "Completează datele pentru a obține verdictul.",
     from: "De la",
@@ -56,18 +54,15 @@ export const t = {
     profitDay: "Profit / zi",
     saveTrip: "Salvează cursa",
     tripSaved: "✓ Cursa a fost salvată! Se redirecționează...",
-    // Verdicts
     accept: "ACCEPTĂ",
     negotiate: "NEGOCIAZĂ",
     reject: "REFUZĂ",
     acceptSub: "Cursă profitabilă. Merită acceptată.",
     negotiateSub: "Profit mic. Încearcă să negociezi.",
     rejectSub: "Nu merită. Costurile depășesc beneficiul.",
-    // History
     historyTitle: "Istoric curse",
     all: "Toate",
     noTripsFound: "Nicio cursă găsită.",
-    // Report
     reportTitle: "Raport lunar",
     reportSub: "Rezumat financiar bazat pe cursele salvate.",
     totalRevenue: "Venituri totale",
@@ -82,7 +77,6 @@ export const t = {
     tollsCosts: "Taxe drum + parcare",
     allowanceCosts: "Diurne",
     fixedCostsAlloc: "Costuri fixe alocate",
-    // Truck
     truckTitle: "Profil camion",
     truckSub: "Datele camionului sunt folosite pentru calcule mai precise.",
     plate: "Număr înmatriculare",
@@ -102,7 +96,6 @@ export const t = {
     profileSaved: "✓ Profilul a fost salvat!",
     welcome: "Bun venit",
     forgotPassword: "Ai uitat parola?",
-    // Pricing
     pricingNav: "Prețuri",
     pricingTitle: "Prețuri simple pentru orice șofer",
     pricingSub: "Începe gratuit. Upgradează când ai nevoie.",
@@ -130,6 +123,8 @@ export const t = {
     history: "Storico",
     report: "Rapporto",
     truck: "Camion",
+    clients: "Clienti",
+    cashflow: "Cashflow",
     logout: "Esci",
     loginTitle: "Accedi al tuo account",
     registerTitle: "Crea il tuo account gratuito",
