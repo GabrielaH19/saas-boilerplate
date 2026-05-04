@@ -3,9 +3,9 @@
 import { useLang } from "./LanguageContext";
 import { Locale } from "./translations";
 
-const LANGS: { code: Locale; flag: string; label: string }[] = [
-  { code: "ro", flag: "????", label: "RO" },
-  { code: "it", flag: "????", label: "IT" },
+const LANGS: { code: Locale; label: string }[] = [
+  { code: "ro", label: "RO" },
+  { code: "it", label: "IT" },
 ];
 
 export default function LangSwitcher() {
@@ -17,13 +17,13 @@ export default function LangSwitcher() {
         <button
           key={l.code}
           onClick={() => setLocale(l.code)}
-          className={`px-2 py-1 rounded text-xs font-semibold transition ${
+          className={`px-3 py-1 rounded text-xs font-semibold transition ${
             locale === l.code
               ? "bg-[#f5a623] text-black"
               : "text-gray-300 hover:text-white"
           }`}
         >
-          {l.flag} {l.label}
+          {l.label}
         </button>
       ))}
     </div>
