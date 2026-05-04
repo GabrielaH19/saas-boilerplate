@@ -6,6 +6,7 @@ import { auth, db } from "../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
+import AppNav from "@/app/components/AppNav";
 
 interface Trip {
   id: string;
@@ -136,18 +137,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
-      <nav className="bg-[#161616] border-b border-[#2e2e2e] px-6 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">Trip<span className="text-[#f5a623]">Profit</span></h1>
-        <div className="flex items-center gap-6 text-sm text-gray-400">
-          <Link href="/dashboard" className="text-white">Dashboard</Link>
-          <Link href="/trip/new" className="hover:text-white">Cursă nouă</Link>
-          <Link href="/history" className="hover:text-white">Istoric</Link>
-          <Link href="/clients" className="hover:text-white">Clienți</Link>
-          <Link href="/cashflow" className="hover:text-white">Cashflow</Link>
-          <Link href="/truck" className="hover:text-white">Camioane</Link>
-          <button onClick={handleLogout} className="hover:text-white">Ieși</button>
-        </div>
-      </nav>
+      <AppNav active="dashboard" />
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
@@ -303,3 +293,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
