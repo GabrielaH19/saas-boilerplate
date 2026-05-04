@@ -23,7 +23,7 @@ export default function LandingPage() {
       {/* HERO */}
       <div className="text-center px-6 pt-24 pb-14">
         <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
-          Pentru firme mici de transport · 1-10 camioane
+          Pentru firme mici de transport · 1-20 camioane
         </div>
         <h1 className="text-6xl font-semibold leading-tight mb-6 max-w-3xl mx-auto text-white">
           În 10 secunde știi dacă<br />
@@ -253,7 +253,7 @@ export default function LandingPage() {
         <div className="flex gap-6 text-sm text-gray-600">
           <Link href="/terms" className="hover:text-gray-400">Termeni și condiții</Link>
           <Link href="/privacy" className="hover:text-gray-400">Politica de confidențialitate</Link>
-          <span>contact@tripprofit.app</span>
+          <span>contact@tripprofit.ro</span>
         </div>
       </footer>
 
