@@ -135,8 +135,6 @@ export default function LandingPage() {
       </div>
 
       {/* PRETURI */}
-      <div 
-        <div className="mb-6 text-center"><span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-xs font-semibold px-4 py-2 rounded-full">{locale === "it" ? "Offerta di lancio - Primi 100 abbonati - Prezzo ridotto per sempre" : "Oferta de lansare - Primii 100 abonati - Pret redus pentru totdeauna"}</span></div>
       <div id="preturi" className="max-w-4xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
