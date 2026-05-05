@@ -73,7 +73,6 @@ export default function LandingPage() {
 
       {/* PROBLEMA */}
       <div className="max-w-4xl mx-auto px-6 mb-24 text-center">
-        <div className="mb-6 text-center"><span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-xs font-semibold px-4 py-2 rounded-full">{locale === "it" ? "Offerta di lancio - Primi 100 abbonati - Prezzo ridotto per sempre" : "Oferta de lansare - Primii 100 abonati - Pret redus pentru totdeauna"}</span></div>
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Il problema" : "Problema"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Perché le piccole aziende di trasporto perdono soldi?" : "De ce pierd bani firmele mici de transport?"}</h2>
         <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Non per mancanza di lavoro. Ma per mancanza di una visione chiara sui costi reali." : "Nu din lipsă de muncă. Ci din lipsa unei imagini clare asupra costurilor reale."}</p>
@@ -139,6 +138,7 @@ export default function LandingPage() {
       <div id="preturi" className="max-w-4xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
+        <div className="mb-6 text-center"><span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-5 py-2 rounded-full">{locale === "it" ? "🔥 Offerta di lancio · Primi 100 abbonati · Prezzo ridotto per sempre" : "🔥 Oferta de lansare · Primii 100 abonati · Pret redus pentru totdeauna"}</span></div>
         <p className="text-lg text-gray-400 mb-4">{locale === "it" ? "30 giorni gratis per qualsiasi piano. Senza carta di credito alla registrazione." : "30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare."}</p>
         <p className="text-sm text-gray-600 mb-14">
           {locale === "it" ? "Dopo il periodo di prova, scegli il piano adatto alla tua azienda e lo attivi direttamente dall'app, nella sezione Prezzi." : "După perioada de test, alegi planul potrivit firmei tale și îl activezi direct din aplicație, din secțiunea Prețuri."}
