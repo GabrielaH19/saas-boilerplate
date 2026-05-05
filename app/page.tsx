@@ -10,7 +10,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-6 py-4 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-lg font-semibold">Trip<span className="text-[#f5a623]">Profit</span></div>
         <div className="hidden md:flex items-center gap-6">
           <a href="#functii" className="text-sm text-gray-400 hover:text-white transition">{locale === "it" ? "Funzioni" : "Functii"}</a>
@@ -218,7 +218,7 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="border-t border-[#1e1e1e] py-6 px-10 flex items-center justify-between">
         <div className="text-sm font-semibold">Trip<span className="text-[#f5a623]">Profit</span></div>
-        <div className="flex gap-6 text-sm text-gray-600">
+        <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
           <Link href="/terms" className="hover:text-gray-400">{locale === "it" ? "Termini e condizioni" : "Termeni și condiții"}</Link>
           <Link href="/privacy" className="hover:text-gray-400">{locale === "it" ? "Politica sulla privacy" : "Politica de confidențialitate"}</Link>
           <span>contact@tripprofit.ro</span>
