@@ -72,7 +72,7 @@ function ShareCard() {
     ctx.fillText(fromCap, x, 195);
     x += ctx.measureText(fromCap).width + 20;
     ctx.fillStyle = "#f5a623";
-    ctx.fillText("->", x, 195);
+    ctx.fillText("→", x, 195);
     x += ctx.measureText("->").width + 20;
     ctx.fillStyle = "#ffffff";
     ctx.fillText(toCap, x, 195);
