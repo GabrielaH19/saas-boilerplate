@@ -34,10 +34,10 @@ export default function LandingPage() {
         <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
           {locale === "it" ? "Per piccole aziende di trasporto · 1-20 camion" : "Pentru firme mici de transport · 1-20 camioane"}
         </div>
-        <h1 className="text-6xl font-semibold leading-tight mb-6 max-w-3xl mx-auto text-white">
+        <h1 className="text-4xl md:text-6xl font-semibold leading-tight mb-6 max-w-3xl mx-auto text-white">
           {locale === "it" ? <>In 10 secondi sai se<br />un viaggio <span className="text-[#f5a623]">vale o no.</span></> : <>În 10 secunde știi dacă<br />o cursă <span className="text-[#f5a623]">merită sau nu.</span></>}
         </h1>
-        <p className="text-xl text-gray-300 mb-4 max-w-xl mx-auto">
+        <p className="text-base md:text-xl text-gray-300 mb-4 max-w-xl mx-auto">
           {locale === "it" ? "Inserisci i dati del viaggio. TripProfit calcola tutto e ti dice subito: ACCETTA, NEGOZIA o RIFIUTA." : "Introduci datele cursei. TripProfit calculează tot și îți spune direct: ACCEPTĂ, NEGOCIAZĂ sau REFUZĂ."}
         </p>
         <p className="text-sm text-gray-500 mb-10 max-w-md mx-auto">
@@ -74,9 +74,9 @@ export default function LandingPage() {
       {/* PROBLEMA */}
       <div className="max-w-4xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Il problema" : "Problema"}</div>
-        <h2 className="text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Perché le piccole aziende di trasporto perdono soldi?" : "De ce pierd bani firmele mici de transport?"}</h2>
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Perché le piccole aziende di trasporto perdono soldi?" : "De ce pierd bani firmele mici de transport?"}</h2>
         <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Non per mancanza di lavoro. Ma per mancanza di una visione chiara sui costi reali." : "Nu din lipsă de muncă. Ci din lipsa unei imagini clare asupra costurilor reale."}</p>
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {(locale === "it" ? [
             { t: "Viaggi accettati sotto il costo reale", d: "Il prezzo negoziato copre il carburante, ma non include leasing, assicurazione e stipendio dell'autista. Senza un calcolo completo, la decisione viene presa senza tutte le informazioni." },
             { t: "Impossibile sapere quale camion perde", d: "Se hai tre camion e uno è in perdita da due mesi, non saprai esattamente quale sia il problema senza un registro chiaro per ogni unità." },
@@ -100,9 +100,9 @@ export default function LandingPage() {
       <div id="functii" className="bg-[#0a0a0a] border-t border-b border-[#1e1e1e] py-24 px-6 mb-24">
         <div className="max-w-4xl mx-auto text-center">
           <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Funzionalità" : "Funcționalități"}</div>
-          <h2 className="text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Cosa fa TripProfit per la tua azienda" : "Ce face TripProfit pentru firma ta"}</h2>
+          <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Cosa fa TripProfit per la tua azienda" : "Ce face TripProfit pentru firma ta"}</h2>
           <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Tutte le informazioni rilevanti, disponibili immediatamente, senza cercarle tu." : "Toate informațiile relevante, disponibile imediat, fără să le cauți tu."}</p>
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {(locale === "it" ? [
               { n: "01", t: "Verdetto istantaneo per viaggio", d: "Inserisci i dati del viaggio e ricevi subito il verdetto: ACCETTA, NEGOZIA o RIFIUTA, basato sui costi reali del tuo camion." },
               { n: "02", t: "Report per camion", d: "Visualizzi il profitto, il costo per km e il numero di viaggi per ogni camion della flotta. Identifichi subito le unità con prestazioni scarse." },
@@ -137,12 +137,12 @@ export default function LandingPage() {
       {/* PRETURI */}
       <div id="preturi" className="max-w-4xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
-        <h2 className="text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
         <p className="text-lg text-gray-400 mb-4">{locale === "it" ? "30 giorni gratis per qualsiasi piano. Senza carta di credito alla registrazione." : "30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare."}</p>
         <p className="text-sm text-gray-600 mb-14">
           {locale === "it" ? "Dopo il periodo di prova, scegli il piano adatto alla tua azienda e lo attivi direttamente dall'app, nella sezione Prezzi." : "După perioada de test, alegi planul potrivit firmei tale și îl activezi direct din aplicație, din secțiunea Prețuri."}
         </p>
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
             <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>30<sub className="text-sm font-normal text-gray-500">{locale === "it" ? "/mese" : "/lună"}</sub></div>
@@ -209,7 +209,7 @@ export default function LandingPage() {
           {locale === "it" ? <>Pronto ad avere il controllo<br />della tua azienda?</> : <>Gata să ai control<br />asupra firmei tale?</>}
         </h2>
         <p className="text-lg text-gray-400 mb-10">{locale === "it" ? "Configuri l'azienda in due minuti. Il primo viaggio calcolato subito." : "Configurezi firma în două minute. Prima cursă calculată imediat."}</p>
-        <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-10 py-4 rounded-lg hover:bg-[#e8951a] transition text-base inline-block">
+        <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-4 md:px-10 py-4 rounded-lg hover:bg-[#e8951a] transition text-base inline-block">
           {locale === "it" ? "Prova 30 giorni gratis" : "Încearcă 30 zile gratuit"}
         </Link>
         <p className="text-sm text-gray-600 mt-5">{locale === "it" ? "Senza carta di credito. Senza impegni. Puoi annullare in qualsiasi momento." : "Fără card bancar. Fără angajamente. Poți anula oricând."}</p>
