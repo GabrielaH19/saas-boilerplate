@@ -145,7 +145,7 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
-            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>18<sub className="text-sm font-normal text-gray-500">{locale === "it" ? "/mese" : "/lună"}</sub></div>
+            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>18<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">30€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
               {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico viaggi"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric curse"]).map(f => (
@@ -165,7 +165,7 @@ export default function LandingPage() {
               {locale === "it" ? "Il più scelto" : "Cel mai ales"}
             </div>
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>29<sub className="text-sm font-normal text-gray-500">{locale === "it" ? "/mese" : "/lună"}</sub></div>
+            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>29<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">49€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
               {(locale === "it" ? ["Tutto di Basic", "Camion illimitati", "Report per camion", "Report per cliente con punteggio rischio", "Dashboard generale azienda", "Avvisi automatici costi superati"] : ["Tot ce include Basic", "Camioane nelimitate", "Raport per camion", "Raport per client cu scor de risc", "Dashboard general firmă", "Alerte automate costuri depășite"]).map(f => (
@@ -182,7 +182,7 @@ export default function LandingPage() {
 
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
-            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>47<sub className="text-sm font-normal text-gray-500">{locale === "it" ? "/mese" : "/lună"}</sub></div>
+            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>47<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">79€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
               {(locale === "it" ? ["Tutto di Pro", "Cashflow tracking", "Avviso blocco liquidità", "Punteggio rischio dettagliato per cliente", "Simulazioni finanziarie", "Raccomandazioni automatiche", "Assistenza prioritaria"] : ["Tot ce include Pro", "Cashflow tracking", "Alertă blocaj de lichiditate", "Scor de risc detaliat per client", "Simulări financiare", "Recomandări automate", "Asistență prioritară"]).map(f => (
