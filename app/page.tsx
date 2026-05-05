@@ -9,17 +9,22 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
-
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-10 py-4 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-6 py-4 flex items-center justify-between">
         <div className="text-lg font-semibold">Trip<span className="text-[#f5a623]">Profit</span></div>
-        <div className="flex items-center gap-6">
-          <a href="#functii" className="text-sm text-gray-400 hover:text-white transition">{locale === "it" ? "Funzioni" : "Funcții"}</a>
-          <a href="#preturi" className="text-sm text-gray-400 hover:text-white transition" >{locale === "it" ? "Prezzi" : "Prețuri"}</a>
-          <Link href="/login" className="text-sm text-gray-400 hover:text-white" >{locale === "it" ? "Accedi" : "Intră în cont"}</Link>
+        <div className="hidden md:flex items-center gap-6">
+          <a href="#functii" className="text-sm text-gray-400 hover:text-white transition">{locale === "it" ? "Funzioni" : "Functii"}</a>
+          <a href="#preturi" className="text-sm text-gray-400 hover:text-white transition">{locale === "it" ? "Prezzi" : "Preturi"}</a>
+          <Link href="/login" className="text-sm text-gray-400 hover:text-white">{locale === "it" ? "Accedi" : "Intra in cont"}</Link>
           <LangSwitcher />
           <Link href="/register" className="bg-[#f5a623] text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#e8951a] transition">
-            {locale === "it" ? "Prova gratis" : "Încearcă gratuit"}
+            {locale === "it" ? "Prova gratis" : "Incearca gratuit"}
+          </Link>
+        </div>
+        <div className="flex md:hidden items-center gap-3">
+          <LangSwitcher />
+          <Link href="/register" className="bg-[#f5a623] text-black text-xs font-semibold px-3 py-2 rounded-lg hover:bg-[#e8951a] transition">
+            {locale === "it" ? "Prova gratis" : "Incearca gratuit"}
           </Link>
         </div>
       </nav>
