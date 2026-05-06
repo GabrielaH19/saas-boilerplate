@@ -3,45 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "../../lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import {
-  collection, query, where, getDocs,
-  addDoc, doc, getDoc, serverTimestamp
-} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, query, where, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
+import { useLang } from "../../lib/LanguageContext";
 
 interface Truck {
-  id: string;
-  name: string;
-  plate: string;
-  consumption: number;
-  estimatedKmPerMonth: number;
-  fixedCosts: {
-    leasing: number;
-    insurance: number;
-    maintenance: number;
-    salary: number;
-    other: number;
-  };
+  id: string; name: string; plate: string; consumption: number; estimatedKmPerMonth: number;
+  fixedCosts: { leasing: number; insurance: number; maintenance: number; salary: number; other: number; };
 }
-
-interface Client {
-  id: string;
-  name: string;
-  paymentTermDays: number;
-}
+interface Client { id: string; name: string; paymentTermDays: number; }
 
 export default function NewTripPage() {
   const router = useRouter();
+  const { tr } = useLang();
   const [userId, setUserId] = useState<string | null>(null);
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  // inputs
   const [selectedTruckId, setSelectedTruckId] = useState("");
   const [selectedClientId, setSelectedClientId] = useState("");
   const [from, setFrom] = useState("");
@@ -76,34 +58,21 @@ export default function NewTripPage() {
 
   const selectedTruck = trucks.find(t => t.id === selectedTruckId);
   const selectedClient = clients.find(c => c.id === selectedClientId);
-
-  // calcule reale
   const totalKm = loadedKm + emptyKm;
   const consumption = selectedTruck?.consumption || 32;
   const fuelCost = Math.round((consumption / 100) * fuelPrice * totalKm);
   const emptyCost = Math.round((consumption / 100) * fuelPrice * emptyKm);
   const extraCost = Math.round(tolls + days * dailyAllowance);
   const waitCost = Math.round(waitHours * 17);
-
-  // cost fix per km din camionul selectat
-  const truckFixed = selectedTruck
-    ? selectedTruck.fixedCosts.leasing + selectedTruck.fixedCosts.insurance +
-      selectedTruck.fixedCosts.maintenance + selectedTruck.fixedCosts.salary +
-      selectedTruck.fixedCosts.other
-    : 0;
-  const truckFixedPerKm = selectedTruck?.estimatedKmPerMonth
-    ? truckFixed / selectedTruck.estimatedKmPerMonth
-    : 0;
+  const truckFixed = selectedTruck ? selectedTruck.fixedCosts.leasing + selectedTruck.fixedCosts.insurance + selectedTruck.fixedCosts.maintenance + selectedTruck.fixedCosts.salary + selectedTruck.fixedCosts.other : 0;
+  const truckFixedPerKm = selectedTruck?.estimatedKmPerMonth ? truckFixed / selectedTruck.estimatedKmPerMonth : 0;
   const truckFixedCost = Math.round(truckFixedPerKm * loadedKm);
-
   const totalCost = fuelCost + extraCost + truckFixedCost + waitCost;
   const profit = revenue - totalCost;
   const revenuePerLoadedKm = loadedKm > 0 ? revenue / loadedKm : 0;
   const revenuePerTotalKm = totalKm > 0 ? revenue / totalKm : 0;
   const minBreakEvenPerKm = loadedKm > 0 ? totalCost / loadedKm : 0;
   const minRecommendedPerKm = minBreakEvenPerKm + 0.15;
-
-  // verdict bazat pe €/km real vs prag
   const verdict: "accept" | "negotiate" | "reject" =
     revenuePerLoadedKm >= minRecommendedPerKm ? "accept" :
     revenuePerLoadedKm >= minBreakEvenPerKm ? "negotiate" : "reject";
@@ -111,260 +80,135 @@ export default function NewTripPage() {
   const handleSave = async () => {
     if (!userId) return;
     if (!selectedTruckId) return alert("Selectează un camion.");
-    if (!from || !to) return alert("Completează ruta (de la / până la).");
-
+    if (!from || !to) return alert("Completează ruta.");
     setSaving(true);
     try {
       await addDoc(collection(db, "trips"), {
-        userId,
-        truckId: selectedTruckId,
-        clientId: selectedClientId || null,
-        from,
-        to,
-        tripDate,
-
-        inputs: {
-          loadedKm,
-          emptyKm,
-          fuelPrice,
-          tolls,
-          days,
-          waitHours,
-          dailyAllowance,
-          revenue,
-        },
-
-        snapshots: {
-          truckName: selectedTruck?.name || "",
-          clientName: selectedClient?.name || "",
-          truckConsumption: consumption,
-          truckFixedCostPerKm: parseFloat(truckFixedPerKm.toFixed(4)),
-        },
-
-        results: {
-          fuelCost,
-          emptyCost,
-          extraCost,
-          truckFixedCost,
-          waitCost,
-          totalCost,
-          profit,
-          revenuePerLoadedKm: parseFloat(revenuePerLoadedKm.toFixed(4)),
-          revenuePerTotalKm: parseFloat(revenuePerTotalKm.toFixed(4)),
-          minBreakEvenPerKm: parseFloat(minBreakEvenPerKm.toFixed(4)),
-          minRecommendedPerKm: parseFloat(minRecommendedPerKm.toFixed(4)),
-          verdict,
-        },
-
-        status: "saved",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        userId, truckId: selectedTruckId, clientId: selectedClientId || null, from, to, tripDate,
+        inputs: { loadedKm, emptyKm, fuelPrice, tolls, days, waitHours, dailyAllowance, revenue },
+        snapshots: { truckName: selectedTruck?.name || "", clientName: selectedClient?.name || "", truckConsumption: consumption, truckFixedCostPerKm: parseFloat(truckFixedPerKm.toFixed(4)) },
+        results: { fuelCost, emptyCost, extraCost, truckFixedCost, waitCost, totalCost, profit, revenuePerLoadedKm: parseFloat(revenuePerLoadedKm.toFixed(4)), revenuePerTotalKm: parseFloat(revenuePerTotalKm.toFixed(4)), minBreakEvenPerKm: parseFloat(minBreakEvenPerKm.toFixed(4)), minRecommendedPerKm: parseFloat(minRecommendedPerKm.toFixed(4)), verdict },
+        status: "saved", createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
       });
-
       setSaved(true);
-    } catch (e) {
-      console.error(e);
-      alert("Eroare la salvare. Încearcă din nou.");
-    }
+    } catch (e) { console.error(e); alert("Eroare la salvare."); }
     setSaving(false);
-  };
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/login");
   };
 
   const inp = "w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#f5a623]";
   const lbl = "block text-xs text-gray-400 mb-1";
 
-  if (loading) return (
-    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
-      <p className="text-gray-400">Se încarcă...</p>
-    </div>
-  );
+  if (loading) return <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center"><p className="text-gray-400">{tr.loading}</p></div>;
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="trip" />
-
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <h2 className="text-2xl font-bold mb-2">Calculează o cursă</h2>
-        <p className="text-gray-400 text-sm mb-8">Completează datele — verdictul apare instant pe baza costurilor reale ale camionului tău.</p>
+        <h2 className="text-2xl font-bold mb-2">{tr.tripCalcTitle}</h2>
+        <p className="text-gray-400 text-sm mb-8">{tr.tripCalcSub}</p>
 
         {trucks.length === 0 && (
           <div className="bg-yellow-900 border border-yellow-700 text-yellow-400 px-4 py-3 rounded-lg mb-6 text-sm">
-            Nu ai adăugat niciun camion.{" "}
-            <Link href="/truck" className="underline font-semibold">Adaugă un camion</Link>
-            {" "}pentru calcule corecte.
+            {tr.noTruckWarning} <Link href="/truck" className="underline font-semibold">{tr.addTruck}</Link>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-6">
-          {/* STANGA — INPUTS */}
           <div className="space-y-4">
-
-            {/* CAMION + CLIENT */}
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Camion și client</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.truckAndClient}</p>
               <div className="space-y-3">
                 <div>
-                  <label className={lbl}>Camion</label>
+                  <label className={lbl}>{tr.truckLabel}</label>
                   <select className={inp} value={selectedTruckId} onChange={e => setSelectedTruckId(e.target.value)}>
-                    {trucks.length === 0 && <option value="">— Niciun camion —</option>}
-                    {trucks.map(t => (
-                      <option key={t.id} value={t.id}>{t.name} ({t.plate})</option>
-                    ))}
+                    {trucks.length === 0 && <option value="">{tr.noTruckOption}</option>}
+                    {trucks.map(t => <option key={t.id} value={t.id}>{t.name} ({t.plate})</option>)}
                   </select>
-                  {selectedTruck && (
-                    <p className="text-xs text-gray-600 mt-1">
-                      Consum: {selectedTruck.consumption}l/100km · Cost fix: {truckFixedPerKm.toFixed(2)}€/km
-                    </p>
-                  )}
+                  {selectedTruck && <p className="text-xs text-gray-600 mt-1">Consum: {selectedTruck.consumption}l/100km · Cost fix: {truckFixedPerKm.toFixed(2)}€/km</p>}
                 </div>
                 <div>
-                  <label className={lbl}>Client (opțional)</label>
+                  <label className={lbl}>{tr.clientOptional}</label>
                   <select className={inp} value={selectedClientId} onChange={e => setSelectedClientId(e.target.value)}>
-                    <option value="">— Fără client —</option>
-                    {clients.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
+                    <option value="">{tr.noClient}</option>
+                    {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
               </div>
             </div>
 
-            {/* RUTA */}
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Rută și dată</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.routeAndDate}</p>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label className={lbl}>De la</label>
-                  <input className={inp} value={from} onChange={e => setFrom(e.target.value)} placeholder="București" />
-                </div>
-                <div>
-                  <label className={lbl}>Până la</label>
-                  <input className={inp} value={to} onChange={e => setTo(e.target.value)} placeholder="München" />
-                </div>
+                <div><label className={lbl}>{tr.from}</label><input className={inp} value={from} onChange={e => setFrom(e.target.value)} placeholder="București" /></div>
+                <div><label className={lbl}>{tr.to}</label><input className={inp} value={to} onChange={e => setTo(e.target.value)} placeholder="München" /></div>
               </div>
-              <div>
-                <label className={lbl}>Data cursei</label>
-                <input type="date" className={inp} value={tripDate} onChange={e => setTripDate(e.target.value)} />
-              </div>
+              <div><label className={lbl}>{tr.tripDate}</label><input type="date" className={inp} value={tripDate} onChange={e => setTripDate(e.target.value)} /></div>
             </div>
 
-            {/* KM + VENIT */}
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Km și venit</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.kmAndRevenue}</p>
               <div className="grid grid-cols-2 gap-3 mb-3">
+                <div><label className={lbl}>{tr.loadedKm}</label><input type="number" className={inp} value={loadedKm} onChange={e => setLoadedKm(+e.target.value)} /></div>
                 <div>
-                  <label className={lbl}>Km încărcați</label>
-                  <input type="number" className={inp} value={loadedKm} onChange={e => setLoadedKm(+e.target.value)} />
-                </div>
-                <div>
-                  <label className={lbl}>Km goi (retur)</label>
+                  <label className={lbl}>{tr.emptyKm}</label>
                   <input type="number" className={inp} value={emptyKm} onChange={e => setEmptyKm(+e.target.value)} />
-                  <p className="text-xs text-gray-600 mt-1">Total: {totalKm} km</p>
+                  <p className="text-xs text-gray-600 mt-1">{tr.totalKmLabel}: {totalKm} km</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className={lbl}>Venit cursă (€)</label>
-                  <input type="number" className={inp} value={revenue} onChange={e => setRevenue(+e.target.value)} />
-                </div>
-                <div>
-                  <label className={lbl}>Preț motorină (€/l)</label>
-                  <input type="number" step="0.01" className={inp} value={fuelPrice} onChange={e => setFuelPrice(+e.target.value)} />
-                </div>
+                <div><label className={lbl}>{tr.revenue}</label><input type="number" className={inp} value={revenue} onChange={e => setRevenue(+e.target.value)} /></div>
+                <div><label className={lbl}>{tr.fuelPriceLabel}</label><input type="number" step="0.01" className={inp} value={fuelPrice} onChange={e => setFuelPrice(+e.target.value)} /></div>
               </div>
             </div>
 
-            {/* COSTURI SUPLIMENTARE */}
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Costuri suplimentare</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.extraCosts}</p>
               <div className="grid grid-cols-2 gap-3">
+                <div><label className={lbl}>{tr.tolls}</label><input type="number" className={inp} value={tolls} onChange={e => setTolls(+e.target.value)} /></div>
                 <div>
-                  <label className={lbl}>Taxe drum (€)</label>
-                  <input type="number" className={inp} value={tolls} onChange={e => setTolls(+e.target.value)} />
-                </div>
-                <div>
-                  <label className={lbl}>Ore așteptare rampă</label>
+                  <label className={lbl}>{tr.waitHours}</label>
                   <input type="number" className={inp} value={waitHours} onChange={e => setWaitHours(+e.target.value)} />
-                  <p className="text-xs text-gray-600 mt-1">Cost pierdut: {waitCost}€</p>
+                  <p className="text-xs text-gray-600 mt-1">{tr.lostCost}: {waitCost}€</p>
                 </div>
-                <div>
-                  <label className={lbl}>Zile deplasare</label>
-                  <input type="number" className={inp} value={days} onChange={e => setDays(+e.target.value)} />
-                </div>
-                <div>
-                  <label className={lbl}>Diurnă / zi (€)</label>
-                  <input type="number" className={inp} value={dailyAllowance} onChange={e => setDailyAllowance(+e.target.value)} />
-                </div>
+                <div><label className={lbl}>{tr.days}</label><input type="number" className={inp} value={days} onChange={e => setDays(+e.target.value)} /></div>
+                <div><label className={lbl}>{tr.dailyAllowance}</label><input type="number" className={inp} value={dailyAllowance} onChange={e => setDailyAllowance(+e.target.value)} /></div>
               </div>
             </div>
           </div>
 
-          {/* DREAPTA — REZULTATE */}
           <div className="space-y-4">
-
-            {/* VERDICT */}
-            <div className={`rounded-xl p-5 text-center border ${
-              verdict === "accept" ? "bg-[#0a1f0a] border-green-800" :
-              verdict === "negotiate" ? "bg-[#1f1a00] border-yellow-800" :
-              "bg-[#1f0a0a] border-red-800"
-            }`}>
-              <div className={`text-2xl font-bold mb-1 ${
-                verdict === "accept" ? "text-green-400" :
-                verdict === "negotiate" ? "text-[#f5a623]" :
-                "text-red-400"
-              }`}>
-                {verdict === "accept" ? "ACCEPTĂ" :
-                 verdict === "negotiate" ? "NEGOCIAZĂ" : "REFUZĂ"}
+            <div className={`rounded-xl p-5 text-center border ${verdict === "accept" ? "bg-[#0a1f0a] border-green-800" : verdict === "negotiate" ? "bg-[#1f1a00] border-yellow-800" : "bg-[#1f0a0a] border-red-800"}`}>
+              <div className={`text-2xl font-bold mb-1 ${verdict === "accept" ? "text-green-400" : verdict === "negotiate" ? "text-[#f5a623]" : "text-red-400"}`}>
+                {verdict === "accept" ? tr.accept : verdict === "negotiate" ? tr.negotiate : tr.reject}
               </div>
               <div className="text-sm text-gray-500 mb-3">
-                {verdict === "accept" ? "Cursă profitabilă — peste pragul tău" :
-                 verdict === "negotiate" ? "Marjă periculoasă — încearcă un preț mai bun" :
-                 "Sub costul real — pierzi bani dacă accepți"}
-              </div>
-              <div className={`text-xs font-semibold ${
-                verdict === "accept" ? "text-green-400" :
-                verdict === "negotiate" ? "text-[#f5a623]" :
-                "text-red-400"
-              }`}>
-                {verdict === "accept"
-                  ? "Fără calcul, ai fi acceptat orb. Acum știi că merită."
-                  : verdict === "negotiate"
-                  ? "Majoritatea acceptă curse ca asta și pierd bani. Tu nu trebuie."
-                  : "Dacă accepți, plătești tu din buzunar ca să lucrezi."}
+                {verdict === "accept" ? tr.acceptSub : verdict === "negotiate" ? tr.negotiateSub : tr.rejectSub}
               </div>
             </div>
 
-            {/* CALCULE DETALIATE */}
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Detalii calcul</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.calcDetails}</p>
               {[
-                { label: "Cost combustibil (total km)", val: `${fuelCost} €` },
+                { label: tr.fuelCost, val: `${fuelCost} €` },
                 { label: `Cost km goi (${emptyKm} km)`, val: `-${emptyCost} €`, red: true },
                 { label: "Taxe + diurnă", val: `${extraCost} €` },
-                { label: "Cost fix camion alocat", val: `${truckFixedCost} €` },
-                { label: `Timp pierdut rampă (${waitHours}h)`, val: `-${waitCost} €`, red: true },
-                { label: "Cost total", val: `${totalCost} €` },
+                { label: "Cost fix camion", val: `${truckFixedCost} €` },
+                { label: `${tr.waitHours} (${waitHours}h)`, val: `-${waitCost} €`, red: true },
+                { label: tr.totalCost, val: `${totalCost} €` },
               ].map((r, i) => (
                 <div key={i} className="flex justify-between py-1.5 border-b border-[#1e1e1e] text-sm">
                   <span className="text-gray-400">{r.label}</span>
-                  <span className={r.red ? "text-red-400 font-medium" : "text-white font-medium"}>{r.val}</span>
+                  <span className={`${r.red ? "text-red-400" : "text-white"} font-medium`}>{r.val}</span>
                 </div>
               ))}
               <div className="flex justify-between py-2 text-sm mt-1">
-                <span className="text-white font-semibold">Profit net</span>
-                <span className={`font-bold text-base ${profit >= 0 ? "text-green-400" : "text-red-400"}`}>
-                  {profit >= 0 ? "+" : ""}{profit} €
-                </span>
+                <span className="text-white font-semibold">{tr.netProfit}</span>
+                <span className={`font-bold text-base ${profit >= 0 ? "text-green-400" : "text-red-400"}`}>{profit >= 0 ? "+" : ""}{profit} €</span>
               </div>
             </div>
 
-            {/* METRICI */}
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">Metrici</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.metrics}</p>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "€/km (km încărcați)", val: revenuePerLoadedKm.toFixed(2) + " €/km", highlight: true },
@@ -380,29 +224,15 @@ export default function NewTripPage() {
               </div>
             </div>
 
-            {/* SAVE */}
             {saved ? (
               <div className="space-y-3">
-                <div className="bg-green-900 border border-green-700 text-green-400 px-4 py-3 rounded-lg text-sm">
-                  ✓ Cursa a fost salvată!
-                </div>
-                <Link href="/history" className="w-full border border-[#2e2e2e] text-white font-semibold py-3 rounded-lg hover:bg-[#161616] transition block text-center text-sm">
-                  Vezi istoricul
-                </Link>
-                <button
-                  onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue(1850); setLoadedKm(1200); setEmptyKm(200); }}
-                  className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm"
-                >
-                  + Calculează altă cursă
-                </button>
+                <div className="bg-green-900 border border-green-700 text-green-400 px-4 py-3 rounded-lg text-sm">{tr.savedTrip}</div>
+                <Link href="/history" className="w-full border border-[#2e2e2e] text-white font-semibold py-3 rounded-lg hover:bg-[#161616] transition block text-center text-sm">{tr.viewHistory}</Link>
+                <button onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue(1850); setLoadedKm(1200); setEmptyKm(200); }} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm">{tr.calcAnother}</button>
               </div>
             ) : (
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50 text-sm"
-              >
-                {saving ? "Se salvează..." : "Salvează cursa"}
+              <button onClick={handleSave} disabled={saving} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50 text-sm">
+                {saving ? tr.saving : tr.saveTrip}
               </button>
             )}
           </div>
@@ -411,4 +241,3 @@ export default function NewTripPage() {
     </div>
   );
 }
-
