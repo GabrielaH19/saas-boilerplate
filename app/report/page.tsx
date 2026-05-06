@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "../lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
+import AppNav from "@/app/components/AppNav";
 import { useLang } from "../lib/LanguageContext";
-import LangSwitcher from "../lib/LangSwitcher";
 
 export default function ReportPage() {
   const [trips, setTrips] = useState<any[]>([]);
@@ -27,11 +27,6 @@ export default function ReportPage() {
     return () => unsub();
   }, []);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/login");
-  };
-
   const monthTrips = trips.filter((t) => t.date?.startsWith(month));
   const totalRev = monthTrips.reduce((s, t) => s + (t.revenue || 0), 0);
   const totalCost = monthTrips.reduce((s, t) => s + (t.totalCost || 0), 0);
@@ -49,27 +44,11 @@ export default function ReportPage() {
   const months = [...new Set(trips.map((t) => t.date?.slice(0, 7)))].sort().reverse();
   if (!months.includes(month)) months.unshift(month);
 
-  if (loading) return (
-    <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
-      <p className="text-gray-400">{tr.loading}</p>
-    </div>
-  );
+  if (loading) return <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center"><p className="text-gray-400">{tr.loading}</p></div>;
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
-      <nav className="bg-[#161616] border-b border-[#2e2e2e] px-6 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">Trip<span className="text-[#f5a623]">Profit</span></h1>
-        <div className="flex items-center gap-6 text-sm text-gray-400">
-          <Link href="/dashboard" className="hover:text-white">{tr.dashboard}</Link>
-          <Link href="/trip/new" className="hover:text-white">{tr.newTrip}</Link>
-          <Link href="/history" className="hover:text-white">{tr.history}</Link>
-          <Link href="/report" className="text-white">{tr.report}</Link>
-          <Link href="/truck" className="hover:text-white">{tr.truck}</Link><Link href="/pricing" className="hover:text-white">Prețuri</Link>
-          <button onClick={handleLogout} className="hover:text-white">{tr.logout}</button>
-        </div>
-        <LangSwitcher />
-      </nav>
-
+      <AppNav active="report" />
       <div className="max-w-5xl mx-auto px-6 py-8">
         <h2 className="text-2xl font-bold mb-2">{tr.reportTitle}</h2>
         <p className="text-gray-400 mb-6">{tr.reportSub}</p>
