@@ -138,7 +138,7 @@ export default function LandingPage() {
       <div id="preturi" className="max-w-4xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
-        <div className="mb-6 text-center"><span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-xs font-semibold px-4 py-2 rounded-full whitespace-nowrap">{locale === "it" ? "🔥 Primi 100 abbonati · Prezzo ridotto per sempre" : "🔥 Primii 100 abonați · Preț redus pe viață"}</span></div>
+        <div className="mb-6 text-center"><span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-xs font-semibold px-4 py-2 rounded-full whitespace-nowrap">{locale === "it" ? "🔥 Primi 100 · Prezzo fisso per sempre" : "🔥 Primii 100 abonați · Preț redus pe viață"}</span></div>
         <p className="text-lg text-gray-400 mb-4">{locale === "it" ? "30 giorni gratis per qualsiasi piano. Senza carta di credito alla registrazione." : "30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare."}</p>
         <p className="text-sm text-gray-600 mb-14">
           {locale === "it" ? "Dopo il periodo di prova, scegli il piano adatto alla tua azienda e lo attivi direttamente dall'app, nella sezione Prezzi." : "După perioada de test, alegi planul potrivit firmei tale și îl activezi direct din aplicație, din secțiunea Prețuri."}
