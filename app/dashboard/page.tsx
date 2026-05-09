@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "../lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
 import { useLang } from "@/app/lib/LanguageContext";
@@ -41,6 +41,14 @@ export default function DashboardPage() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) { router.push("/login"); return; }
+      
+      // Check if onboarding completed
+      const userDoc = await getDoc(doc(db, "users", u.uid));
+      if (userDoc.exists() && userDoc.data()?.onboardingCompleted === false) {
+        router.push("/onboarding");
+        return;
+      }
+
       setUserName(u.email || "");
       const [tSnap, iSnap] = await Promise.all([
         getDocs(query(collection(db, "trips"), where("userId", "==", u.uid))),

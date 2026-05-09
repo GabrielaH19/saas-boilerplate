@@ -29,6 +29,7 @@ export default function RegisterPage() {
         email,
         createdAt: new Date().toISOString(),
         plan: "free",
+        onboardingCompleted: false,
       });
 
       // Email bun venit
@@ -38,7 +39,7 @@ export default function RegisterPage() {
         body: JSON.stringify({ name, email }),
       });
 
-      router.push("/dashboard");
+      router.push("/onboarding");
     } catch (err: any) {
       if (err.code === "auth/email-already-in-use") {
         setError("Email-ul este deja folosit.");
