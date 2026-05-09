@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
+import SignupSourceModal from "@/app/components/SignupSourceModal";
 import { useLang } from "@/app/lib/LanguageContext";
 
 interface Trip {
@@ -30,9 +31,12 @@ interface Invoice {
 
 export default function DashboardPage() {
   const [userName, setUserName] = useState("");
+  const [userId, setUserId] = useState("");
   const [trips, setTrips] = useState<Trip[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSignupSourceModal, setShowSignupSourceModal] = useState(false);
+  const [signupSource, setSignupSource] = useState<string | null>(null);
   const router = useRouter();
   const { tr, locale } = useLang();
 
@@ -49,6 +53,14 @@ export default function DashboardPage() {
         return;
       }
 
+      // Check signup source
+      const userSignupSource = userDoc.exists() ? userDoc.data()?.signupSource : null;
+      setSignupSource(userSignupSource || null);
+      if (!userSignupSource) {
+        setShowSignupSourceModal(true);
+      }
+
+      setUserId(u.uid);
       setUserName(u.email || "");
       const [tSnap, iSnap] = await Promise.all([
         getDocs(query(collection(db, "trips"), where("userId", "==", u.uid))),
@@ -273,6 +285,14 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Signup Source Modal */}
+      {showSignupSourceModal && (
+        <SignupSourceModal
+          userId={userId}
+          onClose={() => setShowSignupSourceModal(false)}
+        />
+      )}
     </div>
   );
 }
