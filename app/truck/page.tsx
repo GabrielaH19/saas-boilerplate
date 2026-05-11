@@ -10,6 +10,8 @@ import {
 } from "firebase/firestore";
 import AppNav from "@/app/components/AppNav";
 import { useLang } from "../lib/LanguageContext";
+import { usePlan } from "../lib/usePlan";
+import PaywallModal from "@/app/components/PaywallModal";
 
 interface Truck {
   id: string;
@@ -38,6 +40,7 @@ export default function TrucksPage() {
   const [saved, setSaved] = useState(false);
   const router = useRouter();
   const { tr } = useLang();
+  const { canAddTruck, loading: planLoading } = usePlan();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -46,7 +49,25 @@ export default function TrucksPage() {
       await loadTrucks(u.uid);
       setLoading(false);
     });
-    return () => unsub();
+    if (!canAddTruck && !planLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-[#0d0d0d]">
+          <AppNav />
+          <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+            <p className="text-gray-400">Se incarca...</p>
+          </div>
+        </div>
+        <PaywallModal
+          feature="Camioane multiple"
+          requiredPlan="Pro"
+          onClose={() => router.push("/dashboard")}
+        />
+      </>
+    );
+  }
+
+  return () => unsub();
   }, []);
 
   const loadTrucks = async (uid: string) => {
