@@ -8,11 +8,14 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
 import { useLang } from "../lib/LanguageContext";
+import { usePlan } from "../lib/usePlan";
+import PaywallModal from "@/app/components/PaywallModal";
 
 export default function ReportPage() {
   const [trips, setTrips] = useState<any[]>([]);
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
   const [loading, setLoading] = useState(true);
+  const { limits, loading: planLoading } = usePlan();
   const router = useRouter();
   const { tr } = useLang();
 
@@ -24,7 +27,25 @@ export default function ReportPage() {
       setTrips(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
       setLoading(false);
     });
-    return () => unsub();
+    if (!limits.hasReport && !planLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-[#0d0d0d]">
+          <AppNav />
+          <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+            <p className="text-gray-400">Se incarca...</p>
+          </div>
+        </div>
+        <PaywallModal
+          feature="Raport lunar"
+          requiredPlan="Pro"
+          onClose={() => router.push("/dashboard")}
+        />
+      </>
+    );
+  }
+
+  return () => unsub();
   }, []);
 
   const monthTrips = trips.filter((t) => t.date?.startsWith(month));
