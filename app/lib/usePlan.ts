@@ -3,50 +3,49 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "@/app/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { getUserPlan, getPlanLimits, Plan, PlanLimits } from "./planLimits";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { getPlanLimits } from "@/app/lib/planLimits";
 
 export function usePlan() {
-  const [plan, setPlan] = useState<Plan>("free");
-  const [limits, setLimits] = useState<PlanLimits | null>(null);
+  const [plan, setPlan] = useState<string>("free");
+  const [limits, setLimits] = useState(getPlanLimits("free"));
+  const [tripsThisMonth, setTripsThisMonth] = useState(0);
+  const [trucksCount, setTrucksCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      if (!u) { setLoading(false); return; }
-      const userPlan = await getUserPlan(u.uid);
-      const userLimits = getPlanLimits(userPlan);
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) { setLoading(false); return; }
 
-      // calculeaza zilele ramase din trial
-      const userDoc = await getDoc(doc(db, "users", u.uid));
-      if (userDoc.exists()) {
-        const createdAt = userDoc.data().createdAt;
-        if (createdAt) {
-          const created = new Date(createdAt);
-          const daysSince = Math.floor((Date.now() - created.getTime()) / (1000 * 60 * 60 * 24));
-          if (daysSince < 30) setTrialDaysLeft(30 - daysSince);
-        }
-      }
-
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userPlan = userDoc.data()?.plan || "free";
       setPlan(userPlan);
-      setLimits(userLimits);
+      setLimits(getPlanLimits(userPlan));
+
+      // Count trips this month
+      const now = new Date();
+      const monthStr = now.toISOString().slice(0, 7);
+      const tripsSnap = await getDocs(
+        query(collection(db, "trips"),
+          where("userId", "==", user.uid),
+          where("tripDate", ">=", monthStr + "-01")
+        )
+      );
+      setTripsThisMonth(tripsSnap.size);
+
+      // Count trucks
+      const trucksSnap = await getDocs(
+        query(collection(db, "trucks"), where("userId", "==", user.uid))
+      );
+      setTrucksCount(trucksSnap.size);
+
       setLoading(false);
     });
     return () => unsub();
   }, []);
 
-  const canAddTrip = (currentMonthTrips: number) => {
-    if (!limits) return false;
-    if (limits.tripsPerMonth === null) return true;
-    return currentMonthTrips < limits.tripsPerMonth;
-  };
+  const canAddTrip = limits.maxTripsPerMonth === Infinity || tripsThisMonth < limits.maxTripsPerMonth;
+  const canAddTruck = limits.maxTrucks === Infinity || trucksCount < limits.maxTrucks;
 
-  const canAddTruck = (currentTrucks: number) => {
-    if (!limits) return false;
-    if (limits.trucks === null) return true;
-    return currentTrucks < limits.trucks;
-  };
-
-  return { plan, limits, loading, trialDaysLeft, canAddTrip, canAddTruck };
+  return { plan, limits, tripsThisMonth, trucksCount, canAddTrip, canAddTruck, loading };
 }
