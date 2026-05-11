@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
+import ReferralBanner from "@/app/components/ReferralBanner";
 import SignupSourceModal from "@/app/components/SignupSourceModal";
 import { useLang } from "@/app/lib/LanguageContext";
 

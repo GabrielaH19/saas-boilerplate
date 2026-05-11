@@ -6,6 +6,7 @@ import { auth, db } from "../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import AppNav from "@/app/components/AppNav";
+import ReferralBanner from "@/app/components/ReferralBanner";
 import { useLang } from "../lib/LanguageContext";
 
 interface Settings {
@@ -174,6 +175,9 @@ export default function SettingsPage() {
           <button onClick={handleSave} disabled={saving} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50">
             {saving ? tr.saving : tr.saveSettings}
           </button>
+        </div>
+        <div className="mt-6">
+          <ReferralBanner />
         </div>
       </div>
     </div>
