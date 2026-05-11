@@ -8,6 +8,8 @@ import { collection, query, where, getDocs, addDoc, serverTimestamp } from "fire
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
 import { useLang } from "../../lib/LanguageContext";
+import { usePlan } from "../../lib/usePlan";
+import PaywallModal from "@/app/components/PaywallModal";
 
 interface Truck {
   id: string; name: string; plate: string; consumption: number; estimatedKmPerMonth: number;
@@ -18,6 +20,8 @@ interface Client { id: string; name: string; paymentTermDays: number; }
 export default function NewTripPage() {
   const router = useRouter();
   const { tr } = useLang();
+  const { canAddTrip, limits, plan } = usePlan();
+  const [showPaywall, setShowPaywall] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
@@ -53,7 +57,26 @@ export default function NewTripPage() {
       if (truckList.length > 0) setSelectedTruckId(truckList[0].id);
       setLoading(false);
     });
-    return () => unsub();
+    // Check paywall la incarcare
+  if (!canAddTrip && !loading) {
+    return (
+      <>
+        <div className="min-h-screen bg-[#0d0d0d]">
+          <AppNav />
+          <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+            <p className="text-gray-400">Se incarca...</p>
+          </div>
+        </div>
+        <PaywallModal
+          feature="Curse noi"
+          requiredPlan="Pro"
+          onClose={() => router.push("/dashboard")}
+        />
+      </>
+    );
+  }
+
+  return () => unsub();
   }, []);
 
   const selectedTruck = trucks.find(t => t.id === selectedTruckId);
