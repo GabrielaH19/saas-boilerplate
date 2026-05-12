@@ -55,22 +55,22 @@ export default function ReferralBanner() {
   };
 
   return (
-    <div className="bg-[#1a1a1a] border border-[#f5a623] border-opacity-40 rounded-xl p-4">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+    <div className="bg-[#1a1a1a] border border-[#f5a623] border-opacity-30 rounded-xl p-4">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p className="text-sm font-semibold text-[#f5a623]">{t.title}</p>
-          <p className="text-xs text-gray-400">{t.sub}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{t.sub}</p>
         </div>
-        <div className="flex gap-2">
-        <button onClick={shareWhatsApp} className="flex-1 bg-[#25D366] text-white font-bold py-2 px-3 rounded-lg hover:opacity-90 transition text-sm">
-          WhatsApp
-        </button>
-        <button onClick={shareFacebook} className="flex-1 bg-[#1877F2] text-white font-bold py-2 px-3 rounded-lg hover:opacity-90 transition text-sm">
-          Facebook
-        </button>
-        <button onClick={handleCopy} className="flex-1 bg-[#2e2e2e] text-white font-bold py-2 px-3 rounded-lg hover:bg-[#3a3a3a] transition text-sm">
-          {copied ? t.copied : t.copy}
-        </button>
+        <div className="flex gap-2 flex-shrink-0">
+          <button onClick={shareWhatsApp} className="bg-[#25D366] text-white font-bold py-1.5 px-3 rounded-lg hover:opacity-90 transition text-xs">
+            WhatsApp
+          </button>
+          <button onClick={shareFacebook} className="bg-[#1877F2] text-white font-bold py-1.5 px-3 rounded-lg hover:opacity-90 transition text-xs">
+            Facebook
+          </button>
+          <button onClick={handleCopy} className="bg-[#2e2e2e] text-white font-bold py-1.5 px-3 rounded-lg hover:bg-[#3a3a3a] transition text-xs">
+            {copied ? t.copied : t.copy}
+          </button>
         </div>
       </div>
     </div>
