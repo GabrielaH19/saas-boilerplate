@@ -287,6 +287,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      <div className="mt-6"><ReferralBanner /></div>
+
       {/* Signup Source Modal */}
       {showSignupSourceModal && (
         <SignupSourceModal

@@ -7,6 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
+import ReferralBanner from "@/app/components/ReferralBanner";
 import { useLang } from "../../lib/LanguageContext";
 import { usePlan } from "../../lib/usePlan";
 import PaywallModal from "@/app/components/PaywallModal";
@@ -261,6 +262,7 @@ export default function NewTripPage() {
           </div>
         </div>
       </div>
+      <div className="mt-6 px-4 max-w-6xl mx-auto"><ReferralBanner /></div>
     </div>
   );
 }

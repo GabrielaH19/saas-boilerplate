@@ -9,6 +9,7 @@ import {
   addDoc, updateDoc, deleteDoc, doc, serverTimestamp
 } from "firebase/firestore";
 import AppNav from "@/app/components/AppNav";
+import ReferralBanner from "@/app/components/ReferralBanner";
 import { useLang } from "../lib/LanguageContext";
 
 interface Client {
@@ -227,6 +228,7 @@ export default function ClientsPage() {
           </div>
         )}
       </div>
+      <div className="mt-6 px-4 max-w-6xl mx-auto"><ReferralBanner /></div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
+import ReferralBanner from "@/app/components/ReferralBanner";
 import { useLang } from "@/app/lib/LanguageContext";
 
 interface Trip {
@@ -187,6 +188,7 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
+      <div className="mt-6 px-4 max-w-6xl mx-auto"><ReferralBanner /></div>
     </div>
   );
 }
