@@ -287,7 +287,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="mt-6"><ReferralBanner /></div>
+      <div className="mt-6 max-w-6xl mx-auto px-4"><ReferralBanner /></div>
 
       {/* Signup Source Modal */}
       {showSignupSourceModal && (
