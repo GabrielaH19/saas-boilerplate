@@ -251,6 +251,9 @@ export default function NewTripPage() {
             {saved ? (
               <div className="space-y-3">
                 <div className="bg-green-900 border border-green-700 text-green-400 px-4 py-3 rounded-lg text-sm">{tr.savedTrip}</div>
+              <a href={"/share?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to) + "&profit=" + Math.round(revenue - totalCost) + "&verdict=" + verdict + "&km=" + loadedKm} className="w-full bg-[#6366f1] text-white font-semibold py-3 rounded-lg hover:bg-[#4f46e5] transition block text-center text-sm">
+                📤 Genereaza cardul de cursa
+              </a>
                 <Link href="/history" className="w-full border border-[#2e2e2e] text-white font-semibold py-3 rounded-lg hover:bg-[#161616] transition block text-center text-sm">{tr.viewHistory}</Link>
                 <button onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue(1850); setLoadedKm(1200); setEmptyKm(200); }} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm">{tr.calcAnother}</button>
               </div>
