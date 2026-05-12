@@ -55,10 +55,13 @@ export default function ReferralBanner() {
   };
 
   return (
-    <div className="bg-[#1a1a1a] border border-[#f5a623] border-opacity-40 rounded-xl p-5">
-      <p className="text-sm font-semibold text-[#f5a623] mb-1">{t.title}</p>
-      <p className="text-xs text-gray-400 mb-4">{t.sub}</p>
-      <div className="flex gap-2 flex-wrap">
+    <div className="bg-[#1a1a1a] border border-[#f5a623] border-opacity-40 rounded-xl p-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <p className="text-sm font-semibold text-[#f5a623]">{t.title}</p>
+          <p className="text-xs text-gray-400">{t.sub}</p>
+        </div>
+        <div className="flex gap-2">
         <button onClick={shareWhatsApp} className="flex-1 bg-[#25D366] text-white font-bold py-2 px-3 rounded-lg hover:opacity-90 transition text-sm">
           WhatsApp
         </button>
@@ -68,6 +71,7 @@ export default function ReferralBanner() {
         <button onClick={handleCopy} className="flex-1 bg-[#2e2e2e] text-white font-bold py-2 px-3 rounded-lg hover:bg-[#3a3a3a] transition text-sm">
           {copied ? t.copied : t.copy}
         </button>
+        </div>
       </div>
     </div>
   );
