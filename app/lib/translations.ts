@@ -373,7 +373,6 @@ export const t = {
     savedTrip: "✓ Viaggio salvato!",
     viewHistory: "Vedi storico",
     calcAnother: "+ Calcola altro viaggio",
-      generateCard: "Genera la scheda del viaggio",
     saving: "Salvataggio...",
     saveChanges: "Salva modifiche",
     historyTitle: "Storico viaggi",
