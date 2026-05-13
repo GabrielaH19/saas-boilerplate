@@ -25,5 +25,6 @@ export default function AppNav({ active }: { active?: string }) {
         <button onClick={handleLogout} className="hover:text-white">{tr.logout}</button>
       </div>
     </nav>
+  <footer className="fixed bottom-0 left-0 p-2 z-50"><a href="mailto:contact@tripprofit.ro" className="text-xs text-gray-500 hover:text-gray-300">contact@tripprofit.ro</a></footer>
   );
 }
