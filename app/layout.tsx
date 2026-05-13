@@ -17,6 +17,7 @@ export default function RootLayout({
       <body>
         <LanguageProvider>
           {children}
+        <a href="mailto:contact@tripprofit.ro" className="fixed bottom-1 left-2 text-xs text-gray-500 hover:text-gray-300 z-50">contact@tripprofit.ro</a>
         </LanguageProvider>
       </body>
     </html>
