@@ -58,7 +58,7 @@ export default function CashflowPage() {
   const [form, setForm] = useState<InvoiceForm>(emptyInvoice());
   const [saving, setSaving] = useState(false);
   const router = useRouter();
-  const { tr } = useLang();
+  const { tr, locale } = useLang();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -213,7 +213,7 @@ export default function CashflowPage() {
                     <div className="text-sm text-white">{inv.dueDate}</div>
                     {inv.status !== "paid" && (
                       <div className={`text-xs mt-0.5 ${days < 0 ? "text-red-400" : days <= 7 ? "text-[#f5a623]" : "text-gray-500"}`}>
-                        {days < 0 ? `${Math.abs(days)} ${tr.daysOverdue}` : days === 0 ? tr.dueToday : `${tr.daysLeft} ${days} ${tr.days}`}
+                        {days < 0 ? `${Math.abs(days)} ${tr.daysOverdue}` : days === 0 ? tr.dueToday : `${tr.daysLeft} ${days} ${locale === "it" ? "giorni" : "zile"}`}
                       </div>
                     )}
                   </div>
@@ -293,4 +293,6 @@ export default function CashflowPage() {
     </div>
   );
 }
+
+
 
