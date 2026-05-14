@@ -20,7 +20,7 @@ interface Client { id: string; name: string; paymentTermDays: number; }
 
 export default function NewTripPage() {
   const router = useRouter();
-  const { tr, locale } = useLang();
+  const { tr } = useLang();
   const { canAddTrip, limits, plan } = usePlan();
   const [showPaywall, setShowPaywall] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -258,7 +258,6 @@ export default function NewTripPage() {
                 <button onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue(1850); setLoadedKm(1200); setEmptyKm(200); }} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm">{tr.calcAnother}</button>
               </div>
             ) : (
-              <p className="text-xs text-gray-500 text-center mb-3">{locale === "it" ? "* I calcoli sono stime basate sui dati inseriti. I risultati reali possono variare." : "* Calculele sunt estimative, bazate pe datele introduse. Rezultatele reale pot varia."}</p>
               <button onClick={handleSave} disabled={saving} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50 text-sm">
                 {saving ? tr.saving : tr.saveTrip}
               </button>
@@ -270,4 +269,3 @@ export default function NewTripPage() {
     </div>
   );
 }
-
