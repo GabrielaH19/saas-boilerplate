@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -103,8 +103,8 @@ export default function NewTripPage() {
 
   const handleSave = async () => {
     if (!userId) return;
-    if (!selectedTruckId) return alert("SelecteazÄƒ un camion.");
-    if (!from || !to) return alert("CompleteazÄƒ ruta.");
+    if (!selectedTruckId) return alert("Selectează un camion.");
+    if (!from || !to) return alert("Completează ruta.");
     setSaving(true);
     try {
       await addDoc(collection(db, "trips"), {
@@ -148,7 +148,7 @@ export default function NewTripPage() {
                     {trucks.length === 0 && <option value="">{tr.noTruckOption}</option>}
                     {trucks.map(t => <option key={t.id} value={t.id}>{t.name} ({t.plate})</option>)}
                   </select>
-                  {selectedTruck && <p className="text-xs text-gray-600 mt-1">Consum: {selectedTruck.consumption}l/100km Â· Cost fix: {truckFixedPerKm.toFixed(2)}â‚¬/km</p>}
+                  {selectedTruck && <p className="text-xs text-gray-600 mt-1">Consum: {selectedTruck.consumption}l/100km · Cost fix: {truckFixedPerKm.toFixed(2)}€/km</p>}
                 </div>
                 <div>
                   <label className={lbl}>{tr.clientOptional}</label>
@@ -163,8 +163,8 @@ export default function NewTripPage() {
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.routeAndDate}</p>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <div><label className={lbl}>{tr.from}</label><input className={inp} value={from} onChange={e => setFrom(e.target.value)} placeholder="BucureÈ™ti" /></div>
-                <div><label className={lbl}>{tr.to}</label><input className={inp} value={to} onChange={e => setTo(e.target.value)} placeholder="MÃ¼nchen" /></div>
+                <div><label className={lbl}>{tr.from}</label><input className={inp} value={from} onChange={e => setFrom(e.target.value)} placeholder="București" /></div>
+                <div><label className={lbl}>{tr.to}</label><input className={inp} value={to} onChange={e => setTo(e.target.value)} placeholder="München" /></div>
               </div>
               <div><label className={lbl}>{tr.tripDate}</label><input type="date" className={inp} value={tripDate} onChange={e => setTripDate(e.target.value)} /></div>
             </div>
@@ -192,7 +192,7 @@ export default function NewTripPage() {
                 <div>
                   <label className={lbl}>{tr.waitHours}</label>
                   <input type="number" className={inp} value={waitHours} onChange={e => setWaitHours(+e.target.value)} />
-                  <p className="text-xs text-gray-600 mt-1">{tr.lostCost}: {waitCost}â‚¬</p>
+                  <p className="text-xs text-gray-600 mt-1">{tr.lostCost}: {waitCost}€</p>
                 </div>
                 <div><label className={lbl}>{tr.days}</label><input type="number" className={inp} value={days} onChange={e => setDays(+e.target.value)} /></div>
                 <div><label className={lbl}>{tr.dailyAllowance}</label><input type="number" className={inp} value={dailyAllowance} onChange={e => setDailyAllowance(+e.target.value)} /></div>
@@ -213,12 +213,12 @@ export default function NewTripPage() {
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.calcDetails}</p>
               {[
-                { label: tr.fuelCost, val: `${fuelCost} â‚¬` },
-                { label: `Cost km goi (${emptyKm} km)`, val: `-${emptyCost} â‚¬`, red: true },
-                { label: "Taxe + diurnÄƒ", val: `${extraCost} â‚¬` },
-                { label: "Cost fix camion", val: `${truckFixedCost} â‚¬` },
-                { label: `${tr.waitHours} (${waitHours}h)`, val: `-${waitCost} â‚¬`, red: true },
-                { label: tr.totalCost, val: `${totalCost} â‚¬` },
+                { label: tr.fuelCost, val: `${fuelCost} €` },
+                { label: `Cost km goi (${emptyKm} km)`, val: `-${emptyCost} €`, red: true },
+                { label: "Taxe + diurnă", val: `${extraCost} €` },
+                { label: "Cost fix camion", val: `${truckFixedCost} €` },
+                { label: `${tr.waitHours} (${waitHours}h)`, val: `-${waitCost} €`, red: true },
+                { label: tr.totalCost, val: `${totalCost} €` },
               ].map((r, i) => (
                 <div key={i} className="flex justify-between py-1.5 border-b border-[#1e1e1e] text-sm">
                   <span className="text-gray-400">{r.label}</span>
@@ -227,7 +227,7 @@ export default function NewTripPage() {
               ))}
               <div className="flex justify-between py-2 text-sm mt-1">
                 <span className="text-white font-semibold">{tr.netProfit}</span>
-                <span className={`font-bold text-base ${profit >= 0 ? "text-green-400" : "text-red-400"}`}>{profit >= 0 ? "+" : ""}{profit} â‚¬</span>
+                <span className={`font-bold text-base ${profit >= 0 ? "text-green-400" : "text-red-400"}`}>{profit >= 0 ? "+" : ""}{profit} €</span>
               </div>
             </div>
 
@@ -235,10 +235,10 @@ export default function NewTripPage() {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.metrics}</p>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: "â‚¬/km (km Ã®ncÄƒrcaÈ›i)", val: revenuePerLoadedKm.toFixed(2) + " â‚¬/km", highlight: true },
-                  { label: "â‚¬/km (km totali)", val: revenuePerTotalKm.toFixed(2) + " â‚¬/km" },
-                  { label: "Break-even minim", val: minBreakEvenPerKm.toFixed(2) + " â‚¬/km" },
-                  { label: "Recomandat minim", val: minRecommendedPerKm.toFixed(2) + " â‚¬/km" },
+                  { label: "€/km (km încărcați)", val: revenuePerLoadedKm.toFixed(2) + " €/km", highlight: true },
+                  { label: "€/km (km totali)", val: revenuePerTotalKm.toFixed(2) + " €/km" },
+                  { label: "Break-even minim", val: minBreakEvenPerKm.toFixed(2) + " €/km" },
+                  { label: "Recomandat minim", val: minRecommendedPerKm.toFixed(2) + " €/km" },
                 ].map((m, i) => (
                   <div key={i} className="bg-[#1f1f1f] rounded-lg p-3">
                     <div className="text-xs text-gray-500 mb-1">{m.label}</div>
