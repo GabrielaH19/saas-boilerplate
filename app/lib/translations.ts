@@ -89,6 +89,7 @@ export const t = {
     viewHistory: "Vezi istoricul",
     calcAnother: "+ Calculează altă cursă",
       generateCard: "Genereaza cardul de cursa",
+      generateCard: "Genereaza cardul de cursa",
     saving: "Se salvează...",
     saveChanges: "Salvează modificările",
     historyTitle: "Istoric curse",
