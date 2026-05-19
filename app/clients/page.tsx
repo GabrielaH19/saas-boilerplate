@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,8 @@ import {
 import AppNav from "@/app/components/AppNav";
 import ReferralBanner from "@/app/components/ReferralBanner";
 import { useLang } from "../lib/LanguageContext";
+import { usePlan } from "../lib/usePlan";
+import PaywallModal from "@/app/components/PaywallModal";
 
 interface Client {
   id: string;
@@ -58,6 +60,7 @@ export default function ClientsPage() {
   const [saved, setSaved] = useState(false);
   const router = useRouter();
   const { tr } = useLang();
+  const { limits, loading: planLoading } = usePlan();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -68,6 +71,21 @@ export default function ClientsPage() {
     });
     return () => unsub();
   }, []);
+
+  if (!limits.hasClients && !planLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-[#0d0d0d]">
+          <AppNav active="clients" />
+        </div>
+        <PaywallModal
+          feature="Clienti & scoring"
+          requiredPlan="Pro"
+          onClose={() => router.push("/dashboard")}
+        />
+      </>
+    );
+  }
 
   const loadClients = async (uid: string) => {
     const cSnap = await getDocs(query(collection(db, "clients"), where("userId", "==", uid)));
@@ -90,7 +108,7 @@ export default function ClientsPage() {
 
   const handleSave = async () => {
     if (!userId) return;
-    if (!form.name) return alert("Completează numele clientului.");
+    if (!form.name) return alert("Completeaza numele clientului.");
     setSaving(true);
     try {
       if (editingId) {
@@ -167,9 +185,9 @@ export default function ClientsPage() {
                     )}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {tr.paymentTerm}: {client.paymentTermDays} zile
+                    {tr.paymentTerm}: {client.paymentTermDays} {tr.days}
                     {client.tripCount !== undefined && client.tripCount > 0 && (
-                      <> · {client.tripCount} curse · {client.avgRevenuePerKm?.toFixed(2)} {tr.avgKmLabel}</>
+                      <> · {client.tripCount} {tr.tripsCount} · {client.avgRevenuePerKm?.toFixed(2)} {tr.avgKmLabel}</>
                     )}
                     {client.notes && <> · {client.notes}</>}
                   </div>
@@ -214,7 +232,7 @@ export default function ClientsPage() {
               </div>
               <div>
                 <label className={lbl}>{tr.notes}</label>
-                <input className={inp} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="ex: plătește mereu cu întârziere" />
+                <input className={inp} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="ex: plateste mereu cu intarziere" />
               </div>
             </div>
             <div className="flex gap-3">
