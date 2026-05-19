@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,8 @@ import { doc, getDoc, collection, query, where, getDocs } from "firebase/firesto
 import Link from "next/link";
 import AppNav from "@/app/components/AppNav";
 import { useLang } from "../lib/LanguageContext";
+import { usePlan } from "../lib/usePlan";
+import PaywallModal from "@/app/components/PaywallModal";
 
 interface Settings {
   thresholdPerKm: number;
@@ -29,6 +31,7 @@ export default function SimulationsPage() {
   const [simTripEmptyKm, setSimTripEmptyKm] = useState(200);
   const router = useRouter();
   const { tr } = useLang();
+  const { limits, loading: planLoading } = usePlan();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -58,6 +61,21 @@ export default function SimulationsPage() {
     });
     return () => unsub();
   }, []);
+
+  if (!limits.hasSimulations && !planLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-[#0d0d0d]">
+          <AppNav active="simulations" />
+        </div>
+        <PaywallModal
+          feature="Simulari financiare"
+          requiredPlan="Pro"
+          onClose={() => router.push("/dashboard")}
+        />
+      </>
+    );
+  }
 
   const baseFuelPrice = settings?.defaultFuelPrice || 1.68;
   const threshold = settings?.thresholdPerKm || 1.30;
@@ -113,7 +131,6 @@ export default function SimulationsPage() {
         </p>
 
         <div className="space-y-6">
-
           <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
             <h3 className="font-semibold text-white mb-1">{tr.simFuelTitle}</h3>
             <p className="text-xs text-gray-500 mb-5">{tr.simFuelSub}: {baseFuelPrice} €/l · {tr.consumption}: {truckConsumption}l/100km</p>
@@ -143,7 +160,7 @@ export default function SimulationsPage() {
               <label className={lbl}>{tr.idleDays}</label>
               <div className="flex items-center gap-4">
                 <input type="range" min="1" max="30" step="1" value={simIdleDays} onChange={e => setSimIdleDays(+e.target.value)} className="flex-1 accent-[#f5a623]" />
-                <span className="text-[#f5a623] font-bold text-lg w-16 text-center">{simIdleDays} zile</span>
+                <span className="text-[#f5a623] font-bold text-lg w-16 text-center">{simIdleDays} {tr.days}</span>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3">
@@ -203,7 +220,6 @@ export default function SimulationsPage() {
               <Link href="/trip/new" className="text-xs text-[#f5a623] hover:underline">{tr.saveToHistory}</Link>
             </div>
           </div>
-
         </div>
       </div>
     </div>
