@@ -20,7 +20,7 @@ interface Client { id: string; name: string; paymentTermDays: number; }
 
 export default function NewTripPage() {
   const router = useRouter();
-  const { tr } = useLang();
+ const { tr, locale } = useLang();
   const { canAddTrip, limits, plan } = usePlan();
   const [showPaywall, setShowPaywall] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
