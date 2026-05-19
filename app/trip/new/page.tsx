@@ -258,9 +258,11 @@ export default function NewTripPage() {
                 <button onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue(1850); setLoadedKm(1200); setEmptyKm(200); }} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm">{tr.calcAnother}</button>
               </div>
             ) : (
+              <>
+              <p className="text-xs text-gray-500 text-center mb-2">{locale === "it" ? "* I calcoli sono stime basate sui dati inseriti." : "* Calculele sunt estimative, bazate pe datele introduse."}</p>
               <button onClick={handleSave} disabled={saving} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50 text-sm">
                 {saving ? tr.saving : tr.saveTrip}
-              </button>
+              </button></>
             )}
           </div>
         </div>
