@@ -149,10 +149,10 @@ export default function LandingPage() {
             <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>18<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">30€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-              {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico viaggi"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric curse"]).map(f => (
+              {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico 60 giorni"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric 60 zile"]).map(f => (
                 <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
               ))}
-              {(locale === "it" ? ["Report per camion", "Report per cliente", "Cashflow tracking"] : ["Raport per camion", "Raport per client", "Cashflow tracking"]).map(f => (
+              {(locale === "it" ? ["Clienti + scoring", "Report mensile email", "Cashflow", "Simulazioni", "Export PDF", "Supporto prioritario"] : ["Clienți + scoring", "Raport lunar email", "Cashflow", "Simulări", "Export PDF", "Suport prioritar"]).map(f => (
                 <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
               ))}
             </div>
@@ -169,10 +169,10 @@ export default function LandingPage() {
             <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>29<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">49€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-              {(locale === "it" ? ["Tutto di Basic", "Camion illimitati", "Report per camion", "Report per cliente con punteggio rischio", "Dashboard generale azienda", "Avvisi automatici costi superati"] : ["Tot ce include Basic", "Camioane nelimitate", "Raport per camion", "Raport per client cu scor de risc", "Dashboard general firmă", "Alerte automate costuri depășite"]).map(f => (
+             {(locale === "it" ? ["Tutto di Basic", "10 camion", "Storico 365 giorni", "Clienti + scoring", "Report mensile email", "Simulazioni"] : ["Tot ce include Basic", "10 camioane", "Istoric 365 zile", "Clienți + scoring", "Raport lunar email", "Simulări"]).map(f => (
                 <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
               ))}
-              {(locale === "it" ? ["Cashflow tracking"] : ["Cashflow tracking"]).map(f => (
+              {(locale === "it" ? ["Cashflow", "Export PDF", "Suport prioritar"] : ["Cashflow", "Export PDF", "Suport prioritar"]).map(f => (
                 <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
               ))}
             </div>
@@ -186,7 +186,7 @@ export default function LandingPage() {
             <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>47<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">79€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-              {(locale === "it" ? ["Tutto di Pro", "Cashflow tracking", "Avviso blocco liquidità", "Punteggio rischio dettagliato per cliente", "Simulazioni finanziarie", "Raccomandazioni automatiche", "Assistenza prioritaria"] : ["Tot ce include Pro", "Cashflow tracking", "Alertă blocaj de lichiditate", "Scor de risc detaliat per client", "Simulări financiare", "Recomandări automate", "Asistență prioritară"]).map(f => (
+              {(locale === "it" ? ["Tutto di Pro", "Camion illimitati", "Storico illimitato", "Cashflow tracking", "Export PDF report", "Supporto prioritario"] : ["Tot ce include Pro", "Camioane nelimitate", "Istoric nelimitat", "Cashflow", "Export PDF raport", "Suport prioritar"]).map(f => (
                 <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
               ))}
             </div>
