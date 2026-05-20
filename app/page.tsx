@@ -204,6 +204,39 @@ export default function LandingPage() {
         </div>
       </div>
 
+     {/* FAQ */}
+      <div className="max-w-3xl mx-auto px-6 mb-24">
+        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5 text-center">{locale === "it" ? "Domande frequenti" : "Întrebări frecvente"}</div>
+        <h2 className="text-3xl font-semibold mb-10 text-center text-white">{locale === "it" ? "Hai domande?" : "Ai întrebări?"}</h2>
+        <div className="space-y-4">
+          {(locale === "it" ? [
+            { q: "Devo inserire la carta di credito per registrarmi?", a: "No. Hai 30 giorni gratis senza carta di credito. Inserisci i dati solo se decidi di continuare dopo il periodo di prova." },
+            { q: "Quanto tempo richiede la configurazione?", a: "Circa 2 minuti. Inserisci i costi della tua azienda una sola volta e da quel momento ogni viaggio viene calcolato automaticamente." },
+            { q: "Funziona anche sul telefono?", a: "Sì, funziona su qualsiasi dispositivo — telefono, tablet o computer." },
+            { q: "I miei dati sono al sicuro?", a: "Sì. I dati sono archiviati in modo sicuro nel cloud e non vengono condivisi con nessuno." },
+            { q: "Posso cancellare in qualsiasi momento?", a: "Sì, senza penali e senza dover spiegare nulla." },
+            { q: "Cosa succede dopo i 30 giorni?", a: "Scegli un piano dall'app. I tuoi dati rimangono intatti indipendentemente dal piano scelto." },
+            { q: "I calcoli sono precisi?", a: "Sono basati sui dati che inserisci tu — carburante, leasing, stipendio. Più i dati sono precisi, più il verdetto è affidabile." },
+            { q: "Posso aggiungere più camion?", a: "Sì, in base al piano — Basic 1 camion, Pro 10 camion, Premium illimitati." },
+            { q: "Funziona per i viaggi internazionali?", a: "Sì, per qualsiasi percorso — Italia, Romania, Germania, ovunque." },
+          ] : [
+            { q: "Trebuie să introduc cardul la înregistrare?", a: "Nu. Ai 30 de zile gratuit fără card bancar. Introduci datele doar dacă decizi să continui după perioada de test." },
+            { q: "Cât durează configurarea?", a: "Aproximativ 2 minute. Introduci costurile firmei o singură dată și de acolo fiecare cursă e calculată automat." },
+            { q: "Funcționează și pe telefon?", a: "Da, funcționează pe orice dispozitiv — telefon, tabletă sau calculator." },
+            { q: "Datele mele sunt în siguranță?", a: "Da. Datele sunt stocate securizat în cloud și nu sunt partajate cu nimeni." },
+            { q: "Pot anula oricând?", a: "Da, fără penalități și fără să explici nimic." },
+            { q: "Ce se întâmplă după 30 de zile?", a: "Alegi un plan din aplicație. Datele tale rămân intacte indiferent de planul ales." },
+            { q: "Calculele sunt exacte?", a: "Sunt bazate pe datele introduse de tine — combustibil, leasing, salariu. Cu cât datele sunt mai precise, cu atât verdictul e mai precis." },
+            { q: "Pot adăuga mai multe camioane?", a: "Da, în funcție de plan — Basic 1 camion, Pro 10 camioane, Premium nelimitat." },
+            { q: "Funcționează pentru curse internaționale?", a: "Da, pentru orice rută — România, Italia, Germania, oriunde." },
+          ]).map((item, i) => (
+            <div key={i} className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-6">
+              <div className="font-semibold text-white mb-2">{item.q}</div>
+              <div className="text-sm text-gray-400 leading-relaxed">{item.a}</div>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* CTA */}
       <div className="bg-[#0a0a0a] border-t border-[#1e1e1e] py-24 px-6 text-center">
         <h2 className="text-4xl font-semibold mb-5 text-white">
