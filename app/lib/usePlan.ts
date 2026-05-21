@@ -1,4 +1,3 @@
-@'
 "use client";
 
 import { useEffect, useState } from "react";
@@ -56,4 +55,3 @@ export function usePlan() {
 
   return { plan, limits, tripsThisMonth, trucksCount, canAddTrip, canAddTruck, loading, isTrialing };
 }
-'@ | Out-File -FilePath "C:\Users\Gabriela\tripprofit\app\lib\usePlan.ts" -Encoding UTF8
