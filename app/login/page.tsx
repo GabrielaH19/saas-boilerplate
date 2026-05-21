@@ -11,6 +11,7 @@ import LangSwitcher from "@/app/lib/LangSwitcher";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
     } catch (err: any) {
-      setError("Email sau parolă greșită.");
+      setError("Email sau parola gresita.");
     } finally {
       setLoading(false);
     }
@@ -52,12 +53,18 @@ export default function LoginPage() {
             </div>
             <div>
               <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">{tr.password}</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f5a623]"
-                placeholder="••••••••" required />
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f5a623] pr-12"
+                  placeholder="••••••••" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-lg">
+                  {showPassword ? "🙈" : "👁"}
+                </button>
+              </div>
               <div className="text-right mt-1">
                 <Link href="/forgot-password" className="text-xs text-gray-500 hover:text-[#f5a623]">
-                   {tr.forgotPassword}
+                  {tr.forgotPassword}
                 </Link>
               </div>
             </div>
