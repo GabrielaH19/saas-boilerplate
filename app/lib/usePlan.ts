@@ -1,3 +1,4 @@
+@'
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,17 +13,24 @@ export function usePlan() {
   const [tripsThisMonth, setTripsThisMonth] = useState(0);
   const [trucksCount, setTrucksCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [isTrialing, setIsTrialing] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) { setLoading(false); return; }
 
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      const userPlan = userDoc.data()?.plan || "free";
-      setPlan(userPlan);
-      setLimits(getPlanLimits(userPlan));
+      const data = userDoc.data();
+      const userPlan = data?.plan || "free";
+      const createdAt = data?.createdAt?.toDate ? data.createdAt.toDate() : new Date(user.metadata.creationTime || Date.now());
 
-      // Count trips this month
+      const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      const onTrial = userPlan === "free" && daysSinceCreation <= 30;
+
+      setPlan(userPlan);
+      setIsTrialing(onTrial);
+      setLimits(getPlanLimits(onTrial ? "premium" : userPlan));
+
       const now = new Date();
       const monthStr = now.toISOString().slice(0, 7);
       const tripsSnap = await getDocs(
@@ -33,7 +41,6 @@ export function usePlan() {
       );
       setTripsThisMonth(tripsSnap.size);
 
-      // Count trucks
       const trucksSnap = await getDocs(
         query(collection(db, "trucks"), where("userId", "==", user.uid))
       );
@@ -47,5 +54,6 @@ export function usePlan() {
   const canAddTrip = limits.maxTripsPerMonth === Infinity || tripsThisMonth < limits.maxTripsPerMonth;
   const canAddTruck = limits.maxTrucks === Infinity || trucksCount < limits.maxTrucks;
 
-  return { plan, limits, tripsThisMonth, trucksCount, canAddTrip, canAddTruck, loading };
+  return { plan, limits, tripsThisMonth, trucksCount, canAddTrip, canAddTruck, loading, isTrialing };
 }
+'@ | Out-File -FilePath "C:\Users\Gabriela\tripprofit\app\lib\usePlan.ts" -Encoding UTF8
