@@ -50,25 +50,7 @@ export default function TrucksPage() {
       await loadTrucks(u.uid);
       setLoading(false);
     });
-    if (!canAddTruck && !planLoading) {
-    return (
-      <>
-        <div className="min-h-screen bg-[#0d0d0d]">
-          <AppNav />
-          <div className="flex items-center justify-center h-[calc(100vh-80px)]">
-            <p className="text-gray-400">Se incarca...</p>
-          </div>
-        </div>
-        <PaywallModal
-          feature="Camioane multiple"
-          requiredPlan="Pro"
-          onClose={() => router.push("/dashboard")}
-        />
-      </>
-    );
-  }
-
-  return () => unsub();
+    return () => unsub();
   }, []);
 
   const loadTrucks = async (uid: string) => {
@@ -77,16 +59,16 @@ export default function TrucksPage() {
   };
 
   const totalFixed = (t: typeof form) =>
-    t.fixedCosts.leasing + t.fixedCosts.insurance + t.fixedCosts.maintenance + t.fixedCosts.salary + t.fixedCosts.other;
+    (t.fixedCosts?.leasing ?? 0) + (t.fixedCosts?.insurance ?? 0) + (t.fixedCosts?.maintenance ?? 0) + (t.fixedCosts?.salary ?? 0) + (t.fixedCosts?.other ?? 0);
 
   const costPerKm = (t: typeof form) => {
     if (!t.estimatedKmPerMonth) return 0;
-    return totalFixed(t) / t.estimatedKmPerMonth + (t.consumption / 100) * 1.68;
+    return totalFixed(t) / t.estimatedKmPerMonth + ((t.consumption ?? 0) / 100) * 1.68;
   };
 
   const handleSave = async () => {
     if (!userId) return;
-    if (!form.name || !form.plate) return alert("Completează cel puțin numele și numărul de înmatriculare.");
+    if (!form.name || !form.plate) return alert("Completeaza cel putin numele si numarul de inmatriculare.");
     setSaving(true);
     try {
       if (editingId) {
@@ -105,7 +87,20 @@ export default function TrucksPage() {
   };
 
   const handleEdit = (truck: Truck) => {
-    setForm({ name: truck.name, plate: truck.plate, consumption: truck.consumption, estimatedKmPerMonth: truck.estimatedKmPerMonth, fixedCosts: { ...truck.fixedCosts }, isActive: truck.isActive });
+    setForm({
+      name: truck.name ?? "",
+      plate: truck.plate ?? "",
+      consumption: truck.consumption ?? 0,
+      estimatedKmPerMonth: truck.estimatedKmPerMonth ?? 0,
+      fixedCosts: {
+        leasing: truck.fixedCosts?.leasing ?? 0,
+        insurance: truck.fixedCosts?.insurance ?? 0,
+        maintenance: truck.fixedCosts?.maintenance ?? 0,
+        salary: truck.fixedCosts?.salary ?? 0,
+        other: truck.fixedCosts?.other ?? 0,
+      },
+      isActive: truck.isActive ?? true,
+    });
     setEditingId(truck.id);
     setShowForm(true);
   };
@@ -124,6 +119,22 @@ export default function TrucksPage() {
   const lbl = "block text-xs text-gray-400 mb-1";
 
   if (loading) return <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center"><p className="text-gray-400">{tr.loading}</p></div>;
+
+  if (!canAddTruck && !planLoading) return (
+    <>
+      <div className="min-h-screen bg-[#0d0d0d]">
+        <AppNav />
+        <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+          <p className="text-gray-400">Se incarca...</p>
+        </div>
+      </div>
+      <PaywallModal
+        feature="Camioane multiple"
+        requiredPlan="Pro"
+        onClose={() => router.push("/dashboard")}
+      />
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
@@ -151,14 +162,17 @@ export default function TrucksPage() {
 
         <div className="grid grid-cols-1 gap-4 mb-8">
           {trucks.map(truck => {
-            const total = truck.fixedCosts.leasing + truck.fixedCosts.insurance + truck.fixedCosts.maintenance + truck.fixedCosts.salary + truck.fixedCosts.other;
-            const cpk = truck.estimatedKmPerMonth > 0 ? ((total / truck.estimatedKmPerMonth) + (truck.consumption / 100) * 1.68).toFixed(2) : "—";
+            const fc = truck.fixedCosts ?? {};
+            const total = (fc.leasing ?? 0) + (fc.insurance ?? 0) + (fc.maintenance ?? 0) + (fc.salary ?? 0) + (fc.other ?? 0);
+            const kmMonth = truck.estimatedKmPerMonth ?? 0;
+            const cons = truck.consumption ?? 0;
+            const cpk = kmMonth > 0 ? ((total / kmMonth) + (cons / 100) * 1.68).toFixed(2) : "—";
             return (
               <div key={truck.id} className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <div className="font-semibold text-white">{truck.name}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{truck.plate} · {truck.consumption} l/100km · {truck.estimatedKmPerMonth.toLocaleString()} km/lună</div>
+                    <div className="font-semibold text-white">{truck.name ?? "—"}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{truck.plate ?? "—"} · {cons} l/100km · {kmMonth.toLocaleString()} km/luna</div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
@@ -177,15 +191,15 @@ export default function TrucksPage() {
                 </div>
                 <div className="grid grid-cols-5 gap-3 text-xs">
                   {([
-                    [tr.leasingLabel, truck.fixedCosts.leasing],
-                    [tr.insurance, truck.fixedCosts.insurance],
-                    [tr.maintenance, truck.fixedCosts.maintenance],
-                    [tr.salaryLabel, truck.fixedCosts.salary],
-                    [tr.other, truck.fixedCosts.other],
+                    [tr.leasingLabel, fc.leasing ?? 0],
+                    [tr.insurance, fc.insurance ?? 0],
+                    [tr.maintenance, fc.maintenance ?? 0],
+                    [tr.salaryLabel, fc.salary ?? 0],
+                    [tr.other, fc.other ?? 0],
                   ] as [string, number][]).map(([label, val]) => (
                     <div key={label} className="bg-[#1f1f1f] rounded-lg p-3">
                       <div className="text-gray-500 mb-1">{label}</div>
-                      <div className="font-semibold text-white">{val.toLocaleString()} €</div>
+                      <div className="font-semibold text-white">{(val ?? 0).toLocaleString()} €</div>
                     </div>
                   ))}
                 </div>

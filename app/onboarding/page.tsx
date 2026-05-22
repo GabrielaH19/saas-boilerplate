@@ -43,7 +43,6 @@ export default function OnboardingPage() {
         return;
       }
 
-      // Check if onboarding already completed
       const userDoc = await getDoc(doc(db, "users", u.uid));
       if (userDoc.exists() && userDoc.data()?.onboardingCompleted === true) {
         router.push("/dashboard");
@@ -92,31 +91,27 @@ export default function OnboardingPage() {
       return;
     }
 
-    const totalFixed = truck.leasing + truck.insurance + truck.maintenance + truck.salary + truck.otherCost;
-    if (totalFixed <= 0) {
-      setError(tr.onboardingError);
-      return;
-    }
-
     setError("");
     setSaving(true);
     try {
-      // Create truck document
       const truckId = `truck_${Date.now()}`;
       await setDoc(doc(db, "trucks", truckId), {
         userId,
         name: truck.name.trim(),
-        leasing: truck.leasing,
-        insurance: truck.insurance,
-        maintenance: truck.maintenance,
-        salary: truck.salary,
-        otherCost: truck.otherCost,
-        fixedCosts: totalFixed,
-        fuelConsumption: truck.fuelConsumption,
+        plate: "",
+        consumption: truck.fuelConsumption,
+        estimatedKmPerMonth: 0,
+        fixedCosts: {
+          leasing: truck.leasing,
+          insurance: truck.insurance,
+          maintenance: truck.maintenance,
+          salary: truck.salary,
+          other: truck.otherCost,
+        },
+        isActive: true,
         createdAt: new Date().toISOString(),
       });
 
-      // Mark onboarding as complete
       await updateDoc(doc(db, "users", userId), {
         onboardingCompleted: true,
       });
@@ -143,7 +138,6 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white">
             Trip<span className="text-[#f5a623]">Profit</span>
@@ -151,7 +145,6 @@ export default function OnboardingPage() {
           <p className="text-gray-400 mt-2">{tr.onboardingTitle}</p>
         </div>
 
-        {/* Step Indicator */}
         <div className="flex gap-2 mb-8">
           {[1, 2, 3].map((s) => (
             <div
@@ -163,9 +156,7 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        {/* Content */}
         <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-8">
-          {/* Step 1: Company Name */}
           {step === 1 && (
             <div className="space-y-4">
               <div>
@@ -198,7 +189,6 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 2: Truck Details */}
           {step === 2 && (
             <div className="space-y-4">
               <div>
@@ -220,15 +210,12 @@ export default function OnboardingPage() {
                 <input
                   type="text"
                   value={truck.name}
-                  onChange={(e) =>
-                    setTruck({ ...truck, name: e.target.value })
-                  }
+                  onChange={(e) => setTruck({ ...truck, name: e.target.value })}
                   placeholder={tr.truckNamePlaceholder}
                   className="w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f5a623]"
                 />
               </div>
 
-              {/* Fixed Costs */}
               <div className="pt-4 border-t border-[#2e2e2e]">
                 <p className="text-xs text-gray-400 uppercase tracking-wider mb-4 font-bold">
                   {tr.calcSettings}
@@ -261,7 +248,6 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Fuel Consumption */}
               <div className="pt-4 border-t border-[#2e2e2e]">
                 <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">
                   {tr.fuelConsumption}
@@ -300,7 +286,6 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* Step 3: Finish */}
           {step === 3 && (
             <div className="text-center space-y-6">
               <div>
