@@ -21,8 +21,7 @@ export default function SignupSourceModal({
   const options = [
     { id: "referral", label: "Recomandare de la cineva" },
     { id: "google", label: "Google / motoare de căutare" },
-    { id: "social_media", label: "Social media (Facebook, LinkedIn, etc)" },
-    { id: "tiktok", label: "TikTok (@gabryhawk)" },
+    { id: "social_media", label: "Social media (Facebook, WhatsApp, etc)" },
     { id: "altele", label: "Altceva" },
   ];
 
