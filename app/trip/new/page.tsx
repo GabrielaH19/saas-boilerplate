@@ -20,7 +20,7 @@ interface Client { id: string; name: string; paymentTermDays: number; }
 
 export default function NewTripPage() {
   const router = useRouter();
- const { tr, locale } = useLang();
+  const { tr, locale } = useLang();
   const { canAddTrip, limits, plan } = usePlan();
   const [showPaywall, setShowPaywall] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -34,14 +34,14 @@ export default function NewTripPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [tripDate, setTripDate] = useState(new Date().toISOString().slice(0, 10));
-  const [revenue, setRevenue] = useState(1850);
-  const [loadedKm, setLoadedKm] = useState(1200);
-  const [emptyKm, setEmptyKm] = useState(200);
-  const [fuelPrice, setFuelPrice] = useState(1.68);
-  const [tolls, setTolls] = useState(120);
-  const [days, setDays] = useState(3);
-  const [waitHours, setWaitHours] = useState(3);
-  const [dailyAllowance, setDailyAllowance] = useState(65);
+  const [revenue, setRevenue] = useState("1850");
+  const [loadedKm, setLoadedKm] = useState("1200");
+  const [emptyKm, setEmptyKm] = useState("200");
+  const [fuelPrice, setFuelPrice] = useState("1.68");
+  const [tolls, setTolls] = useState("120");
+  const [days, setDays] = useState("3");
+  const [waitHours, setWaitHours] = useState("3");
+  const [dailyAllowance, setDailyAllowance] = useState("65");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -58,44 +58,35 @@ export default function NewTripPage() {
       if (truckList.length > 0) setSelectedTruckId(truckList[0].id);
       setLoading(false);
     });
-    // Check paywall la incarcare
-  if (!canAddTrip && !loading) {
-    return (
-      <>
-        <div className="min-h-screen bg-[#0d0d0d]">
-          <AppNav />
-          <div className="flex items-center justify-center h-[calc(100vh-80px)]">
-            <p className="text-gray-400">Se incarca...</p>
-          </div>
-        </div>
-        <PaywallModal
-          feature="Curse noi"
-          requiredPlan="Pro"
-          onClose={() => router.push("/dashboard")}
-        />
-      </>
-    );
-  }
-
-  return () => unsub();
+    return () => unsub();
   }, []);
+
+  // Conversii numerice pentru calcule
+  const rRevenue = parseFloat(revenue) || 0;
+  const rLoadedKm = parseFloat(loadedKm) || 0;
+  const rEmptyKm = parseFloat(emptyKm) || 0;
+  const rFuelPrice = parseFloat(fuelPrice) || 0;
+  const rTolls = parseFloat(tolls) || 0;
+  const rDays = parseFloat(days) || 0;
+  const rWaitHours = parseFloat(waitHours) || 0;
+  const rDailyAllowance = parseFloat(dailyAllowance) || 0;
 
   const selectedTruck = trucks.find(t => t.id === selectedTruckId);
   const selectedClient = clients.find(c => c.id === selectedClientId);
-  const totalKm = loadedKm + emptyKm;
+  const totalKm = rLoadedKm + rEmptyKm;
   const consumption = selectedTruck?.consumption || 32;
-  const fuelCost = Math.round((consumption / 100) * fuelPrice * totalKm);
-  const emptyCost = Math.round((consumption / 100) * fuelPrice * emptyKm);
-  const extraCost = Math.round(tolls + days * dailyAllowance);
-  const waitCost = Math.round(waitHours * 17);
+  const fuelCost = Math.round((consumption / 100) * rFuelPrice * totalKm);
+  const emptyCost = Math.round((consumption / 100) * rFuelPrice * rEmptyKm);
+  const extraCost = Math.round(rTolls + rDays * rDailyAllowance);
+  const waitCost = Math.round(rWaitHours * 17);
   const truckFixed = selectedTruck ? selectedTruck.fixedCosts.leasing + selectedTruck.fixedCosts.insurance + selectedTruck.fixedCosts.maintenance + selectedTruck.fixedCosts.salary + selectedTruck.fixedCosts.other : 0;
   const truckFixedPerKm = selectedTruck?.estimatedKmPerMonth ? truckFixed / selectedTruck.estimatedKmPerMonth : 0;
-  const truckFixedCost = Math.round(truckFixedPerKm * loadedKm);
+  const truckFixedCost = Math.round(truckFixedPerKm * rLoadedKm);
   const totalCost = fuelCost + extraCost + truckFixedCost + waitCost;
-  const profit = revenue - totalCost;
-  const revenuePerLoadedKm = loadedKm > 0 ? revenue / loadedKm : 0;
-  const revenuePerTotalKm = totalKm > 0 ? revenue / totalKm : 0;
-  const minBreakEvenPerKm = loadedKm > 0 ? totalCost / loadedKm : 0;
+  const profit = rRevenue - totalCost;
+  const revenuePerLoadedKm = rLoadedKm > 0 ? rRevenue / rLoadedKm : 0;
+  const revenuePerTotalKm = totalKm > 0 ? rRevenue / totalKm : 0;
+  const minBreakEvenPerKm = rLoadedKm > 0 ? totalCost / rLoadedKm : 0;
   const minRecommendedPerKm = minBreakEvenPerKm + 0.15;
   const verdict: "accept" | "negotiate" | "reject" =
     revenuePerLoadedKm >= minRecommendedPerKm ? "accept" :
@@ -103,13 +94,13 @@ export default function NewTripPage() {
 
   const handleSave = async () => {
     if (!userId) return;
-    if (!selectedTruckId) return alert("Selectează un camion.");
-    if (!from || !to) return alert("Completează ruta.");
+    if (!selectedTruckId) return alert("Selecteaza un camion.");
+    if (!from || !to) return alert("Completeaza ruta.");
     setSaving(true);
     try {
       await addDoc(collection(db, "trips"), {
         userId, truckId: selectedTruckId, clientId: selectedClientId || null, from, to, tripDate,
-        inputs: { loadedKm, emptyKm, fuelPrice, tolls, days, waitHours, dailyAllowance, revenue },
+        inputs: { loadedKm: rLoadedKm, emptyKm: rEmptyKm, fuelPrice: rFuelPrice, tolls: rTolls, days: rDays, waitHours: rWaitHours, dailyAllowance: rDailyAllowance, revenue: rRevenue },
         snapshots: { truckName: selectedTruck?.name || "", clientName: selectedClient?.name || "", truckConsumption: consumption, truckFixedCostPerKm: parseFloat(truckFixedPerKm.toFixed(4)) },
         results: { fuelCost, emptyCost, extraCost, truckFixedCost, waitCost, totalCost, profit, revenuePerLoadedKm: parseFloat(revenuePerLoadedKm.toFixed(4)), revenuePerTotalKm: parseFloat(revenuePerTotalKm.toFixed(4)), minBreakEvenPerKm: parseFloat(minBreakEvenPerKm.toFixed(4)), minRecommendedPerKm: parseFloat(minRecommendedPerKm.toFixed(4)), verdict },
         status: "saved", createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
@@ -123,6 +114,22 @@ export default function NewTripPage() {
   const lbl = "block text-xs text-gray-400 mb-1";
 
   if (loading) return <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center"><p className="text-gray-400">{tr.loading}</p></div>;
+
+  if (!canAddTrip) return (
+    <>
+      <div className="min-h-screen bg-[#0d0d0d]">
+        <AppNav />
+        <div className="flex items-center justify-center h-[calc(100vh-80px)]">
+          <p className="text-gray-400">Se incarca...</p>
+        </div>
+      </div>
+      <PaywallModal
+        feature="Curse noi"
+        requiredPlan="Pro"
+        onClose={() => router.push("/dashboard")}
+      />
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
@@ -163,8 +170,8 @@ export default function NewTripPage() {
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.routeAndDate}</p>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <div><label className={lbl}>{tr.from}</label><input className={inp} value={from} onChange={e => setFrom(e.target.value)} placeholder="București" /></div>
-                <div><label className={lbl}>{tr.to}</label><input className={inp} value={to} onChange={e => setTo(e.target.value)} placeholder="München" /></div>
+                <div><label className={lbl}>{tr.from}</label><input className={inp} value={from} onChange={e => setFrom(e.target.value)} placeholder="Bucuresti" /></div>
+                <div><label className={lbl}>{tr.to}</label><input className={inp} value={to} onChange={e => setTo(e.target.value)} placeholder="Munchen" /></div>
               </div>
               <div><label className={lbl}>{tr.tripDate}</label><input type="date" className={inp} value={tripDate} onChange={e => setTripDate(e.target.value)} /></div>
             </div>
@@ -172,30 +179,30 @@ export default function NewTripPage() {
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.kmAndRevenue}</p>
               <div className="grid grid-cols-2 gap-3 mb-3">
-                <div><label className={lbl}>{tr.loadedKm}</label><input type="number" className={inp} value={loadedKm} onChange={e => setLoadedKm(+e.target.value)} /></div>
+                <div><label className={lbl}>{tr.loadedKm}</label><input type="number" className={inp} value={loadedKm} onChange={e => setLoadedKm(e.target.value)} /></div>
                 <div>
                   <label className={lbl}>{tr.emptyKm}</label>
-                  <input type="number" className={inp} value={emptyKm} onChange={e => setEmptyKm(+e.target.value)} />
+                  <input type="number" className={inp} value={emptyKm} onChange={e => setEmptyKm(e.target.value)} />
                   <p className="text-xs text-gray-600 mt-1">{tr.totalKmLabel}: {totalKm} km</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className={lbl}>{tr.revenue}</label><input type="number" className={inp} value={revenue} onChange={e => setRevenue(+e.target.value)} /></div>
-                <div><label className={lbl}>{tr.fuelPriceLabel}</label><input type="number" step="0.01" className={inp} value={fuelPrice} onChange={e => setFuelPrice(+e.target.value)} /></div>
+                <div><label className={lbl}>{tr.revenue}</label><input type="number" className={inp} value={revenue} onChange={e => setRevenue(e.target.value)} /></div>
+                <div><label className={lbl}>{tr.fuelPriceLabel}</label><input type="number" step="0.01" className={inp} value={fuelPrice} onChange={e => setFuelPrice(e.target.value)} /></div>
               </div>
             </div>
 
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.extraCosts}</p>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className={lbl}>{tr.tolls}</label><input type="number" className={inp} value={tolls} onChange={e => setTolls(+e.target.value)} /></div>
+                <div><label className={lbl}>{tr.tolls}</label><input type="number" className={inp} value={tolls} onChange={e => setTolls(e.target.value)} /></div>
                 <div>
                   <label className={lbl}>{tr.waitHours}</label>
-                  <input type="number" className={inp} value={waitHours} onChange={e => setWaitHours(+e.target.value)} />
+                  <input type="number" className={inp} value={waitHours} onChange={e => setWaitHours(e.target.value)} />
                   <p className="text-xs text-gray-600 mt-1">{tr.lostCost}: {waitCost}€</p>
                 </div>
-                <div><label className={lbl}>{tr.days}</label><input type="number" className={inp} value={days} onChange={e => setDays(+e.target.value)} /></div>
-                <div><label className={lbl}>{tr.dailyAllowance}</label><input type="number" className={inp} value={dailyAllowance} onChange={e => setDailyAllowance(+e.target.value)} /></div>
+                <div><label className={lbl}>{tr.days}</label><input type="number" className={inp} value={days} onChange={e => setDays(e.target.value)} /></div>
+                <div><label className={lbl}>{tr.dailyAllowance}</label><input type="number" className={inp} value={dailyAllowance} onChange={e => setDailyAllowance(e.target.value)} /></div>
               </div>
             </div>
           </div>
@@ -214,10 +221,10 @@ export default function NewTripPage() {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.calcDetails}</p>
               {[
                 { label: tr.fuelCost, val: `${fuelCost} €` },
-                { label: `Cost km goi (${emptyKm} km)`, val: `-${emptyCost} €`, red: true },
-                { label: "Taxe + diurnă", val: `${extraCost} €` },
+                { label: `Cost km goi (${rEmptyKm} km)`, val: `-${emptyCost} €`, red: true },
+                { label: "Taxe + diurna", val: `${extraCost} €` },
                 { label: "Cost fix camion", val: `${truckFixedCost} €` },
-                { label: `${tr.waitHours} (${waitHours}h)`, val: `-${waitCost} €`, red: true },
+                { label: `${tr.waitHours} (${rWaitHours}h)`, val: `-${waitCost} €`, red: true },
                 { label: tr.totalCost, val: `${totalCost} €` },
               ].map((r, i) => (
                 <div key={i} className="flex justify-between py-1.5 border-b border-[#1e1e1e] text-sm">
@@ -235,7 +242,7 @@ export default function NewTripPage() {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.metrics}</p>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: "€/km (km încărcați)", val: revenuePerLoadedKm.toFixed(2) + " €/km", highlight: true },
+                  { label: "€/km (km incarcati)", val: revenuePerLoadedKm.toFixed(2) + " €/km", highlight: true },
                   { label: "€/km (km totali)", val: revenuePerTotalKm.toFixed(2) + " €/km" },
                   { label: "Break-even minim", val: minBreakEvenPerKm.toFixed(2) + " €/km" },
                   { label: "Recomandat minim", val: minRecommendedPerKm.toFixed(2) + " €/km" },
@@ -251,18 +258,19 @@ export default function NewTripPage() {
             {saved ? (
               <div className="space-y-3">
                 <div className="bg-green-900 border border-green-700 text-green-400 px-4 py-3 rounded-lg text-sm">{tr.savedTrip}</div>
-              <a href={"/share?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to) + "&profit=" + Math.round(revenue - totalCost) + "&verdict=" + verdict + "&km=" + loadedKm} className="w-full bg-[#6366f1] text-white font-semibold py-3 rounded-lg hover:bg-[#4f46e5] transition block text-center text-sm">
-                {tr.generateCard}
-              </a>
+                <a href={"/share?from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to) + "&profit=" + Math.round(rRevenue - totalCost) + "&verdict=" + verdict + "&km=" + rLoadedKm} className="w-full bg-[#6366f1] text-white font-semibold py-3 rounded-lg hover:bg-[#4f46e5] transition block text-center text-sm">
+                  {tr.generateCard}
+                </a>
                 <Link href="/history" className="w-full border border-[#2e2e2e] text-white font-semibold py-3 rounded-lg hover:bg-[#161616] transition block text-center text-sm">{tr.viewHistory}</Link>
-                <button onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue(1850); setLoadedKm(1200); setEmptyKm(200); }} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm">{tr.calcAnother}</button>
+                <button onClick={() => { setSaved(false); setFrom(""); setTo(""); setRevenue("1850"); setLoadedKm("1200"); setEmptyKm("200"); }} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition text-sm">{tr.calcAnother}</button>
               </div>
             ) : (
               <>
-              <p className="text-xs text-gray-500 text-center mb-2">{locale === "it" ? "* I calcoli sono stime basate sui dati inseriti." : "* Calculele sunt estimative, bazate pe datele introduse."}</p>
-              <button onClick={handleSave} disabled={saving} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50 text-sm">
-                {saving ? tr.saving : tr.saveTrip}
-              </button></>
+                <p className="text-xs text-gray-500 text-center mb-2">{locale === "it" ? "* I calcoli sono stime basate sui dati inseriti." : "* Calculele sunt estimative, bazate pe datele introduse."}</p>
+                <button onClick={handleSave} disabled={saving} className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50 text-sm">
+                  {saving ? tr.saving : tr.saveTrip}
+                </button>
+              </>
             )}
           </div>
         </div>
