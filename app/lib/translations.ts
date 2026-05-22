@@ -37,7 +37,7 @@
     newTripSub: "Completează datele pentru a obține verdictul.",
     from: "De la",
     to: "Până la",
-    revenue: "Venit (€)",
+    revenue: "Venit total cursă (€)"
     km: "Kilometri",
     liters: "Litri consumați",
     fuelPrice: "Preț / litru (€)",
@@ -75,7 +75,7 @@
     noTruckOption: "— Niciun camion —",
     routeAndDate: "Rută și dată",
     tripDate: "Data cursei",
-    loadedKm: "Km încărcați",
+    loadedKm: "Km încărcați (cu marfă)"
     emptyKm: "Km goi (retur)",
     totalKmLabel: "Total",
     fuelPriceLabel: "Preț motorină (€/l)",
@@ -321,7 +321,7 @@
     newTripSub: "Inserisci i dati per il verdetto.",
     from: "Da",
     to: "A",
-    revenue: "Ricavo (€)",
+    revenue: "Ricavo totale viaggio (€)"
     km: "Chilometri",
     liters: "Carburante (litri)",
     fuelPrice: "Prezzo / litro (€)",
@@ -359,7 +359,7 @@
     noTruckOption: "— Nessun camion —",
     routeAndDate: "Percorso e data",
     tripDate: "Data viaggio",
-    loadedKm: "Km caricati",
+    loadedKm: "Km caricati (con merce)"
     emptyKm: "Km vuoti (ritorno)",
     totalKmLabel: "Totale",
     fuelPriceLabel: "Prezzo gasolio (€/l)",
