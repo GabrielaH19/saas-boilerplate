@@ -113,8 +113,8 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold text-white mb-3">10. Contact</h2>
             <p className="text-sm">
               Pentru orice întrebări legate de acești termeni, ne poți contacta la:{" "}
-              <a href="mailto:contact@tripprofit.app" className="text-[#f5a623] hover:underline">
-                contact@tripprofit.app
+              <a href="mailto:contact@tripprofit.ro" className="text-[#f5a623] hover:underline">
+                contact@tripprofit.ro
               </a>
             </p>
           </section>
