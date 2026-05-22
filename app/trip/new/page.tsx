@@ -221,9 +221,9 @@ export default function NewTripPage() {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.calcDetails}</p>
               {[
                 { label: tr.fuelCost, val: `${fuelCost} €` },
-                { label: `Cost km goi (${rEmptyKm} km)`, val: `-${emptyCost} €`, red: true },
-                { label: "Taxe + diurna", val: `${extraCost} €` },
-                { label: "Cost fix camion", val: `${truckFixedCost} €` },
+               { label: `${tr.emptyKmCost} (${rEmptyKm} km)`, val: `-${emptyCost} €`, red: true },
+{ label: tr.taxesDiurna, val: `${extraCost} €` },
+{ label: tr.truckFixedCost, val: `${truckFixedCost} €` },
                 { label: `${tr.waitHours} (${rWaitHours}h)`, val: `-${waitCost} €`, red: true },
                 { label: tr.totalCost, val: `${totalCost} €` },
               ].map((r, i) => (
@@ -242,10 +242,10 @@ export default function NewTripPage() {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.metrics}</p>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: "€/km (km incarcati)", val: revenuePerLoadedKm.toFixed(2) + " €/km", highlight: true },
-                  { label: "€/km (km totali)", val: revenuePerTotalKm.toFixed(2) + " €/km" },
-                  { label: "Break-even minim", val: minBreakEvenPerKm.toFixed(2) + " €/km" },
-                  { label: "Recomandat minim", val: minRecommendedPerKm.toFixed(2) + " €/km" },
+                 { label: tr.metricLoadedKm, val: revenuePerLoadedKm.toFixed(2) + " €/km", highlight: true },
+{ label: tr.metricTotalKm, val: revenuePerTotalKm.toFixed(2) + " €/km" },
+{ label: tr.breakEvenMin, val: minBreakEvenPerKm.toFixed(2) + " €/km" },
+{ label: tr.recommendedMin, val: minRecommendedPerKm.toFixed(2) + " €/km" },
                 ].map((m, i) => (
                   <div key={i} className="bg-[#1f1f1f] rounded-lg p-3">
                     <div className="text-xs text-gray-500 mb-1">{m.label}</div>
