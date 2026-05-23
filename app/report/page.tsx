@@ -49,20 +49,20 @@ export default function ReportPage() {
     setDownloading(false);
   };
 
-  const monthTrips = trips.filter((t) => t.date?.startsWith(month));
-  const totalRev = monthTrips.reduce((s, t) => s + (t.revenue || 0), 0);
-  const totalCost = monthTrips.reduce((s, t) => s + (t.totalCost || 0), 0);
-  const totalProfit = monthTrips.reduce((s, t) => s + (t.profit || 0), 0);
-  const totalKm = monthTrips.reduce((s, t) => s + (t.km || 0), 0);
-  const totalDays = monthTrips.reduce((s, t) => s + (t.days || 0), 0);
-  const totalFuel = monthTrips.reduce((s, t) => s + (t.fuelCost || 0), 0);
-  const totalTolls = monthTrips.reduce((s, t) => s + (t.tollsTotal || 0), 0);
-  const totalDiurna = monthTrips.reduce((s, t) => s + (t.diurnaTotal || 0), 0);
-  const totalFixed = monthTrips.reduce((s, t) => s + (t.fixed || 0), 0);
+  const monthTrips = trips.filter((t) => (t.tripDate || t.date)?.startsWith(month));
+  const totalRev = monthTrips.reduce((s, t) => s + (t.inputs?.revenue || t.revenue || 0), 0);
+const totalCost = monthTrips.reduce((s, t) => s + (t.results?.totalCost || t.totalCost || 0), 0);
+const totalProfit = monthTrips.reduce((s, t) => s + (t.results?.profit || t.profit || 0), 0);
+const totalKm = monthTrips.reduce((s, t) => s + (t.inputs?.loadedKm || t.km || 0), 0);
+const totalDays = monthTrips.reduce((s, t) => s + (t.inputs?.days || t.days || 0), 0);
+const totalFuel = monthTrips.reduce((s, t) => s + (t.results?.fuelCost || t.fuelCost || 0), 0);
+const totalTolls = monthTrips.reduce((s, t) => s + (t.inputs?.tolls || t.tollsTotal || 0), 0);
+const totalDiurna = monthTrips.reduce((s, t) => s + (t.results?.extraCost || t.diurnaTotal || 0), 0);
+const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost || t.fixed || 0), 0);
   const avgPpkm = totalKm > 0 ? totalProfit / totalKm : 0;
   const avgPpday = totalDays > 0 ? totalProfit / totalDays : 0;
   const marja = totalRev > 0 ? (totalProfit / totalRev) * 100 : 0;
-  const months = [...new Set(trips.map((t) => t.date?.slice(0, 7)))].sort().reverse();
+  const months = [...new Set(trips.map((t) => (t.tripDate || t.date)?.slice(0, 7)))].filter(Boolean).sort().reverse();
   if (!months.includes(month)) months.unshift(month);
 
   if (!limits.hasReport && !planLoading) {
@@ -156,10 +156,10 @@ export default function ReportPage() {
                 <div key={t.id} className="flex justify-between items-center py-3 border-b border-[#2e2e2e] last:border-0">
                   <div>
                     <div className="text-sm font-medium">{t.from} → {t.to}</div>
-                    <div className="text-xs text-gray-500 font-mono mt-1">{t.date} · {t.km} km</div>
+                    <div className="text-xs text-gray-500 font-mono mt-1">{t.tripDate || t.date} · {(t.inputs?.loadedKm || t.km || 0)} km</div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className={`font-mono text-sm font-bold ${t.profit >= 0 ? "text-green-400" : "text-red-400"}`}>{t.profit?.toFixed(0)} €</span>
+                    <span className={`font-mono text-sm font-bold ${(t.results?.profit ?? t.profit ?? 0) >= 0 ? "text-green-400" : "text-red-400"}`}>{(t.results?.profit ?? t.profit ?? 0).toFixed(0)} €</span>
                     <span className={`text-xs font-mono px-2 py-1 rounded border ${t.verdict === "accept" ? "bg-green-900 text-green-400 border-green-700" : t.verdict === "negotiate" ? "bg-yellow-900 text-yellow-400 border-yellow-700" : "bg-red-900 text-red-400 border-red-700"}`}>{t.verdict === "accept" ? tr.accept : t.verdict === "negotiate" ? tr.negotiate : tr.reject}</span>
                   </div>
                 </div>
