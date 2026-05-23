@@ -11,7 +11,7 @@ import { usePlan } from "@/app/lib/usePlan";
 export default function AppNav({ active }: { active?: string }) {
   const router = useRouter();
   const { tr } = useLang();
-  const { plan } = usePlan();
+ const { plan, isTrialing } = usePlan();
   const handleLogout = async () => { await signOut(auth); router.push("/login"); };
   return (
     <nav className="bg-[#161616] border-b border-[#2e2e2e] px-6 py-4 flex items-center justify-between">
@@ -23,7 +23,13 @@ export default function AppNav({ active }: { active?: string }) {
         <Link href="/clients" className={active==="clients"?"text-white":"hover:text-white"}>{tr.clients}</Link>
         <Link href="/cashflow" className={active==="cashflow"?"text-white":"hover:text-white"}>{tr.cashflow}</Link>
         <Link href="/truck" className={active==="truck"?"text-white":"hover:text-white"}>{tr.truck}</Link>
-        {plan !== "premium" && (
+{(plan === "pro" || plan === "premium" || isTrialing) && (
+  <Link href="/report" className={active==="report"?"text-white":"hover:text-white"}>{tr.report}</Link>
+)}
+{(plan === "pro" || plan === "premium" || isTrialing) && (
+  <Link href="/simulations" className={active==="simulations"?"text-white":"hover:text-white"}>{tr.simulations}</Link>
+)}
+{!isTrialing && plan !== "premium" && (
           <Link href="/#pricing" className="bg-[#f5a623] text-black font-semibold px-3 py-1 rounded-lg hover:bg-[#e8951a] transition text-xs">
             Upgrade
           </Link>
