@@ -161,7 +161,7 @@ function ShareCard() {
         <div className="mt-8 bg-[#161616] border border-[#2e2e2e] rounded-xl p-6 max-w-2xl text-center">
           <div style={{ color: verdictColor }} className="text-lg font-bold mb-2">{ct.earn}</div>
           <p className="text-gray-400 text-sm">{ct.earnSub}</p>
-          <Link href="/pricing" className="inline-block mt-4 text-[#f5a623] text-sm hover:underline">
+          <Link href="/dashboard" className="inline-block mt-4 text-[#f5a623] text-sm hover:underline">
             {ct.refLink}
           </Link>
         </div>
