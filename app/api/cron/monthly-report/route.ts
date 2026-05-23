@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Get all premium users
-    const usersSnap = await db.collection("users").where("plan", "==", "premium").get();
+    const usersSnap = await db.collection("users").get();
 
     if (usersSnap.empty) {
       return NextResponse.json({ message: "No premium users found" });
@@ -41,8 +41,12 @@ export async function POST(request: NextRequest) {
     for (const userDoc of usersSnap.docs) {
       const userId = userDoc.id;
       const userData = userDoc.data() as any;
-      const userEmail = userData.email;
-      const userName = userData.name || userEmail;
+     const userEmail = userData.email;
+const userName = userData.name || userEmail;
+const userPlan = userData.plan;
+const trialEnd = userData.trialEnd;
+const isOnTrial = userPlan === "free" && trialEnd && new Date(trialEnd) > new Date();
+if (userPlan !== "premium" && userPlan !== "pro" && !isOnTrial) continue;
 
       try {
         // Get trips for last month
