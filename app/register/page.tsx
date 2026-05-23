@@ -24,14 +24,16 @@ export default function RegisterPage() {
     setError("");
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        name,
-        email,
-        createdAt: new Date().toISOString(),
-        plan: "free",
-        onboardingCompleted: false,
-      });
-
+      const trialEnd = new Date();
+trialEnd.setDate(trialEnd.getDate() + 30);
+await setDoc(doc(db, "users", userCredential.user.uid), {
+  name,
+  email,
+  createdAt: new Date().toISOString(),
+  plan: "free",
+  trialEnd: trialEnd.toISOString().slice(0, 10),
+  onboardingCompleted: false,
+});
       // Email bun venit
       await fetch("/api/email/welcome", {
         method: "POST",
