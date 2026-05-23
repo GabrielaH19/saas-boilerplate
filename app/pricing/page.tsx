@@ -10,6 +10,7 @@ import Link from "next/link";
 export default function PricingPage() {
   const [user, setUser] = useState<any>(null);
   const [currentPlan, setCurrentPlan] = useState("free");
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
@@ -18,7 +19,10 @@ export default function PricingPage() {
       if (!u) { router.push("/login"); return; }
       setUser(u);
       const snap = await getDoc(doc(db, "users", u.uid));
-      if (snap.exists()) setCurrentPlan(snap.data().plan || "free");
+      if (snap.exists()) {
+        setCurrentPlan(snap.data().plan || "free");
+        setCreatedAt(snap.data().createdAt || null);
+      }
     });
     return () => unsub();
   }, []);
@@ -34,16 +38,17 @@ export default function PricingPage() {
           plan,
           userId: user.uid,
           email: user.email,
+          createdAt,
         }),
       });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Eroare la procesarea plății. Încearcă din nou.");
+        alert("Eroare la procesarea platii. Incearca din nou.");
       }
     } catch (e) {
-      alert("Eroare la procesarea plății. Încearcă din nou.");
+      alert("Eroare la procesarea platii. Incearca din nou.");
     }
     setLoading(null);
   };
@@ -58,8 +63,8 @@ export default function PricingPage() {
       id: "basic",
       name: "Basic",
       price: 30,
-      desc: "Pentru firmele care vor să elimine cursele neprofitabile",
-      features: ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric curse"],
+      desc: "Pentru firmele care vor sa elimine cursele neprofitabile",
+      features: ["Calculator cursa cu verdict instant", "Cost real per km", "1 camion", "Istoric curse"],
       missing: ["Raport per camion", "Raport per client", "Cashflow tracking"],
       highlight: false,
     },
@@ -67,8 +72,8 @@ export default function PricingPage() {
       id: "pro",
       name: "Pro",
       price: 49,
-      desc: "Pentru firmele care vor vizibilitate completă asupra finanțelor",
-      features: ["Tot ce include Basic", "Camioane nelimitate", "Raport per camion", "Raport per client cu scor de risc", "Dashboard general firmă", "Alerte automate costuri depășite"],
+      desc: "Pentru firmele care vor vizibilitate completa asupra finantelor",
+      features: ["Tot ce include Basic", "Camioane nelimitate", "Raport per camion", "Raport per client cu scor de risc", "Dashboard general firma", "Alerte automate costuri depasite"],
       missing: ["Cashflow tracking"],
       highlight: true,
     },
@@ -77,7 +82,7 @@ export default function PricingPage() {
       name: "Premium",
       price: 79,
       desc: "Pentru firmele care vor control financiar complet",
-      features: ["Tot ce include Pro", "Cashflow tracking", "Alertă blocaj de lichiditate", "Scor de risc detaliat per client", "Simulări financiare", "Recomandări automate", "Asistență prioritară"],
+      features: ["Tot ce include Pro", "Cashflow tracking", "Alerta blocaj de lichiditate", "Scor de risc detaliat per client", "Simulari financiare", "Recomandari automate", "Asistenta prioritara"],
       missing: [],
       highlight: false,
     },
@@ -89,20 +94,20 @@ export default function PricingPage() {
         <h1 className="text-xl font-bold">Trip<span className="text-[#f5a623]">Profit</span></h1>
         <div className="flex items-center gap-6 text-sm text-gray-400">
           <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-          <Link href="/trip/new" className="hover:text-white">Cursă nouă</Link>
+          <Link href="/trip/new" className="hover:text-white">Cursa noua</Link>
           <Link href="/history" className="hover:text-white">Istoric</Link>
-          <Link href="/clients" className="hover:text-white">Clienți</Link>
+          <Link href="/clients" className="hover:text-white">Clienti</Link>
           <Link href="/cashflow" className="hover:text-white">Cashflow</Link>
           <Link href="/truck" className="hover:text-white">Camioane</Link>
-          <Link href="/pricing" className="text-white">Prețuri</Link>
-          <button onClick={handleLogout} className="hover:text-white">Ieși</button>
+          <Link href="/pricing" className="text-white">Preturi</Link>
+          <button onClick={handleLogout} className="hover:text-white">Iesi</button>
         </div>
       </nav>
 
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-3">Alege planul potrivit firmei tale</h2>
-          <p className="text-gray-400">30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare.</p>
+          <p className="text-gray-400">30 de zile gratuit pentru orice plan. Fara card bancar la inregistrare.</p>
           {currentPlan && currentPlan !== "free" && (
             <div className="mt-4 inline-block bg-green-900 border border-green-700 text-green-400 text-sm px-4 py-2 rounded-lg">
               Plan activ: <strong className="capitalize">{currentPlan}</strong>
@@ -120,7 +125,7 @@ export default function PricingPage() {
               )}
               <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">{plan.name}</div>
               <div className="text-5xl font-semibold text-white mb-1">
-                <sup className="text-xl">€</sup>{plan.price}<sub className="text-sm font-normal text-gray-500">/lună</sub>
+                <sup className="text-xl">€</sup>{plan.price}<sub className="text-sm font-normal text-gray-500">/luna</sub>
               </div>
               <div className="text-sm text-gray-400 mb-6 mt-2">{plan.desc}</div>
               <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
@@ -141,7 +146,7 @@ export default function PricingPage() {
                   disabled={loading === plan.id}
                   className={`w-full py-3 rounded-lg text-sm font-semibold transition disabled:opacity-50 ${plan.highlight ? "bg-[#4f46e5] text-white hover:bg-[#4338ca]" : "border border-[#333] text-white hover:bg-[#1e1e1e]"}`}
                 >
-                  {loading === plan.id ? "Se procesează..." : "Activează planul"}
+                  {loading === plan.id ? "Se proceseaza..." : "Activeaza planul"}
                 </button>
               )}
             </div>
@@ -149,7 +154,7 @@ export default function PricingPage() {
         </div>
 
         <div className="mt-8 bg-[#161616] border border-[#2a2a2a] rounded-xl p-5 text-center text-sm text-gray-400">
-          Plata se procesează securizat prin <strong className="text-white">Stripe</strong>. Poți anula oricând. Datele tale rămân intacte indiferent de planul ales.
+          Plata se proceseaza securizat prin <strong className="text-white">Stripe</strong>. Poti anula oricand. Datele tale raman intacte indiferent de planul ales.
         </div>
       </div>
     </div>

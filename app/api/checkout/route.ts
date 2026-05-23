@@ -13,13 +13,19 @@ const PRICE_IDS: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { plan, userId, email } = await req.json();
+    const { plan, userId, email, createdAt } = await req.json();
 
     if (!plan || !PRICE_IDS[plan]) {
       return NextResponse.json({ error: "Plan invalid" }, { status: 400 });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    // Calculeaza zilele ramase din trial
+    const daysSince = createdAt
+      ? Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24))
+      : 30;
+    const trialDays = Math.max(0, 30 - daysSince);
+
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: "subscription",
       payment_method_types: ["card"],
       customer_email: email,
@@ -34,15 +40,17 @@ export async function POST(req: NextRequest) {
         plan,
       },
       subscription_data: {
-        trial_period_days: 30,
         metadata: {
           userId,
           plan,
         },
+        ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
       },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true&plan=${plan}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    });
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
