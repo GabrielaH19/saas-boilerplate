@@ -21,11 +21,14 @@ export function usePlan() {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const data = userDoc.data();
       const userPlan = data?.plan || "free";
-      const createdAt = data?.createdAt?.toDate ? data.createdAt.toDate() : new Date(user.metadata.creationTime || Date.now());
-
-      const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
-      const onTrial = userPlan === "free" && daysSinceCreation <= 30;
-
+     const createdAtRaw = data?.createdAt;
+const createdAt = createdAtRaw?.toDate
+  ? createdAtRaw.toDate()
+  : createdAtRaw
+  ? new Date(createdAtRaw)
+  : new Date(user.metadata.creationTime || Date.now());
+const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+const onTrial = userPlan === "free" && daysSinceCreation <= 30;
       setPlan(userPlan);
       setIsTrialing(onTrial);
       setLimits(getPlanLimits(onTrial ? "premium" : userPlan));
