@@ -160,7 +160,7 @@ const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost ||
                   </div>
                   <div className="flex items-center gap-4">
                     <span className={`font-mono text-sm font-bold ${(t.results?.profit ?? t.profit ?? 0) >= 0 ? "text-green-400" : "text-red-400"}`}>{(t.results?.profit ?? t.profit ?? 0).toFixed(0)} €</span>
-                    <span className={`text-xs font-mono px-2 py-1 rounded border ${t.verdict === "accept" ? "bg-green-900 text-green-400 border-green-700" : t.verdict === "negotiate" ? "bg-yellow-900 text-yellow-400 border-yellow-700" : "bg-red-900 text-red-400 border-red-700"}`}>{t.verdict === "accept" ? tr.accept : t.verdict === "negotiate" ? tr.negotiate : tr.reject}</span>
+                    <span className={`text-xs font-mono px-2 py-1 rounded border ${(t.results?.verdict || t.verdict) === "accept" ? "bg-green-900 text-green-400 border-green-700" : (t.results?.verdict || t.verdict) === "negotiate" ? "bg-yellow-900 text-yellow-400 border-yellow-700" : "bg-red-900 text-red-400 border-red-700"}`}>{(t.results?.verdict || t.verdict) === "accept" ? tr.accept : (t.results?.verdict || t.verdict) === "negotiate" ? tr.negotiate : tr.reject}</span>
                   </div>
                 </div>
               ))}
