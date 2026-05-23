@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       await setDoc(
         doc(db, "users", userId),
         {
-          plan: "basic",
+          plan: "free",
           updatedAt: serverTimestamp(),
         },
         { merge: true }
