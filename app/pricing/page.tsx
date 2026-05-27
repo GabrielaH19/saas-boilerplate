@@ -7,10 +7,17 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Link from "next/link";
 
+const FOUNDER_PRICES: Record<string, number> = {
+  basic: 18,
+  pro: 29,
+  premium: 47,
+};
+
 export default function PricingPage() {
   const [user, setUser] = useState<any>(null);
   const [currentPlan, setCurrentPlan] = useState("free");
   const [createdAt, setCreatedAt] = useState<string | null>(null);
+  const [founderPricing, setFounderPricing] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
@@ -22,6 +29,7 @@ export default function PricingPage() {
       if (snap.exists()) {
         setCurrentPlan(snap.data().plan || "free");
         setCreatedAt(snap.data().createdAt || null);
+        setFounderPricing(snap.data().founderPricing || false);
       }
     });
     return () => unsub();
@@ -39,6 +47,7 @@ export default function PricingPage() {
           userId: user.uid,
           email: user.email,
           createdAt,
+          founderPricing,
         }),
       });
       const data = await res.json();
@@ -108,6 +117,11 @@ export default function PricingPage() {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-3">Alege planul potrivit firmei tale</h2>
           <p className="text-gray-400">30 de zile gratuit pentru orice plan. Fara card bancar la inregistrare.</p>
+          {founderPricing && (
+            <div className="mt-4 inline-block bg-[#1a1200] border border-[#f5a623] text-[#f5a623] text-sm px-4 py-2 rounded-lg">
+              🎉 Esti printre primii 100 — beneficiezi de <strong>pretul fondator pe viata!</strong>
+            </div>
+          )}
           {currentPlan && currentPlan !== "free" && (
             <div className="mt-4 inline-block bg-green-900 border border-green-700 text-green-400 text-sm px-4 py-2 rounded-lg">
               Plan activ: <strong className="capitalize">{currentPlan}</strong>
@@ -124,9 +138,19 @@ export default function PricingPage() {
                 </div>
               )}
               <div className="text-xs text-gray-500 uppercase tracking-wider mb-3">{plan.name}</div>
-              <div className="text-5xl font-semibold text-white mb-1">
-                <sup className="text-xl">€</sup>{plan.price}<sub className="text-sm font-normal text-gray-500">/luna</sub>
-              </div>
+              {founderPricing ? (
+                <div className="mb-1">
+                  <div className="text-gray-500 line-through text-xl">€{plan.price}/luna</div>
+                  <div className="text-5xl font-semibold text-[#f5a623]">
+                    <sup className="text-xl">€</sup>{FOUNDER_PRICES[plan.id]}<sub className="text-sm font-normal text-gray-500">/luna</sub>
+                  </div>
+                  <div className="text-xs text-[#f5a623] mt-1">Pret fondator pe viata</div>
+                </div>
+              ) : (
+                <div className="text-5xl font-semibold text-white mb-1">
+                  <sup className="text-xl">€</sup>{plan.price}<sub className="text-sm font-normal text-gray-500">/luna</sub>
+                </div>
+              )}
               <div className="text-sm text-gray-400 mb-6 mt-2">{plan.desc}</div>
               <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
                 {plan.features.map((f) => (

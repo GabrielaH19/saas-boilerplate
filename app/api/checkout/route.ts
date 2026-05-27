@@ -11,13 +11,22 @@ const PRICE_IDS: Record<string, string> = {
   premium: process.env.STRIPE_PRICE_PREMIUM!,
 };
 
+const PRICE_IDS_FOUNDER: Record<string, string> = {
+  basic: process.env.STRIPE_PRICE_BASIC_FOUNDER!,
+  pro: process.env.STRIPE_PRICE_PRO_FOUNDER!,
+  premium: process.env.STRIPE_PRICE_PREMIUM_FOUNDER!,
+};
+
 export async function POST(req: NextRequest) {
   try {
-    const { plan, userId, email, createdAt } = await req.json();
+    const { plan, userId, email, createdAt, founderPricing } = await req.json();
 
     if (!plan || !PRICE_IDS[plan]) {
       return NextResponse.json({ error: "Plan invalid" }, { status: 400 });
     }
+
+    // Foloseste pretul fondator daca e eligibil
+    const priceId = founderPricing ? PRICE_IDS_FOUNDER[plan] : PRICE_IDS[plan];
 
     // Calculeaza zilele ramase din trial
     const daysSince = createdAt
@@ -31,7 +40,7 @@ export async function POST(req: NextRequest) {
       customer_email: email,
       line_items: [
         {
-          price: PRICE_IDS[plan],
+          price: priceId,
           quantity: 1,
         },
       ],

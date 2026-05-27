@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, getCountFromServer } from "firebase/firestore";
 import { auth, db } from "@/app/lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -23,18 +23,24 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
     try {
+      // Verifica daca e printre primii 100
+      const usersCount = await getCountFromServer(collection(db, "users"));
+      const isFounder = usersCount.data().count < 100;
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const trialEnd = new Date();
-trialEnd.setDate(trialEnd.getDate() + 30);
-await setDoc(doc(db, "users", userCredential.user.uid), {
-  name,
-  email,
-  createdAt: new Date().toISOString(),
-  plan: "free",
-  trialEnd: trialEnd.toISOString().slice(0, 10),
-  onboardingCompleted: false,
-});
-      // Email bun venit
+      trialEnd.setDate(trialEnd.getDate() + 30);
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        name,
+        email,
+        createdAt: new Date().toISOString(),
+        plan: "free",
+        trialEnd: trialEnd.toISOString().slice(0, 10),
+        onboardingCompleted: false,
+        founderPricing: isFounder,
+        founderNumber: isFounder ? usersCount.data().count + 1 : null,
+      });
+
       await fetch("/api/email/welcome", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,9 +52,9 @@ await setDoc(doc(db, "users", userCredential.user.uid), {
       if (err.code === "auth/email-already-in-use") {
         setError("Email-ul este deja folosit.");
       } else if (err.code === "auth/weak-password") {
-        setError("Parola trebuie să aibă minim 6 caractere.");
+        setError("Parola trebuie sa aiba minim 6 caractere.");
       } else {
-        setError("A apărut o eroare. Încearcă din nou.");
+        setError("A aparut o eroare. Incearca din nou.");
       }
     } finally {
       setLoading(false);
