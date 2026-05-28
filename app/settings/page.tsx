@@ -292,7 +292,10 @@ export default function SettingsPage() {
               <p className="text-sm text-white">{userEmail || "—"}</p>
             </div>
           </div>
-
+<button onClick={handleSaveCompany} disabled={companyLoading} className={btnSecondary}>
+            {companyLoading ? tr.saving : (it ? "Salva nome" : "Salveaza numele")}
+          </button>
+          <Msg msg={companyMsg} />
           <hr className="border-[#2e2e2e]" />
 
           <p className="text-sm font-medium text-gray-300">
@@ -365,13 +368,16 @@ export default function SettingsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={lbl}>{tr.yourName}</label>
+              <div>
+              <label className={lbl}>{tr.yourName}</label>
               <input className={inp} value={userName} onChange={e => setUserName(e.target.value)}
                 placeholder={it ? "Mario Rossi" : "Ion Ionescu"} />
             </div>
+            
+            </div>
             <div>
-              <label className={lbl}>{tr.companyName}</label>
-              <input className={inp} value={companyName} onChange={e => setCompanyName(e.target.value)}
-                placeholder={it ? "Trasporti SRL" : "Transport SRL"} />
+              <label className={lbl}>Email</label>
+              <p className="text-sm text-white pt-2">{userEmail || "—"}</p>
             </div>
           </div>
           <Msg msg={companyMsg} />
