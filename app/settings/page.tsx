@@ -8,6 +8,7 @@ import {
   EmailAuthProvider,
   updatePassword,
   deleteUser,
+  updateProfile,
 } from "firebase/auth";
 import {
   doc,
@@ -190,11 +191,14 @@ export default function SettingsPage() {
   };
 
   const handleSaveCompany = async () => {
-    if (!userId) return;
+    if (!userId || !auth.currentUser) return;
     setCompanyLoading(true);
     setCompanyMsg(null);
     try {
-      await setDoc(doc(db, "users", userId), { name: userName, companyName, updatedAt: serverTimestamp() }, { merge: true });
+      await Promise.all([
+        setDoc(doc(db, "users", userId), { name: userName, companyName, updatedAt: serverTimestamp() }, { merge: true }),
+        updateProfile(auth.currentUser, { displayName: userName }),
+      ]);
       setCompanyMsg({ type: "ok", text: tr.settingsSaved });
     } catch {
       setCompanyMsg({ type: "err", text: locale === "it" ? "Errore nel salvataggio." : "Eroare la salvare." });
@@ -284,18 +288,20 @@ export default function SettingsPage() {
         <Card title={it ? "Account" : "Cont"}>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-gray-400 mb-1">{tr.yourName}</p>
-              <p className="text-sm text-white">{userName || "—"}</p>
+              <label className={lbl}>{tr.yourName}</label>
+              <input className={inp} value={userName} onChange={e => setUserName(e.target.value)}
+                placeholder={it ? "Mario Rossi" : "Ion Ionescu"} />
             </div>
             <div>
-              <p className="text-xs text-gray-400 mb-1">Email</p>
-              <p className="text-sm text-white">{userEmail || "—"}</p>
+              <label className={lbl}>Email</label>
+              <p className="text-sm text-white pt-2">{userEmail || "—"}</p>
             </div>
           </div>
-<button onClick={handleSaveCompany} disabled={companyLoading} className={btnSecondary}>
+          <Msg msg={companyMsg} />
+          <button onClick={handleSaveCompany} disabled={companyLoading} className={btnSecondary}>
             {companyLoading ? tr.saving : (it ? "Salva nome" : "Salveaza numele")}
           </button>
-          <Msg msg={companyMsg} />
+
           <hr className="border-[#2e2e2e]" />
 
           <p className="text-sm font-medium text-gray-300">
@@ -365,22 +371,13 @@ export default function SettingsPage() {
 
         {/* 3. Firma */}
         <Card title={tr.companyData}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className={lbl}>{tr.yourName}</label>
-              <div>
-              <label className={lbl}>{tr.yourName}</label>
-              <input className={inp} value={userName} onChange={e => setUserName(e.target.value)}
-                placeholder={it ? "Mario Rossi" : "Ion Ionescu"} />
-            </div>
-            
-            </div>
-            <div>
-              <label className={lbl}>Email</label>
-              <p className="text-sm text-white pt-2">{userEmail || "—"}</p>
+              <label className={lbl}>{tr.companyName}</label>
+              <input className={inp} value={companyName} onChange={e => setCompanyName(e.target.value)}
+                placeholder={it ? "Trasporti SRL" : "Transport SRL"} />
             </div>
           </div>
-          <Msg msg={companyMsg} />
           <button onClick={handleSaveCompany} disabled={companyLoading} className={btnPrimary}>
             {companyLoading ? tr.saving : tr.saveSettings}
           </button>
