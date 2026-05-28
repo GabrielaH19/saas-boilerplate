@@ -61,33 +61,27 @@ export default function SettingsPage() {
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Cont - parola
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMsg, setPasswordMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  // Stergere cont
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteMsg, setDeleteMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Abonament
   const [stripeCustomerId, setStripeCustomerId] = useState<string | null>(null);
   const [trialEnd, setTrialEnd] = useState<string | null>(null);
   const [billingLoading, setBillingLoading] = useState(false);
 
-  // Firma
   const [companyMsg, setCompanyMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
   const [companyLoading, setCompanyLoading] = useState(false);
 
-  // Notificari
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [notifLoading, setNotifLoading] = useState(false);
 
-  // Setari calcul
   const [calcSettings, setCalcSettings] = useState<CalcSettings>(defaultCalc());
   const [calcSaved, setCalcSaved] = useState(false);
   const [calcLoading, setCalcLoading] = useState(false);
@@ -151,11 +145,11 @@ export default function SettingsPage() {
   const handleChangePassword = async () => {
     setPasswordMsg(null);
     if (newPassword !== confirmPassword) {
-      setPasswordMsg({ type: "err", text: "Parolele nu coincid." });
+      setPasswordMsg({ type: "err", text: locale === "it" ? "Le password non coincidono." : "Parolele nu coincid." });
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordMsg({ type: "err", text: "Minim 6 caractere." });
+      setPasswordMsg({ type: "err", text: locale === "it" ? "Minimo 6 caratteri." : "Minim 6 caractere." });
       return;
     }
     if (!auth.currentUser?.email) return;
@@ -164,10 +158,10 @@ export default function SettingsPage() {
       const cred = EmailAuthProvider.credential(auth.currentUser.email, currentPassword);
       await reauthenticateWithCredential(auth.currentUser, cred);
       await updatePassword(auth.currentUser, newPassword);
-      setPasswordMsg({ type: "ok", text: "Parola schimbata cu succes." });
+      setPasswordMsg({ type: "ok", text: locale === "it" ? "Password cambiata con successo." : "Parola schimbata cu succes." });
       setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
     } catch {
-      setPasswordMsg({ type: "err", text: "Parola curenta este incorecta." });
+      setPasswordMsg({ type: "err", text: locale === "it" ? "La password attuale non e corretta." : "Parola curenta este incorecta." });
     } finally {
       setPasswordLoading(false);
     }
@@ -190,7 +184,7 @@ export default function SettingsPage() {
       await deleteUser(auth.currentUser);
       router.push("/login");
     } catch {
-      setDeleteMsg({ type: "err", text: "Parola incorecta sau eroare." });
+      setDeleteMsg({ type: "err", text: locale === "it" ? "Password errata o errore." : "Parola incorecta sau eroare." });
       setDeleteLoading(false);
     }
   };
@@ -203,7 +197,7 @@ export default function SettingsPage() {
       await setDoc(doc(db, "users", userId), { name: userName, companyName, updatedAt: serverTimestamp() }, { merge: true });
       setCompanyMsg({ type: "ok", text: tr.settingsSaved });
     } catch {
-      setCompanyMsg({ type: "err", text: "Eroare la salvare." });
+      setCompanyMsg({ type: "err", text: locale === "it" ? "Errore nel salvataggio." : "Eroare la salvare." });
     } finally {
       setCompanyLoading(false);
     }
@@ -272,6 +266,8 @@ export default function SettingsPage() {
   const Msg = ({ msg }: { msg: { type: "ok" | "err"; text: string } | null }) =>
     msg ? <p className={`text-sm ${msg.type === "ok" ? "text-green-400" : "text-red-400"}`}>{msg.text}</p> : null;
 
+  const it = locale === "it";
+
   if (loading) return (
     <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
       <p className="text-gray-400">{tr.loading}</p>
@@ -285,7 +281,7 @@ export default function SettingsPage() {
         <h1 className="text-2xl font-bold">{tr.settings}</h1>
 
         {/* 1. Cont */}
-        <Card title="Cont">
+        <Card title={it ? "Account" : "Cont"}>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-xs text-gray-400 mb-1">{tr.yourName}</p>
@@ -299,52 +295,67 @@ export default function SettingsPage() {
 
           <hr className="border-[#2e2e2e]" />
 
-          <p className="text-sm font-medium text-gray-300">Schimba parola</p>
-          <input type="password" placeholder="Parola curenta" value={currentPassword}
-            onChange={e => setCurrentPassword(e.target.value)} className={inp} />
-          <input type="password" placeholder="Parola noua" value={newPassword}
-            onChange={e => setNewPassword(e.target.value)} className={inp} />
-          <input type="password" placeholder="Confirma parola noua" value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)} className={inp} />
+          <p className="text-sm font-medium text-gray-300">
+            {it ? "Cambia password" : "Schimba parola"}
+          </p>
+          <input type="password"
+            placeholder={it ? "Password attuale" : "Parola curenta"}
+            value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} className={inp} />
+          <input type="password"
+            placeholder={it ? "Nuova password" : "Parola noua"}
+            value={newPassword} onChange={e => setNewPassword(e.target.value)} className={inp} />
+          <input type="password"
+            placeholder={it ? "Conferma nuova password" : "Confirma parola noua"}
+            value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className={inp} />
           <Msg msg={passwordMsg} />
           <button onClick={handleChangePassword}
             disabled={passwordLoading || !currentPassword || !newPassword || !confirmPassword}
             className={btnSecondary}>
-            {passwordLoading ? tr.saving : "Schimba parola"}
+            {passwordLoading ? tr.saving : (it ? "Cambia password" : "Schimba parola")}
           </button>
 
           <hr className="border-[#2e2e2e]" />
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Sterge contul</p>
-              <p className="text-xs text-gray-500">Aceasta actiune este ireversibila.</p>
+              <p className="text-sm font-medium text-white">
+                {it ? "Elimina account" : "Sterge contul"}
+              </p>
+              <p className="text-xs text-gray-500">
+                {it ? "Questa azione e irreversibile." : "Aceasta actiune este ireversibila."}
+              </p>
             </div>
             <button onClick={() => setShowDeleteModal(true)} className={btnDanger}>
-              Sterge contul
+              {it ? "Elimina account" : "Sterge contul"}
             </button>
           </div>
         </Card>
 
         {/* 2. Abonament */}
-        <Card title="Abonament">
+        <Card title={it ? "Abbonamento" : "Abonament"}>
           <div className="flex items-center gap-3 flex-wrap">
             <span className={`text-xs font-semibold px-3 py-1 rounded-full uppercase ${planColors[plan] || planColors.free}`}>
               {plan}
             </span>
             {isTrialing && (
               <span className="text-xs text-amber-400 bg-amber-900/30 px-3 py-1 rounded-full">
-                Trial activ — {trialDaysLeft} {trialDaysLeft === 1 ? "zi ramasa" : "zile ramase"}
+                {it ? "Trial attivo" : "Trial activ"} — {trialDaysLeft} {
+                  it
+                    ? (trialDaysLeft === 1 ? "giorno rimasto" : "giorni rimasti")
+                    : (trialDaysLeft === 1 ? "zi ramasa" : "zile ramase")
+                }
               </span>
             )}
           </div>
           {stripeCustomerId ? (
             <button onClick={handleBillingPortal} disabled={billingLoading} className={btnSecondary}>
-              {billingLoading ? "Se redirectioneaza..." : "Gestioneaza abonamentul"}
+              {billingLoading
+                ? (it ? "Reindirizzamento..." : "Se redirectioneaza...")
+                : (it ? "Gestisci abbonamento" : "Gestioneaza abonamentul")}
             </button>
           ) : (
             <button onClick={() => router.push("/pricing")} className={btnPrimary}>
-              Alege un plan
+              {it ? "Scegli un piano" : "Alege un plan"}
             </button>
           )}
         </Card>
@@ -354,11 +365,13 @@ export default function SettingsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={lbl}>{tr.yourName}</label>
-              <input className={inp} value={userName} onChange={e => setUserName(e.target.value)} placeholder="Ion Ionescu" />
+              <input className={inp} value={userName} onChange={e => setUserName(e.target.value)}
+                placeholder={it ? "Mario Rossi" : "Ion Ionescu"} />
             </div>
             <div>
               <label className={lbl}>{tr.companyName}</label>
-              <input className={inp} value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Transport SRL" />
+              <input className={inp} value={companyName} onChange={e => setCompanyName(e.target.value)}
+                placeholder={it ? "Trasporti SRL" : "Transport SRL"} />
             </div>
           </div>
           <Msg msg={companyMsg} />
@@ -438,11 +451,11 @@ export default function SettingsPage() {
         </Card>
 
         {/* 5. Preferinte */}
-        <Card title="Preferinte">
+        <Card title={it ? "Preferenze" : "Preferinte"}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Limba</p>
-              <p className="text-xs text-gray-500">Interfata aplicatiei</p>
+              <p className="text-sm font-medium text-white">{it ? "Lingua" : "Limba"}</p>
+              <p className="text-xs text-gray-500">{it ? "Interfaccia applicazione" : "Interfata aplicatiei"}</p>
             </div>
             <div className="flex gap-2">
               {(["ro", "it"] as const).map(l => (
@@ -462,8 +475,8 @@ export default function SettingsPage() {
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Notificari email</p>
-              <p className="text-xs text-gray-500">Rapoarte lunare si alerte</p>
+              <p className="text-sm font-medium text-white">{it ? "Notifiche email" : "Notificari email"}</p>
+              <p className="text-xs text-gray-500">{it ? "Rapporti mensili e avvisi" : "Rapoarte lunare si alerte"}</p>
             </div>
             <button
               onClick={() => handleToggleNotifications(!emailNotifications)}
@@ -484,21 +497,27 @@ export default function SettingsPage() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-4">
           <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6 w-full max-w-md space-y-4">
-            <h3 className="text-white font-semibold text-lg">Sterge contul</h3>
+            <h3 className="text-white font-semibold text-lg">
+              {it ? "Elimina account" : "Sterge contul"}
+            </h3>
             <p className="text-sm text-gray-400">
-              Aceasta actiune este <span className="text-red-400 font-medium">ireversibila</span>. Toate datele tale vor fi sterse permanent.
+              {it ? "Questa azione e " : "Aceasta actiune este "}
+              <span className="text-red-400 font-medium">{it ? "irreversibile" : "ireversibila"}</span>
+              {it ? ". Tutti i tuoi dati verranno eliminati definitivamente." : ". Toate datele tale vor fi sterse permanent."}
             </p>
-            <input type="password" placeholder="Introdu parola pentru confirmare"
+            <input type="password"
+              placeholder={it ? "Inserisci la password per confermare" : "Introdu parola pentru confirmare"}
               value={deletePassword} onChange={e => setDeletePassword(e.target.value)}
               className={inp} />
             <Msg msg={deleteMsg} />
             <div className="flex gap-3 justify-end">
-              <button onClick={() => { setShowDeleteModal(false); setDeletePassword(""); setDeleteMsg(null); }}
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeletePassword(""); setDeleteMsg(null); }}
                 className="text-sm text-gray-400 hover:text-white px-4 py-2 transition">
                 {tr.cancel}
               </button>
               <button onClick={handleDeleteAccount} disabled={deleteLoading || !deletePassword} className={btnDanger}>
-                {deleteLoading ? tr.saving : "Sterge definitiv"}
+                {deleteLoading ? tr.saving : (it ? "Elimina definitivamente" : "Sterge definitiv")}
               </button>
             </div>
           </div>
