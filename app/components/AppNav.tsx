@@ -34,6 +34,7 @@ export default function AppNav({ active }: { active?: string }) {
             Upgrade
           </Link>
         )}
+        <Link href="/settings" className={active==="settings"?"text-white":"hover:text-white"}>{tr.settings}</Link>
         <LangSwitcher />
         <button onClick={handleLogout} className="hover:text-white">{tr.logout}</button>
       </div>
