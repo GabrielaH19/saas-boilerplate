@@ -10,6 +10,7 @@ import AppNav from "@/app/components/AppNav";
 import ReferralBanner from "@/app/components/ReferralBanner";
 import SignupSourceModal from "@/app/components/SignupSourceModal";
 import { useLang } from "@/app/lib/LanguageContext";
+import { usePlan } from "@/app/lib/usePlan";
 
 interface Trip {
   id: string;
@@ -39,7 +40,7 @@ export default function DashboardPage() {
   const [showSignupSourceModal, setShowSignupSourceModal] = useState(false);
   const [signupSource, setSignupSource] = useState<string | null>(null);
   const router = useRouter();
-  const { tr, locale } = useLang();
+  const { tr, locale } = useLang(); const { plan, isTrialing } = usePlan();
 
   const currentMonth = new Date().toISOString().slice(0, 7);
 
@@ -145,6 +146,18 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="dashboard" />
+      {!isTrialing && plan === "free" && (
+        <div className="bg-[#1a0a00] border-b border-[#f5a623]/30 px-6 py-3 flex items-center justify-between">
+          <p className="text-sm text-[#f5a623]">
+            {locale === "it"
+              ? "⚠️ Il tuo periodo gratuito è scaduto. Alcune funzioni sono disabilitate."
+              : "⚠️ Perioada ta gratuita a expirat. Unele functii sunt dezactivate."}
+          </p>
+          <Link href="/pricing" className="bg-[#f5a623] text-black text-xs font-semibold px-4 py-1.5 rounded-lg hover:bg-[#e8951a] transition whitespace-nowrap ml-4">
+            {locale === "it" ? "Scegli un piano" : "Alege un plan"}
+          </Link>
+        </div>
+      )}
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
