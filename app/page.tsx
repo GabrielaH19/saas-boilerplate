@@ -1,12 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useLang } from "./lib/LanguageContext";
 import LangSwitcher from "./lib/LangSwitcher";
 
 export default function LandingPage() {
   const { tr, locale } = useLang();
+const router = useRouter();
 
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("mode") === "resetPassword") {
+      router.push(`/reset-password${window.location.search}`);
+    }
+  }
+}, []);
+  
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       {/* NAV */}
