@@ -181,7 +181,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
             { label: locale === "it" ? "Profitto mese" : "Profit luna", value: `${monthProfit >= 0 ? "+" : ""}${monthProfit.toLocaleString()} €`, color: monthProfit >= 0 ? "text-green-400" : "text-red-400" },
             { label: locale === "it" ? "Viaggi mese" : "Curse luna", value: monthTrips.length, color: "text-white" },
@@ -195,7 +195,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
             <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-4">{locale === "it" ? "Prestazioni camion" : "Performanță camioane"}</h3>
             {truckEntries.length === 0 ? (
