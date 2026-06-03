@@ -141,7 +141,7 @@ export default function SimulationsPage() {
                 <input type="number" step="0.01" className="w-24 bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-[#f5a623]" value={simFuelPrice} onChange={e => setSimFuelPrice(+e.target.value)} />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {metricCard(tr.newCostPerKm, `${newCostPerKm} €/km`, "text-[#f5a623]")}
               {metricCard(tr.monthlyImpact, `${fuelImpactMonthly >= 0 ? "+" : ""}${fuelImpactMonthly.toLocaleString()} €`, fuelImpactMonthly > 0 ? "text-red-400" : "text-green-400")}
               {metricCard(tr.newMinThreshold, `${newMinThreshold} €/km`)}
@@ -178,7 +178,7 @@ export default function SimulationsPage() {
           <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
             <h3 className="font-semibold text-white mb-1">{tr.simTripTitle}</h3>
             <p className="text-xs text-gray-500 mb-5">{tr.simTripSub}</p>
-            <div className="grid grid-cols-3 gap-4 mb-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
               <div>
                 <label className={lbl}>{tr.loadedKm}</label>
                 <input type="number" className={inp} value={simTripKm} onChange={e => setSimTripKm(+e.target.value)} />
@@ -209,7 +209,7 @@ export default function SimulationsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {metricCard("€/km", `${pkmTrip} €/km`, "text-[#f5a623]")}
               {metricCard(tr.breakEven, `${breakEvenVal} €/km`)}
               {metricCard(tr.totalCost, `${totalCostTrip.toLocaleString()} €`)}
