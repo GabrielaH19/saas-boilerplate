@@ -148,7 +148,7 @@ export default function CashflowPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="cashflow" />
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h2 className="text-2xl font-bold">{tr.cashflowTitle}</h2>
             <p className="text-gray-400 text-sm mt-1">{tr.cashflowSub}</p>
@@ -187,64 +187,61 @@ export default function CashflowPage() {
             <p className="text-gray-600 text-sm">{tr.noInvoiceDesc}</p>
           </div>
         ) : (
-          <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl overflow-hidden mb-6">
-            <div className="grid grid-cols-6 gap-4 px-5 py-3 border-b border-[#2e2e2e] text-xs text-gray-500 uppercase tracking-wider">
-              <div className="col-span-2">{tr.clientCol}</div>
-              <div>{tr.amountCol}</div>
-              <div>{tr.dueDateCol}</div>
-              <div>{tr.statusCol}</div>
-              <div></div>
-            </div>
-            {invoices.map(inv => {
-              const days = daysUntil(inv.dueDate);
-              return (
-                <div key={inv.id} className="grid grid-cols-6 gap-4 px-5 py-4 border-b border-[#1e1e1e] last:border-0 items-center hover:bg-[#1a1a1a] transition">
-                  <div className="col-span-2">
-                    <div className="text-sm font-medium text-white">{inv.clientName}</div>
-                    {inv.notes && <div className="text-xs text-gray-500 mt-0.5">{inv.notes}</div>}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white">{inv.amount.toLocaleString()} €</div>
-                    {inv.paidAmount > 0 && inv.paidAmount < inv.amount && (
-                      <div className="text-xs text-gray-500">{tr.collected}: {inv.paidAmount.toLocaleString()}€</div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-sm text-white">{inv.dueDate}</div>
-                    {inv.status !== "paid" && (
-                      <div className={`text-xs mt-0.5 ${days < 0 ? "text-red-400" : days <= 7 ? "text-[#f5a623]" : "text-gray-500"}`}>
-                        {days < 0 ? `${Math.abs(days)} ${tr.daysOverdue}` : days === 0 ? tr.dueToday : `${tr.daysLeft} ${days} ${locale === "it" ? "giorni" : "zile"}`}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <span className={`text-xs px-2 py-1 rounded border font-semibold ${statusStyle(inv.status)}`}>
-                      {statusLabel(inv.status)}
-                    </span>
-                  </div>
-                  <div className="flex gap-2 justify-end">
-                    {inv.status !== "paid" && (
-                      <button onClick={() => handleMarkPaid(inv)} className="text-xs text-green-400 hover:text-green-300 border border-green-800 px-2 py-1 rounded">
-                        {tr.markPaid}
-                      </button>
-                    )}
-                    <button onClick={() => handleEdit(inv)} className="text-xs text-gray-400 hover:text-white border border-[#2e2e2e] px-2 py-1 rounded">
-                      {tr.edit}
-                    </button>
-                    <button onClick={() => handleDelete(inv.id)} className="text-xs text-red-400 hover:text-red-300 border border-[#2e2e2e] px-2 py-1 rounded">
-                      ×
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="space-y-3 mb-6">
+  {invoices.map(inv => {
+    const days = daysUntil(inv.dueDate);
+    return (
+      <div key={inv.id} className="bg-[#161616] border border-[#2e2e2e] rounded-xl px-5 py-4 hover:bg-[#1a1a1a] transition">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div className="text-sm font-medium text-white">{inv.clientName}</div>
+            {inv.notes && <div className="text-xs text-gray-500 mt-0.5">{inv.notes}</div>}
           </div>
+          <span className={`text-xs px-2 py-1 rounded border font-semibold whitespace-nowrap ${statusStyle(inv.status)}`}>
+            {statusLabel(inv.status)}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-4 mb-3 text-sm">
+          <div>
+            <div className="text-xs text-gray-500 mb-0.5">{tr.amountCol}</div>
+            <div className="font-semibold text-white">{inv.amount.toLocaleString()} €</div>
+            {inv.paidAmount > 0 && inv.paidAmount < inv.amount && (
+              <div className="text-xs text-gray-500">{tr.collected}: {inv.paidAmount.toLocaleString()}€</div>
+            )}
+          </div>
+          <div>
+            <div className="text-xs text-gray-500 mb-0.5">{tr.dueDateCol}</div>
+            <div className="text-white">{inv.dueDate}</div>
+            {inv.status !== "paid" && (
+              <div className={`text-xs mt-0.5 ${days < 0 ? "text-red-400" : days <= 7 ? "text-[#f5a623]" : "text-gray-500"}`}>
+                {days < 0 ? `${Math.abs(days)} ${tr.daysOverdue}` : days === 0 ? tr.dueToday : `${tr.daysLeft} ${days} ${locale === "it" ? "giorni" : "zile"}`}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {inv.status !== "paid" && (
+            <button onClick={() => handleMarkPaid(inv)} className="text-xs text-green-400 hover:text-green-300 border border-green-800 px-2 py-1 rounded">
+              {tr.markPaid}
+            </button>
+          )}
+          <button onClick={() => handleEdit(inv)} className="text-xs text-gray-400 hover:text-white border border-[#2e2e2e] px-2 py-1 rounded">
+            {tr.edit}
+          </button>
+          <button onClick={() => handleDelete(inv.id)} className="text-xs text-red-400 hover:text-red-300 border border-[#2e2e2e] px-2 py-1 rounded">
+            ×
+          </button>
+        </div>
+      </div>
+    );
+  })}
+</div>
         )}
 
         {showForm && (
           <div className="bg-[#161616] border border-[#f5a623] rounded-xl p-6">
             <h3 className="font-semibold text-white mb-5">{editingId ? tr.editInvoice : tr.newInvoice}</h3>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="col-span-2">
                 <label className={lbl}>{tr.clientFirm}</label>
                 <input className={inp} value={form.clientName} onChange={e => setForm(f => ({ ...f, clientName: e.target.value }))} />
