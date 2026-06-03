@@ -144,7 +144,7 @@ export default function NewTripPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-5">
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.truckAndClient}</p>
