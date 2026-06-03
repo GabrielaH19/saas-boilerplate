@@ -93,7 +93,7 @@ export default function HistoryPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="history" />
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h2 className="text-2xl font-bold">{tr.historyTitle}</h2>
             <p className="text-gray-400 text-sm mt-1">
@@ -148,8 +148,8 @@ export default function HistoryPage() {
           <div className="space-y-3">
             {filtered.map(t => (
               <div key={t.id} className="bg-[#161616] border border-[#2e2e2e] rounded-xl px-5 py-4 hover:border-[#3a3a3a] transition">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <div className="flex-1">
                     <div className="flex items-center gap-3 mb-1">
                       <span className="font-semibold text-white">{t.from || "—"} → {t.to || "—"}</span>
                       <span className={`text-xs px-2 py-0.5 rounded border font-semibold ${verdictStyle(t.results?.verdict)}`}>
@@ -165,7 +165,7 @@ export default function HistoryPage() {
                       <span>· {t.inputs?.days} {locale === "it" ? "giorni" : "zile"}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-6 ml-4">
+                  <div className="flex items-center gap-4 sm:ml-4">
                     <div className="text-right">
                       <div className="text-xs text-gray-500 mb-0.5">{locale === "it" ? "Ricavo" : "Venit"}</div>
                       <div className="text-sm font-semibold text-white">{t.inputs?.revenue?.toLocaleString()} €</div>
