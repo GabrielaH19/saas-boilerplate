@@ -85,7 +85,7 @@ const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost ||
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="report" />
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
           <h2 className="text-2xl font-bold">{tr.reportTitle}</h2>
           {limits.hasPdfExport && monthTrips.length > 0 && (
             <button onClick={handleDownloadPdf} disabled={downloading} className="bg-[#f5a623] text-black font-semibold px-4 py-2 rounded-lg hover:bg-[#e8951a] transition text-sm disabled:opacity-50">
@@ -106,7 +106,7 @@ const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost ||
           </div>
         ) : (
           <div ref={reportRef}>
-            <div className="grid grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {[
                 { label: tr.totalRevenue, value: totalRev.toFixed(0) + " €" },
                 { label: tr.totalCosts, value: totalCost.toFixed(0) + " €" },
@@ -119,7 +119,7 @@ const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost ||
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
                 <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-4">{tr.reportTitle}</h3>
                 {[
@@ -153,7 +153,7 @@ const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost ||
             <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
               <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-4">{tr.tripsCount}</h3>
               {monthTrips.map((t) => (
-                <div key={t.id} className="flex justify-between items-center py-3 border-b border-[#2e2e2e] last:border-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 py-3 border-b border-[#2e2e2e] last:border-0">
                   <div>
                     <div className="text-sm font-medium">{t.from} → {t.to}</div>
                     <div className="text-xs text-gray-500 font-mono mt-1">{t.tripDate || t.date} · {(t.inputs?.loadedKm || t.km || 0)} km</div>
