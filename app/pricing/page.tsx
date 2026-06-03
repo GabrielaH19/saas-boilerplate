@@ -135,7 +135,7 @@ export default function PricingPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (
             <div key={plan.id} className={`rounded-xl p-8 relative ${plan.highlight ? "bg-[#16143a] border-2 border-[#4f46e5]" : "bg-[#161616] border border-[#2a2a2a]"}`}>
               {plan.highlight && (
