@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,8 +11,6 @@ import {
 import AppNav from "@/app/components/AppNav";
 import ReferralBanner from "@/app/components/ReferralBanner";
 import { useLang } from "../lib/LanguageContext";
-import { usePlan } from "../lib/usePlan";
-import PaywallModal from "@/app/components/PaywallModal";
 
 interface Client {
   id: string;
@@ -60,7 +58,6 @@ export default function ClientsPage() {
   const [saved, setSaved] = useState(false);
   const router = useRouter();
   const { tr } = useLang();
-  const { limits, loading: planLoading } = usePlan();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -71,21 +68,6 @@ export default function ClientsPage() {
     });
     return () => unsub();
   }, []);
-
-  if (!limits.hasClients && !planLoading) {
-    return (
-      <>
-        <div className="min-h-screen bg-[#0d0d0d]">
-          <AppNav active="clients" />
-        </div>
-        <PaywallModal
-          feature="Clienti & scoring"
-          requiredPlan="Pro"
-          onClose={() => router.push("/dashboard")}
-        />
-      </>
-    );
-  }
 
   const loadClients = async (uid: string) => {
     const cSnap = await getDocs(query(collection(db, "clients"), where("userId", "==", uid)));
@@ -108,7 +90,7 @@ export default function ClientsPage() {
 
   const handleSave = async () => {
     if (!userId) return;
-    if (!form.name) return alert("Completeaza numele clientului.");
+    if (!form.name) return alert("Completează numele clientului.");
     setSaving(true);
     try {
       if (editingId) {
@@ -149,7 +131,7 @@ export default function ClientsPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="clients" />
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
+       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h2 className="text-2xl font-bold">{tr.clientsTitle}</h2>
             <p className="text-gray-400 text-sm mt-1">{tr.clientsSub}</p>
@@ -185,14 +167,14 @@ export default function ClientsPage() {
                     )}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {tr.paymentTerm}: {client.paymentTermDays} {tr.days}
+                    {tr.paymentTerm}: {client.paymentTermDays} zile
                     {client.tripCount !== undefined && client.tripCount > 0 && (
-                      <> · {client.tripCount} {tr.tripsCount} · {client.avgRevenuePerKm?.toFixed(2)} {tr.avgKmLabel}</>
+                      <> · {client.tripCount} curse · {client.avgRevenuePerKm?.toFixed(2)} {tr.avgKmLabel}</>
                     )}
                     {client.notes && <> · {client.notes}</>}
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                   {client.tripCount !== undefined && client.tripCount > 0 && (
                     <div className="text-right">
                       <div className="text-xs text-gray-500">{tr.totalProfitLabel}</div>
@@ -221,7 +203,7 @@ export default function ClientsPage() {
         {showForm && (
           <div className="bg-[#161616] border border-[#f5a623] rounded-xl p-6">
             <h3 className="font-semibold text-white mb-5">{editingId ? tr.editClient : tr.newClient}</h3>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="col-span-2">
                 <label className={lbl}>{tr.clientName}</label>
                 <input className={inp} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="ex: Trans Logistics SRL" />
@@ -232,7 +214,7 @@ export default function ClientsPage() {
               </div>
               <div>
                 <label className={lbl}>{tr.notes}</label>
-                <input className={inp} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="ex: plateste mereu cu intarziere" />
+                <input className={inp} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="ex: plătește mereu cu întârziere" />
               </div>
             </div>
             <div className="flex gap-3">
