@@ -140,7 +140,7 @@ export default function TrucksPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       <AppNav active="truck" />
       <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h2 className="text-2xl font-bold">{tr.trucksTitle}</h2>
             <p className="text-gray-400 text-sm mt-1">{tr.trucksSub}</p>
@@ -174,7 +174,7 @@ export default function TrucksPage() {
                     <div className="font-semibold text-white">{truck.name ?? "—"}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{truck.plate ?? "—"} · {cons} l/100km · {kmMonth.toLocaleString()} km/luna</div>
                   </div>
-                  <div className="flex items-center gap-3">
+                 <div className="flex flex-wrap items-center gap-3">
                     <div className="text-right">
                       <div className="text-xs text-gray-500">{tr.totalMonthCost}</div>
                       <div className="text-lg font-bold text-[#f5a623]">{total.toLocaleString()} €</div>
@@ -189,7 +189,7 @@ export default function TrucksPage() {
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-5 gap-3 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                   {([
                     [tr.leasingLabel, fc.leasing ?? 0],
                     [tr.insurance, fc.insurance ?? 0],
@@ -211,7 +211,7 @@ export default function TrucksPage() {
         {showForm && (
           <div className="bg-[#161616] border border-[#f5a623] rounded-xl p-6">
             <h3 className="font-semibold text-white mb-6">{editingId ? tr.editTruck : tr.newTruck}</h3>
-            <div className="grid grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tr.truckData}</p>
                 <div className="space-y-3">
