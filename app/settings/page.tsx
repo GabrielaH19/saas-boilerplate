@@ -286,17 +286,17 @@ export default function SettingsPage() {
 
         {/* 1. Cont */}
         <Card title={it ? "Account" : "Cont"}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={lbl}>{tr.yourName}</label>
-              <input className={inp} value={userName} onChange={e => setUserName(e.target.value)}
-                placeholder={it ? "Mario Rossi" : "Ion Ionescu"} />
-            </div>
-            <div>
-              <label className={lbl}>Email</label>
-              <p className="text-sm text-white pt-2">{userEmail || "—"}</p>
-            </div>
-          </div>
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div>
+    <label className={lbl}>{tr.yourName}</label>
+    <input className={inp} value={userName} onChange={e => setUserName(e.target.value)}
+      placeholder={it ? "Mario Rossi" : "Ion Ionescu"} />
+  </div>
+  <div>
+    <label className={lbl}>Email</label>
+    <p className="text-sm text-white pt-2 break-all">{userEmail || "—"}</p>
+  </div>
+</div>
           <Msg msg={companyMsg} />
           <button onClick={handleSaveCompany} disabled={companyLoading} className={btnSecondary}>
             {companyLoading ? tr.saving : (it ? "Salva nome" : "Salveaza numele")}
