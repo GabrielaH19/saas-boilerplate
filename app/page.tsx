@@ -223,8 +223,8 @@ useEffect(() => {
            <div className="mb-4">
   <div className="flex items-baseline gap-3 mb-1">
     <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>18</span>
-    <span className="text-lg line-through text-gray-500">30€</span>
-    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-40%</span>
+    <span className="text-base text-gray-500 line-through decoration-[#f5a623]">49€</span>
+   <span className="text-sm bg-green-900 text-green-400 px-3 py-1 rounded-full font-bold">-40%</span>
   </div>
   <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
 </div>
@@ -250,8 +250,8 @@ useEffect(() => {
            <div className="mb-4">
   <div className="flex items-baseline gap-3 mb-1">
     <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>29</span>
-    <span className="text-lg line-through text-gray-500">49€</span>
-    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
+   <span className="text-base text-gray-500 line-through decoration-[#f5a623]">49€</span>
+    <span className="text-sm bg-green-900 text-green-400 px-3 py-1 rounded-full font-bold">-41%</span>
   </div>
   <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
 </div>
@@ -274,7 +274,7 @@ useEffect(() => {
             <div className="mb-4">
   <div className="flex items-baseline gap-3 mb-1">
     <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>47</span>
-    <span className="text-lg line-through text-gray-500">79€</span>
+    <span className="text-base text-gray-500 line-through decoration-[#f5a623]">79€</span>
     <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
   </div>
   <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
