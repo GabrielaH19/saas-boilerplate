@@ -33,11 +33,11 @@ function FounderCounter({ locale }: { locale: string }) {
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
-            className={`h-3 w-8 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`}
+            className={`h-2 w-5 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`}
           />
         ))}
       </div>
-      <span className="text-sm text-gray-300">
+      <span className="text-xs text-gray-400">
         {it ? `${remaining} posti rimasti su 100` : `${remaining} locuri rămase din 100`}
       </span>
     </div>
@@ -208,9 +208,9 @@ useEffect(() => {
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
         <div className="mb-6 text-center flex flex-col items-center gap-3">
           
-         <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-6 py-3 rounded-full whitespace-nowrap">
+          <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-6 py-3 rounded-full whitespace-nowrap">
             {locale === "it" ? "🔥 Primi 100 · Prezzo fisso per sempre" : "🔥 Primii 100 abonați · Preț redus pe viață"}
-          </span>
+          </span> 
           <FounderCounter locale={locale} />
         </div>
         <p className="text-lg text-gray-400 mb-4">{locale === "it" ? "30 giorni gratis per qualsiasi piano. Senza carta di credito alla registrazione." : "30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare."}</p>
@@ -220,15 +220,13 @@ useEffect(() => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
-            <div className="mb-3">
-  <div className="flex items-center gap-2 mb-1">
+           <div className="mb-4">
+  <div className="flex items-baseline gap-3 mb-1">
     <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>18</span>
-    <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
-  </div>
-  <div className="flex items-center gap-2">
-    <span className="text-sm line-through text-gray-600">30€</span>
+    <span className="text-2xl line-through text-gray-500">30€</span>
     <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-40%</span>
   </div>
+  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
 </div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
@@ -249,15 +247,13 @@ useEffect(() => {
               {locale === "it" ? "Il più scelto" : "Cel mai ales"}
             </div>
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-           <div className="mb-3">
-  <div className="flex items-center gap-2 mb-1">
+           <div className="mb-4">
+  <div className="flex items-baseline gap-3 mb-1">
     <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>29</span>
-    <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
-  </div>
-  <div className="flex items-center gap-2">
-    <span className="text-sm line-through text-gray-600">49€</span>
+    <span className="text-2xl line-through text-gray-500">49€</span>
     <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
   </div>
+  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
 </div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
@@ -275,15 +271,13 @@ useEffect(() => {
 
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
-           <div className="mb-3">
-  <div className="flex items-center gap-2 mb-1">
+            <div className="mb-4">
+  <div className="flex items-baseline gap-3 mb-1">
     <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>47</span>
-    <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
-  </div>
-  <div className="flex items-center gap-2">
-    <span className="text-sm line-through text-gray-600">79€</span>
+    <span className="text-2xl line-through text-gray-500">79€</span>
     <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
   </div>
+  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
 </div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
