@@ -46,7 +46,7 @@ useEffect(() => {
         <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
           {locale === "it" ? "Per piccole aziende di trasporto · 1-20 camion" : "Pentru firme mici de transport · 1-20 camioane"}
         </div>
-        <h1 className="text-3xl sm:text-6xl font-semibold leading-tight mb-6 max-w-4xl mx-auto text-white">
+        <h1 className="text-3xl sm:text-5xl font-semibold leading-tight mb-6 max-w-3xl mx-auto text-white">
           {locale === "it" ? <>In 10 secondi sai se<br />un viaggio <span className="text-[#f5a623]">vale o no.</span></> : <>În 10 secunde știi dacă<br />o cursă <span className="text-[#f5a623]">merită sau nu.</span></>}
         </h1>
         <p className="text-base md:text-xl text-gray-300 mb-4 max-w-xl mx-auto">
@@ -84,7 +84,7 @@ useEffect(() => {
       </div>
 
       {/* PROBLEMA */}
-      <div className="max-w-6xl mx-auto px-6 mb-24 text-center">
+      <div className="max-w-4xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Il problema" : "Problema"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Perché le piccole aziende di trasporto perdono soldi?" : "De ce pierd bani firmele mici de transport?"}</h2>
         <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Non per mancanza di lavoro. Ma per mancanza di una visione chiara sui costi reali." : "Nu din lipsă de muncă. Ci din lipsa unei imagini clare asupra costurilor reale."}</p>
@@ -110,7 +110,7 @@ useEffect(() => {
 
       {/* SOLUTIA */}
       <div id="functii" className="bg-[#0a0a0a] border-t border-b border-[#1e1e1e] py-24 px-6 mb-24">
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Funzionalità" : "Funcționalități"}</div>
           <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Cosa fa TripProfit per la tua azienda" : "Ce face TripProfit pentru firma ta"}</h2>
           <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Tutte le informazioni rilevanti, disponibili immediatamente, senza cercarle tu." : "Toate informațiile relevante, disponibile imediat, fără să le cauți tu."}</p>
@@ -217,7 +217,7 @@ useEffect(() => {
       </div>
 
      {/* FAQ */}
-      <div className="max-w-5xl mx-auto px-6 mb-24">
+      <div className="max-w-3xl mx-auto px-6 mb-24">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5 text-center">{locale === "it" ? "Domande frequenti" : "Întrebări frecvente"}</div>
         <h2 className="text-3xl font-semibold mb-10 text-center text-white">{locale === "it" ? "Hai domande?" : "Ai întrebări?"}</h2>
         <div className="space-y-4">
