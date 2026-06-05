@@ -9,44 +9,36 @@ import { useLang } from "@/app/lib/LanguageContext";
 export default function ReferralBanner() {
   const [referralLink, setReferralLink] = useState("");
   const [copied, setCopied] = useState(false);
+  const [earnings, setEarnings] = useState(0);
+  const [referralCount, setReferralCount] = useState(0);
   const { locale } = useLang();
 
-  const texts = {
-    ro: {
-      title: "Invita un coleg, castiga 4€",
-      sub: "Dupa 30 zile de abonament activ primesti 4€ pentru fiecare invitat.",
-      shareText: "Folosesc TripProfit sa calculez profitul curselor mele. Incearca si tu: ",
-      copy: "Copiaza link",
-      copied: "Copiat!",
-    },
-    it: {
-      title: "Invita un collega, guadagna 4€",
-      sub: "Dopo 30 giorni di abbonamento attivo ricevi 4€ per ogni invitato.",
-      shareText: "Uso TripProfit per calcolare il profitto dei miei viaggi. Provalo anche tu: ",
-      copy: "Copia link",
-      copied: "Copiato!",
-    },
-  };
-
-  const t = locale === "it" ? texts.it : texts.ro;
+  const it = locale === "it";
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) return;
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      let code = userDoc.data()?.referralCode;
+      const data = userDoc.data();
+      let code = data?.referralCode;
       if (!code) {
         code = user.uid.slice(0, 8).toUpperCase();
         await updateDoc(doc(db, "users", user.uid), { referralCode: code });
       }
       setReferralLink("https://tripprofit.ro/register?ref=" + code);
+      setEarnings(data?.referralEarnings || 0);
+      setReferralCount(data?.referralCount || 0);
     });
     return () => unsub();
   }, []);
 
   if (!referralLink) return null;
 
-  const shareWhatsApp = () => window.open("https://wa.me/?text=" + encodeURIComponent(t.shareText + referralLink), "_blank");
+  const shareText = it
+    ? "Uso TripProfit per calcolare il profitto dei miei viaggi. Provalo anche tu: "
+    : "Folosesc TripProfit sa calculez profitul curselor mele. Incearca si tu: ";
+
+  const shareWhatsApp = () => window.open("https://wa.me/?text=" + encodeURIComponent(shareText + referralLink), "_blank");
   const shareFacebook = () => window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(referralLink), "_blank");
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink);
@@ -56,12 +48,23 @@ export default function ReferralBanner() {
 
   return (
     <div className="bg-[#1a1a1a] border border-[#f5a623] border-opacity-30 rounded-xl p-4">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-sm font-semibold text-[#f5a623]">{t.title}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{t.sub}</p>
+          <p className="text-sm font-semibold text-[#f5a623]">
+            {it ? "Invita un collega, guadagna 10€" : "Invita un coleg, castiga 10€"}
+          </p>
+          <p className="text-xs text-gray-400 mt-0.5">
+            {it ? "Per ogni abbonamento attivato tramite il tuo link ricevi 10€ (max 4/mese)." : "Pentru fiecare abonament activat prin linkul tau primesti 10€ (max 4/luna)."}
+          </p>
+          {referralCount > 0 && (
+            <p className="text-xs text-green-400 mt-1">
+              {it
+                ? `${referralCount} ${referralCount === 1 ? "invitato convertito" : "invitati convertiti"} · ${earnings}€ guadagnati`
+                : `${referralCount} ${referralCount === 1 ? "invitat convertit" : "invitati convertiti"} · ${earnings}€ castigati`}
+            </p>
+          )}
         </div>
-        <div className="flex gap-2 flex-shrink-0">
+        <div className="flex gap-2 flex-shrink-0 flex-wrap">
           <button onClick={shareWhatsApp} className="bg-[#25D366] text-white font-bold py-1.5 px-3 rounded-lg hover:opacity-90 transition text-xs">
             WhatsApp
           </button>
@@ -69,7 +72,7 @@ export default function ReferralBanner() {
             Facebook
           </button>
           <button onClick={handleCopy} className="bg-[#2e2e2e] text-white font-bold py-1.5 px-3 rounded-lg hover:bg-[#3a3a3a] transition text-xs">
-            {copied ? t.copied : t.copy}
+            {copied ? (it ? "Copiato!" : "Copiat!") : (it ? "Copia link" : "Copiaza link")}
           </button>
         </div>
       </div>
