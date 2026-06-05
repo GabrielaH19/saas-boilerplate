@@ -81,57 +81,54 @@ useEffect(() => {
      {/* HERO */}
       <div className="max-w-7xl mx-auto px-6 pt-24 pb-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-        <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
-          {locale === "it" ? "Per piccole aziende di trasporto · 1-20 camion" : "Pentru firme mici de transport · 1-20 camioane"}
-        </div>
-        <h1 className="text-3xl sm:text-6xl font-semibold leading-tight mb-6 max-w-4xl mx-auto text-white">
-          {locale === "it" ? <>In 10 secondi sai se<br />un viaggio <span className="text-[#f5a623]">vale o no.</span></> : <>În 10 secunde știi dacă<br />o cursă <span className="text-[#f5a623]">merită sau nu.</span></>}
-        </h1>
-        <p className="text-base md:text-xl text-gray-300 mb-4 max-w-xl mx-auto">
-          {locale === "it" ? "Inserisci i dati del viaggio. TripProfit calcola tutto e ti dice subito: ACCETTA, NEGOZIA o RIFIUTA." : "Introduci datele cursei. TripProfit calculează tot și îți spune direct: ACCEPTĂ, NEGOCIAZĂ sau REFUZĂ."}
-        </p>
-        <p className="text-sm text-gray-500 mb-10 max-w-md mx-auto">
-          {locale === "it" ? "Non è un software complesso. È uno strumento che calcola la redditività reale di ogni viaggio." : "Nu este un software complex. Este un instrument care calculează profitabilitatea reală a fiecărei curse."}
-        </p>
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-8 py-4 rounded-lg hover:bg-[#e8951a] transition text-base">
-            {locale === "it" ? "Prova 30 giorni gratis" : "Încearcă 30 zile gratuit"}
-          </Link>
-          <Link href="/login" className="border border-[#3a3a3a] text-gray-300 px-8 py-4 rounded-lg hover:text-white hover:border-[#555] transition text-base">
-            {locale === "it" ? "Accedi" : "Intră în cont"}
-          </Link>
-        </div>
-
-       <p className="text-xs text-gray-600">{locale === "it" ? "Senza carta di credito. Senza impegni." : "Fără card bancar. Fără angajamente."}</p>
-    {/* DEMO VERDICT */}
-      <div className="hidden lg:block">
-        <div className="bg-[#0a1f0a] border border-green-900 rounded-2xl p-8">
-          <div className="text-sm text-gray-500 mb-4">{locale === "it" ? "Viaggio București → München · 1.200 km · 1.850€" : "Cursă București → München · 1.200 km · 1.850€"}</div>
-          <div className="text-6xl font-bold text-green-400 mb-2">+482 €</div>
-          <div className="text-3xl font-bold text-green-400 mb-6">{locale === "it" ? "ACCETTA" : "ACCEPTĂ"}</div>
-          <div className="border-t border-green-900 pt-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{locale === "it" ? "Costo carburante" : "Cost combustibil"}</span>
-              <span className="text-white">753 €</span>
+          <div>
+            <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
+              {locale === "it" ? "Per piccole aziende di trasporto · 1-20 camion" : "Pentru firme mici de transport · 1-20 camioane"}
             </div>
+            <h1 className="text-3xl sm:text-6xl font-semibold leading-tight mb-6 max-w-4xl mx-auto text-white">
+              {locale === "it" ? <>In 10 secondi sai se<br />un viaggio <span className="text-[#f5a623]">vale o no.</span></> : <>În 10 secunde știi dacă<br />o cursă <span className="text-[#f5a623]">merită sau nu.</span></>}
+            </h1>
+            <p className="text-base md:text-xl text-gray-300 mb-4 max-w-xl mx-auto">
+              {locale === "it" ? "Inserisci i dati del viaggio. TripProfit calcola tutto e ti dice subito: ACCETTA, NEGOZIA o RIFIUTA." : "Introduci datele cursei. TripProfit calculează tot și îți spune direct: ACCEPTĂ, NEGOCIAZĂ sau REFUZĂ."}
+            </p>
+            <p className="text-sm text-gray-500 mb-10 max-w-md mx-auto">
+              {locale === "it" ? "Non è un software complesso. È uno strumento che calcola la redditività reale di ogni viaggio." : "Nu este un software complex. Este un instrument care calculează profitabilitatea reală a fiecărei curse."}
+            </p>
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-8 py-4 rounded-lg hover:bg-[#e8951a] transition text-base">
+                {locale === "it" ? "Prova 30 giorni gratis" : "Încearcă 30 zile gratuit"}
+              </Link>
+              <Link href="/login" className="border border-[#3a3a3a] text-gray-300 px-8 py-4 rounded-lg hover:text-white hover:border-[#555] transition text-base">
+                {locale === "it" ? "Accedi" : "Intră în cont"}
+              </Link>
             </div>
-    </div>
-  </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{locale === "it" ? "Taxe + indemnizatie" : "Taxe + diurna"}</span>
-              <span className="text-white">315 €</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{locale === "it" ? "Costo fisso camion" : "Cost fix camion"}</span>
-              <span className="text-white">300 €</span>
-            </div>
-            <div className="flex justify-between text-sm font-semibold border-t border-green-900 pt-2 mt-2">
-              <span className="text-gray-300">{locale === "it" ? "Costo totale" : "Cost total"}</span>
-              <span className="text-white">1.368 €</span>
-            </div>
+            <p className="text-xs text-gray-600">{locale === "it" ? "Senza carta di credito. Senza impegni." : "Fără card bancar. Fără angajamente."}</p>
           </div>
-          <div className="mt-4 text-xs text-gray-600 text-center">1.54 €/km · {locale === "it" ? "sopra la soglia minima" : "peste pragul minim setat de tine"}</div>
+
+          <div className="bg-[#0a1f0a] border border-green-900 rounded-2xl p-8">
+            <div className="text-sm text-gray-500 mb-4">{locale === "it" ? "Viaggio București → München · 1.200 km · 1.850€" : "Cursă București → München · 1.200 km · 1.850€"}</div>
+            <div className="text-6xl font-bold text-green-400 mb-2">+482 €</div>
+            <div className="text-3xl font-bold text-green-400 mb-6">{locale === "it" ? "ACCETTA" : "ACCEPTĂ"}</div>
+            <div className="border-t border-green-900 pt-4 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">{locale === "it" ? "Costo carburante" : "Cost combustibil"}</span>
+                <span className="text-white">753 €</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">{locale === "it" ? "Taxe + indemnizatie" : "Taxe + diurna"}</span>
+                <span className="text-white">315 €</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">{locale === "it" ? "Costo fisso camion" : "Cost fix camion"}</span>
+                <span className="text-white">300 €</span>
+              </div>
+              <div className="flex justify-between text-sm font-semibold border-t border-green-900 pt-2 mt-2">
+                <span className="text-gray-300">{locale === "it" ? "Costo totale" : "Cost total"}</span>
+                <span className="text-white">1.368 €</span>
+              </div>
+            </div>
+            <div className="mt-4 text-xs text-gray-600 text-center">1.54 €/km · {locale === "it" ? "sopra la soglia minima" : "peste pragul minim setat de tine"}</div>
+          </div>
         </div>
       </div>
 
