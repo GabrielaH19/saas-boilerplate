@@ -33,11 +33,11 @@ function FounderCounter({ locale }: { locale: string }) {
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
-            className={`h-2 w-5 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`}
+            className={`h-3 w-8 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`}
           />
         ))}
       </div>
-      <span className="text-xs text-gray-400">
+      <span className="text-sm text-gray-300">
         {it ? `${remaining} posti rimasti su 100` : `${remaining} locuri rămase din 100`}
       </span>
     </div>
@@ -207,7 +207,8 @@ useEffect(() => {
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
         <div className="mb-6 text-center flex flex-col items-center gap-3">
-          <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-xs font-semibold px-4 py-2 rounded-full whitespace-nowrap">
+          
+         <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-6 py-3 rounded-full whitespace-nowrap">
             {locale === "it" ? "🔥 Primi 100 · Prezzo fisso per sempre" : "🔥 Primii 100 abonați · Preț redus pe viață"}
           </span>
           <FounderCounter locale={locale} />
