@@ -57,7 +57,31 @@ export async function POST(req: NextRequest) {
         },
         { merge: true }
       );
-
+// Logica referral
+      const newUser = await getUserData(userId);
+      if (newUser?.referredBy) {
+        const { getDocs, collection, query, where } = await import("firebase/firestore");
+        const q = query(collection(db, "users"), where("referralCode", "==", newUser.referredBy));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          const referrerDoc = snap.docs[0];
+          const referrerData = referrerDoc.data();
+          const now = new Date();
+          const monthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+          const monthlyCount = referrerData.referralMonthly?.[monthKey] || 0;
+          if (monthlyCount < 4) {
+            await setDoc(doc(db, "users", referrerDoc.id), {
+              referralEarnings: (referrerData.referralEarnings || 0) + 10,
+              referralCount: (referrerData.referralCount || 0) + 1,
+              referralMonthly: {
+                ...(referrerData.referralMonthly || {}),
+                [monthKey]: monthlyCount + 1,
+              },
+              updatedAt: serverTimestamp(),
+            }, { merge: true });
+          }
+        }
+      }
       // Email confirmare plată
       const user = await getUserData(userId);
       if (user?.email) {

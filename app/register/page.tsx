@@ -4,18 +4,22 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, collection, getCountFromServer } from "firebase/firestore";
 import { auth, db } from "@/app/lib/firebase";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/app/lib/LanguageContext";
 import LangSwitcher from "@/app/lib/LangSwitcher";
 
-export default function RegisterPage() {
+import { Suspense } from "react";
+
+function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refCode = searchParams.get("ref");
   const { tr } = useLang();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -39,6 +43,9 @@ export default function RegisterPage() {
         onboardingCompleted: false,
         founderPricing: isFounder,
         founderNumber: isFounder ? usersCount.data().count + 1 : null,
+        referredBy: refCode || null,
+        referralEarnings: 0,
+        referralCount: 0,
       });
 
       await fetch("/api/email/welcome", {
@@ -106,5 +113,12 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }
