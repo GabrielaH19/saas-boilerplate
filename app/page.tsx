@@ -220,7 +220,16 @@ useEffect(() => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
-            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>18<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">30€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
+            <div className="mb-3">
+  <div className="flex items-center gap-2 mb-1">
+    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>18</span>
+    <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <span className="text-sm line-through text-gray-600">30€</span>
+    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-40%</span>
+  </div>
+</div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
               {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico 60 giorni"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric 60 zile"]).map(f => (
@@ -240,7 +249,16 @@ useEffect(() => {
               {locale === "it" ? "Il più scelto" : "Cel mai ales"}
             </div>
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>29<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">49€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
+           <div className="mb-3">
+  <div className="flex items-center gap-2 mb-1">
+    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>29</span>
+    <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <span className="text-sm line-through text-gray-600">49€</span>
+    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
+  </div>
+</div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
              {(locale === "it" ? ["Tutto di Basic", "10 camion", "Storico 365 giorni", "Clienti + scoring", "Report mensile email", "Simulazioni"] : ["Tot ce include Basic", "10 camioane", "Istoric 365 zile", "Clienți + scoring", "Raport lunar email", "Simulări"]).map(f => (
@@ -257,7 +275,16 @@ useEffect(() => {
 
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
-            <div className="text-5xl font-semibold text-white mb-1"><sup className="text-xl">€</sup>47<sub className="text-sm font-normal text-gray-500"><span className="text-base line-through text-gray-600 ml-1">79€</span>{locale === "it" ? "/mese" : "/lună"}</sub></div>
+           <div className="mb-3">
+  <div className="flex items-center gap-2 mb-1">
+    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>47</span>
+    <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <span className="text-sm line-through text-gray-600">79€</span>
+    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
+  </div>
+</div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
               {(locale === "it" ? ["Tutto di Pro", "Camion illimitati", "Storico illimitato", "Cashflow tracking", "Export PDF report", "Supporto prioritario"] : ["Tot ce include Pro", "Camioane nelimitate", "Istoric nelimitat", "Cashflow", "Export PDF raport", "Suport prioritar"]).map(f => (
