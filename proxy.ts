@@ -1,7 +1,7 @@
 // middleware reset password
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   const mode = searchParams.get("mode");
   const oobCode = searchParams.get("oobCode");
