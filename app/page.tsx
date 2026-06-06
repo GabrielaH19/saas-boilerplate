@@ -24,38 +24,35 @@ function FounderCounter({ locale }: { locale: string }) {
 
   const remaining = Math.max(0, 100 - count);
   const it = locale === "it";
-
   if (remaining <= 0) return null;
 
   return (
     <div className="flex items-center gap-2">
       <div className="flex gap-1">
         {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className={`h-2 w-5 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`}
-          />
+          <div key={i} className={`h-3 w-8 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`} />
         ))}
       </div>
-      <span className="text-xs text-gray-400">
+      <span className="text-sm text-gray-300">
         {it ? `${remaining} posti rimasti su 100` : `${remaining} locuri rămase din 100`}
       </span>
     </div>
   );
 }
-export default function LandingPage() {
-  const { tr, locale } = useLang();
-const router = useRouter();
 
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("mode") === "resetPassword") {
-      router.push(`/reset-password${window.location.search}`);
+export default function LandingPage() {
+  const { locale } = useLang();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("mode") === "resetPassword") {
+        router.push(`/reset-password${window.location.search}`);
+      }
     }
-  }
-}, []);
-  
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       {/* NAV */}
@@ -78,7 +75,7 @@ useEffect(() => {
         </div>
       </nav>
 
-     {/* HERO */}
+      {/* HERO */}
       <div className="max-w-7xl mx-auto px-6 pt-24 pb-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
@@ -88,13 +85,13 @@ useEffect(() => {
             <h1 className="text-3xl sm:text-5xl font-semibold leading-tight mb-6 text-white">
               {locale === "it" ? <>In 10 secondi sai se<br />un viaggio <span className="text-[#f5a623]">vale o no.</span></> : <>În 10 secunde știi dacă<br />o cursă <span className="text-[#f5a623]">merită sau nu.</span></>}
             </h1>
-            <p className="text-base md:text-xl text-gray-300 mb-4 max-w-xl mx-auto">
+            <p className="text-base md:text-xl text-gray-300 mb-4">
               {locale === "it" ? "Inserisci i dati del viaggio. TripProfit calcola tutto e ti dice subito: ACCETTA, NEGOZIA o RIFIUTA." : "Introduci datele cursei. TripProfit calculează tot și îți spune direct: ACCEPTĂ, NEGOCIAZĂ sau REFUZĂ."}
             </p>
-            <p className="text-sm text-gray-500 mb-10 max-w-md mx-auto">
+            <p className="text-sm text-gray-500 mb-10">
               {locale === "it" ? "Non è un software complesso. È uno strumento che calcola la redditività reale di ogni viaggio." : "Nu este un software complex. Este un instrument care calculează profitabilitatea reală a fiecărei curse."}
             </p>
-            <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="flex items-center gap-4 mb-4">
               <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-8 py-4 rounded-lg hover:bg-[#e8951a] transition text-base">
                 {locale === "it" ? "Prova 30 giorni gratis" : "Încearcă 30 zile gratuit"}
               </Link>
@@ -203,14 +200,13 @@ useEffect(() => {
       </div>
 
       {/* PRETURI */}
-      <div id="preturi" className="max-w-4xl mx-auto px-6 mb-24 text-center">
+      <div id="preturi" className="max-w-6xl mx-auto px-6 mb-24 text-center">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
         <div className="mb-6 text-center flex flex-col items-center gap-3">
-          
           <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-6 py-3 rounded-full whitespace-nowrap">
             {locale === "it" ? "🔥 Primi 100 · Prezzo fisso per sempre" : "🔥 Primii 100 abonați · Preț redus pe viață"}
-          </span> 
+          </span>
           <FounderCounter locale={locale} />
         </div>
         <p className="text-lg text-gray-400 mb-4">{locale === "it" ? "30 giorni gratis per qualsiasi piano. Senza carta di credito alla registrazione." : "30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare."}</p>
@@ -218,111 +214,94 @@ useEffect(() => {
           {locale === "it" ? "Dopo il periodo di prova, scegli il piano adatto alla tua azienda e lo attivi direttamente dall'app, nella sezione Prezzi." : "După perioada de test, alegi planul potrivit firmei tale și îl activezi direct din aplicație, din secțiunea Prețuri."}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
-<<<<<<< HEAD
- <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
-  <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-  <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-144€/anno" : "-144€/an"}</span>
-</div>
-<div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">30€/{locale === "it" ? "mese" : "lună"}</div>
-<div className="text-5xl font-bold text-[#f5a623] mb-1">€18</div>
-<div className="flex items-center justify-between mb-5">
-  <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
-  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-40%</span>
-=======
-           <div className="mb-4">
-  <div className="flex items-baseline gap-3 mb-1">
-    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>18</span>
-    <span className="text-2xl line-through text-gray-500">30€</span>
-    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-40%</span>
-  </div>
-  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
->>>>>>> parent of ec5b4a1 (fix: pret original mai mic line-through)
-</div>
-            <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
-            <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-              {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico 60 giorni"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric 60 zile"]).map(f => (
-                <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
-              ))}
-              {(locale === "it" ? ["Clienti + scoring", "Report mensile email", "Cashflow", "Simulazioni", "Export PDF", "Supporto prioritario"] : ["Clienți + scoring", "Raport lunar email", "Cashflow", "Simulări", "Export PDF", "Suport prioritar"]).map(f => (
-                <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
-              ))}
+
+          {/* BASIC */}
+          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl overflow-hidden text-left">
+            <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
+              <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
+              <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-144€/anno" : "-144€/an"}</span>
             </div>
-            <Link href="/register" className="block text-center border border-[#333] text-white py-3 rounded-lg text-sm hover:bg-[#1e1e1e] transition">
-              {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
-            </Link>
+            <div className="p-8">
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
+              <div className="text-sm text-gray-500 line-through decoration-red-500 mb-1">30€/{locale === "it" ? "mese" : "lună"}</div>
+              <div className="text-5xl font-bold text-[#f5a623] mb-1">€18</div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
+                <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-40%</span>
+              </div>
+              <div className="text-sm text-gray-400 mb-6">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
+              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
+                {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico 60 giorni"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric 60 zile"]).map(f => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
+                ))}
+                {(locale === "it" ? ["Clienti + scoring", "Report mensile email", "Cashflow", "Simulazioni", "Export PDF", "Supporto prioritario"] : ["Clienți + scoring", "Raport lunar email", "Cashflow", "Simulări", "Export PDF", "Suport prioritar"]).map(f => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
+                ))}
+              </div>
+              <Link href="/register" className="block text-center border border-[#333] text-white py-3 rounded-lg text-sm hover:bg-[#1e1e1e] transition">
+                {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
+              </Link>
+            </div>
           </div>
 
-          <div className="bg-[#16143a] border-2 border-[#4f46e5] rounded-xl p-8 text-left relative">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#f5a623] text-black text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
+          {/* PRO */}
+          <div className="bg-[#16143a] border-2 border-[#4f46e5] rounded-xl overflow-hidden text-left relative">
+            <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-[#f5a623] text-black text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap z-10">
               {locale === "it" ? "Il più scelto" : "Cel mai ales"}
             </div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-<<<<<<< HEAD
-  <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-  <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-240€/anno" : "-240€/an"}</span>
-</div>
-<div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">49€/{locale === "it" ? "mese" : "lună"}</div>
-<div className="text-5xl font-bold text-[#f5a623] mb-1">€29</div>
-<div className="flex items-center justify-between mb-5">
-  <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
-  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
-=======
-           <div className="mb-4">
-  <div className="flex items-baseline gap-3 mb-1">
-    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>29</span>
-    <span className="text-2xl line-through text-gray-500">49€</span>
-    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
-  </div>
-  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
->>>>>>> parent of ec5b4a1 (fix: pret original mai mic line-through)
-</div>
-            <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
-            <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-             {(locale === "it" ? ["Tutto di Basic", "10 camion", "Storico 365 giorni", "Clienti + scoring", "Report mensile email", "Simulazioni"] : ["Tot ce include Basic", "10 camioane", "Istoric 365 zile", "Clienți + scoring", "Raport lunar email", "Simulări"]).map(f => (
-                <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
-              ))}
-              {(locale === "it" ? ["Cashflow", "Export PDF", "Suport prioritar"] : ["Cashflow", "Export PDF", "Suport prioritar"]).map(f => (
-                <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
-              ))}
+            <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
+              <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
+              <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-240€/anno" : "-240€/an"}</span>
             </div>
-            <Link href="/register" className="block text-center bg-[#4f46e5] text-white py-3 rounded-lg text-sm hover:bg-[#4338ca] transition font-semibold">
-              {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
-            </Link>
+            <div className="p-8 pt-12">
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
+              <div className="text-sm text-gray-500 line-through decoration-red-500 mb-1">49€/{locale === "it" ? "mese" : "lună"}</div>
+              <div className="text-5xl font-bold text-[#f5a623] mb-1">€29</div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
+                <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
+              </div>
+              <div className="text-sm text-gray-400 mb-6">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
+              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
+                {(locale === "it" ? ["Tutto di Basic", "10 camion", "Storico 365 giorni", "Clienti + scoring", "Report mensile email", "Simulazioni"] : ["Tot ce include Basic", "10 camioane", "Istoric 365 zile", "Clienți + scoring", "Raport lunar email", "Simulări"]).map(f => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
+                ))}
+                {(locale === "it" ? ["Cashflow", "Export PDF", "Supporto prioritario"] : ["Cashflow", "Export PDF", "Suport prioritar"]).map(f => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
+                ))}
+              </div>
+              <Link href="/register" className="block text-center bg-[#4f46e5] text-white py-3 rounded-lg text-sm hover:bg-[#4338ca] transition font-semibold">
+                {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
+              </Link>
+            </div>
           </div>
 
-          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
-<<<<<<< HEAD
-           <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
-  <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-  <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-384€/anno" : "-384€/an"}</span>
-<div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">79€/{locale === "it" ? "mese" : "lună"}</div>
-<div className="text-5xl font-bold text-[#f5a623] mb-1">€47</div>
-<div className="flex items-center justify-between mb-5">
-  <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
-  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
-=======
-            <div className="mb-4">
-  <div className="flex items-baseline gap-3 mb-1">
-    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>47</span>
-    <span className="text-2xl line-through text-gray-500">79€</span>
-    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
-  </div>
-  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
->>>>>>> parent of ec5b4a1 (fix: pret original mai mic line-through)
-</div>
-            <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
-            <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-              {(locale === "it" ? ["Tutto di Pro", "Camion illimitati", "Storico illimitato", "Cashflow tracking", "Export PDF report", "Supporto prioritario"] : ["Tot ce include Pro", "Camioane nelimitate", "Istoric nelimitat", "Cashflow", "Export PDF raport", "Suport prioritar"]).map(f => (
-                <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
-              ))}
+          {/* PREMIUM */}
+          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl overflow-hidden text-left">
+            <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
+              <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
+              <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-384€/anno" : "-384€/an"}</span>
             </div>
-            <Link href="/register" className="block text-center border border-[#333] text-white py-3 rounded-lg text-sm hover:bg-[#1e1e1e] transition">
-              {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
-            </Link>
+            <div className="p-8">
+              <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
+              <div className="text-sm text-gray-500 line-through decoration-red-500 mb-1">79€/{locale === "it" ? "mese" : "lună"}</div>
+              <div className="text-5xl font-bold text-[#f5a623] mb-1">€47</div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
+                <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
+              </div>
+              <div className="text-sm text-gray-400 mb-6">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
+              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
+                {(locale === "it" ? ["Tutto di Pro", "Camion illimitati", "Storico illimitato", "Cashflow tracking", "Export PDF report", "Supporto prioritario"] : ["Tot ce include Pro", "Camioane nelimitate", "Istoric nelimitat", "Cashflow", "Export PDF raport", "Suport prioritar"]).map(f => (
+                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
+                ))}
+              </div>
+              <Link href="/register" className="block text-center border border-[#333] text-white py-3 rounded-lg text-sm hover:bg-[#1e1e1e] transition">
+                {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
+              </Link>
+            </div>
           </div>
+
         </div>
 
         <div className="mt-8 bg-[#161616] border border-[#2a2a2a] rounded-xl p-5 max-w-xl mx-auto text-left">
@@ -333,7 +312,7 @@ useEffect(() => {
         </div>
       </div>
 
-     {/* FAQ */}
+      {/* FAQ */}
       <div className="max-w-5xl mx-auto px-6 mb-24">
         <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5 text-center">{locale === "it" ? "Domande frequenti" : "Întrebări frecvente"}</div>
         <h2 className="text-3xl font-semibold mb-10 text-center text-white">{locale === "it" ? "Hai domande?" : "Ai întrebări?"}</h2>
@@ -366,6 +345,7 @@ useEffect(() => {
           ))}
         </div>
       </div>
+
       {/* CTA */}
       <div className="bg-[#0a0a0a] border-t border-[#1e1e1e] py-24 px-6 text-center">
         <h2 className="text-4xl font-semibold mb-5 text-white">
