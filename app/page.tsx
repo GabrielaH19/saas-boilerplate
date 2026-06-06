@@ -220,7 +220,6 @@ useEffect(() => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
-           <div className="mb-4">
  <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
   <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
   <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-144€/anno" : "-144€/an"}</span>
@@ -250,7 +249,6 @@ useEffect(() => {
               {locale === "it" ? "Il più scelto" : "Cel mai ales"}
             </div>
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-          <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
   <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
   <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-240€/anno" : "-240€/an"}</span>
 </div>
@@ -279,7 +277,6 @@ useEffect(() => {
            <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
   <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
   <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-384€/anno" : "-384€/an"}</span>
-</div>
 <div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">79€/{locale === "it" ? "mese" : "lună"}</div>
 <div className="text-5xl font-bold text-[#f5a623] mb-1">€47</div>
 <div className="flex items-center justify-between mb-5">
