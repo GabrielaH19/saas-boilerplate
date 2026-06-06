@@ -221,18 +221,16 @@ useEffect(() => {
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
            <div className="mb-4">
- <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
+ <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
   <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
   <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-144€/anno" : "-144€/an"}</span>
 </div>
-<div className="p-6">
-  <div className="text-xs text-gray-500 uppercase tracking-wider mb-5">Basic</div>
-  <div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">{locale === "it" ? "30€/mese" : "30€/lună"}</div>
-  <div className="text-5xl font-bold text-[#f5a623] mb-1">€18</div>
-  <div className="flex items-center justify-between mb-5">
-    <span className="text-xs text-gray-600">{locale === "it" ? "/mese · prezzo a vita" : "/lună · preț pe viață"}</span>
-    <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-40%</span>
-  </div>
+<div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">30€/{locale === "it" ? "mese" : "lună"}</div>
+<div className="text-5xl font-bold text-[#f5a623] mb-1">€18</div>
+<div className="flex items-center justify-between mb-5">
+  <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
+  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-40%</span>
+</div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
               {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico 60 giorni"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric 60 zile"]).map(f => (
@@ -252,23 +250,16 @@ useEffect(() => {
               {locale === "it" ? "Il più scelto" : "Cel mai ales"}
             </div>
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-           <div className="mb-4">
-  <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
+          <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
   <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
   <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-240€/anno" : "-240€/an"}</span>
 </div>
-<div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
-  <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-  <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-384€/anno" : "-384€/an"}</span>
+<div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">49€/{locale === "it" ? "mese" : "lună"}</div>
+<div className="text-5xl font-bold text-[#f5a623] mb-1">€29</div>
+<div className="flex items-center justify-between mb-5">
+  <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
+  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
 </div>
-<div className="p-6">
-  <div className="text-xs text-gray-500 uppercase tracking-wider mb-5">Premium</div>
-  <div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">{locale === "it" ? "79€/mese" : "79€/lună"}</div>
-  <div className="text-5xl font-bold text-[#f5a623] mb-1">€47</div>
-  <div className="flex items-center justify-between mb-5">
-    <span className="text-xs text-gray-600">{locale === "it" ? "/mese · prezzo a vita" : "/lună · preț pe viață"}</span>
-    <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
-  </div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
              {(locale === "it" ? ["Tutto di Basic", "10 camion", "Storico 365 giorni", "Clienti + scoring", "Report mensile email", "Simulazioni"] : ["Tot ce include Basic", "10 camioane", "Istoric 365 zile", "Clienți + scoring", "Raport lunar email", "Simulări"]).map(f => (
@@ -285,13 +276,15 @@ useEffect(() => {
 
           <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-8 text-left">
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
-            <div className="mb-4">
-  <div className="flex items-baseline gap-3 mb-1">
-    <span className="text-5xl font-bold text-[#f5a623]"><sup className="text-xl">€</sup>47</span>
-    <span className="text-base text-gray-500 line-through decoration-[#f5a623]">79€</span>
-    <span className="text-xs bg-green-900 text-green-400 px-2 py-0.5 rounded-full font-semibold">-41%</span>
-  </div>
-  <span className="text-sm text-gray-500">{locale === "it" ? "/mese" : "/lună"}</span>
+           <div className="bg-red-500 -mx-8 -mt-8 px-5 py-2.5 flex items-center justify-between mb-6 rounded-t-xl">
+  <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
+  <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-384€/anno" : "-384€/an"}</span>
+</div>
+<div className="text-sm text-gray-500 line-through decoration-red-500 mb-2">79€/{locale === "it" ? "mese" : "lună"}</div>
+<div className="text-5xl font-bold text-[#f5a623] mb-1">€47</div>
+<div className="flex items-center justify-between mb-5">
+  <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
+  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
 </div>
             <div className="text-sm text-gray-400 mb-6 mt-2">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
             <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
