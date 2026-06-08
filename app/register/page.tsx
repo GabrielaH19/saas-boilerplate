@@ -21,11 +21,17 @@ function RegisterForm() {
   const searchParams = useSearchParams();
   const refCode = searchParams.get("ref");
   const { tr } = useLang();
+  const [gdprAccepted, setGdprAccepted] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    if (!gdprAccepted) {
+  setError("Trebuie să accepți politica de confidențialitate.");
+  setLoading(false);
+  return;
+}
     try {
       // Verifica daca e printre primii 100
       const usersCount = await getCountFromServer(collection(db, "users"));
@@ -100,7 +106,30 @@ function RegisterForm() {
                 className="w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f5a623]"
                 placeholder={tr.minChars} required />
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
+            <div className="flex items-start gap-3">
+  <input
+    type="checkbox"
+    id="gdpr"
+    checked={gdprAccepted}
+    onChange={(e) => setGdprAccepted(e.target.checked)}
+    className="mt-1 accent-[#f5a623] w-4 h-4 shrink-0 cursor-pointer"
+  />
+  <label htmlFor="gdpr" className="text-xs text-gray-400 leading-relaxed cursor-pointer">
+    {(
+      <>
+        Am citit și accept{" "}
+        <Link href="/privacy" className="text-[#f5a623] hover:underline">
+          politica de confidențialitate
+        </Link>{" "}
+        și{" "}
+        <Link href="/terms" className="text-[#f5a623] hover:underline">
+          termenii și condițiile
+        </Link>
+        .
+      </>
+    )}
+  </label>
+</div>
             <button type="submit" disabled={loading}
               className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50">
               {loading ? tr.loading : tr.registerBtn}
