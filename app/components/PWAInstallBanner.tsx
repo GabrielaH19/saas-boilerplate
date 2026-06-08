@@ -8,6 +8,7 @@ export function PWAInstallBanner() {
   const [visible, setVisible] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [lang, setLang] = useState("ro");
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     if (window.matchMedia("(display-mode: standalone)").matches) return;
@@ -23,13 +24,39 @@ export function PWAInstallBanner() {
     const isMobile = /mobile|android|iphone|ipad/i.test(navigator.userAgent);
     if (!isMobile) return;
 
+    // Captam evenimentul nativ de instalare (Android Chrome)
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+
     const timer = setTimeout(() => setVisible(true), 3000);
-    return () => clearTimeout(timer);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
   function dismiss() {
     localStorage.setItem(BANNER_KEY, "1");
     setVisible(false);
+  }
+
+  async function install() {
+    if (deferredPrompt) {
+      // Android — declanseaza popup nativ
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        dismiss();
+      }
+      setDeferredPrompt(null);
+    } else {
+      // iOS — nu exista prompt nativ, bannerul explica manual
+      dismiss();
+    }
   }
 
   if (!visible) return null;
@@ -60,8 +87,7 @@ export function PWAInstallBanner() {
         <div className="flex items-center gap-2 shrink-0">
           {!isIOS && (
             <button
-              id="pwa-install-btn"
-              onClick={dismiss}
+              onClick={install}
               className="bg-black text-[#f5a623] text-xs font-bold px-3 py-1.5 rounded-lg"
             >
               {it ? "INSTALLA" : "INSTALEAZĂ"}
