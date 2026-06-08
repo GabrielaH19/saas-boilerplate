@@ -20,23 +20,54 @@ function loadConsent(): ConsentState | null {
   }
 }
 
+function getLang(): string {
+  if (typeof window === "undefined") return "ro";
+  try {
+    const saved = localStorage.getItem("tp_lang");
+    return saved === "it" ? "it" : "ro";
+  } catch {
+    return "ro";
+  }
+}
+
 function saveConsent(state: ConsentState) {
   localStorage.setItem(COOKIE_KEY, JSON.stringify(state));
 }
 
 function activateAnalytics() {
-  // Activezi GA aici când e gata
-  // ex: window.gtag("consent", "update", { analytics_storage: "granted" });
+  // window.gtag?.("consent", "update", { analytics_storage: "granted" });
   console.log("[TripProfit] Analytics consent granted");
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`transition-transform duration-200 text-gray-500 ${open ? "rotate-180" : ""}`}
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
 }
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [analyticsToggle, setAnalyticsToggle] = useState(false);
+  const [lang, setLang] = useState("ro");
+  const [essentialOpen, setEssentialOpen] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   useEffect(() => {
     const consent = loadConsent();
+    setLang(getLang());
     if (!consent) {
       setVisible(true);
     } else if (consent.analytics) {
@@ -44,19 +75,33 @@ export function CookieBanner() {
     }
   }, []);
 
+  const ro = lang === "ro";
+
   function acceptAll() {
-    const state: ConsentState = { analytics: true, accepted: true };
-    saveConsent(state);
+    saveConsent({ analytics: true, accepted: true });
     activateAnalytics();
     setVisible(false);
+    setModalOpen(false);
+  }
+
+  function rejectAll() {
+    saveConsent({ analytics: false, accepted: true });
+    setVisible(false);
+    setModalOpen(false);
   }
 
   function saveSettings() {
-    const state: ConsentState = { analytics: analyticsToggle, accepted: true };
-    saveConsent(state);
+    saveConsent({ analytics: analyticsToggle, accepted: true });
     if (analyticsToggle) activateAnalytics();
-    setModalOpen(false);
     setVisible(false);
+    setModalOpen(false);
+  }
+
+  function openModal() {
+    setAnalyticsToggle(false);
+    setEssentialOpen(false);
+    setAnalyticsOpen(false);
+    setModalOpen(true);
   }
 
   if (!visible) return null;
@@ -64,112 +109,168 @@ export function CookieBanner() {
   return (
     <>
       {/* Banner */}
-      <div className="fixed bottom-0 left-0 right-0 z-[9999] px-4 pb-4 pointer-events-none">
-        <div className="max-w-4xl mx-auto pointer-events-auto">
-          <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-2xl">
-            {/* Text */}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-300 leading-relaxed">
-                Folosim cookie-uri esențiale pentru funcționarea platformei și, cu acordul tău, cookie-uri de analiză pentru a înțelege cum e folosit TripProfit.{" "}
-                <a href="/privacy" className="text-[#f5a623] hover:underline text-sm">
-                  Politica de confidențialitate
-                </a>
-              </p>
-            </div>
-
-            {/* Butoane */}
-            <div className="flex items-center gap-3 shrink-0">
+      {!modalOpen && (
+        <div className="fixed bottom-0 left-0 right-0 z-[9999] p-4">
+          <div className="max-w-2xl mx-auto bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl px-6 py-5 shadow-2xl">
+            <h3 className="text-base font-bold text-white mb-2">
+              {ro ? "Folosim cookie-uri" : "Utilizziamo i cookie"}
+            </h3>
+            <p className="text-sm text-gray-400 leading-relaxed mb-5">
+              {ro
+                ? "Folosim cookie-uri esențiale pentru funcționarea platformei și, cu acordul tău, cookie-uri de analiză pentru a înțelege cum e folosit TripProfit. Citește "
+                : "Utilizziamo cookie essenziali per il funzionamento della piattaforma e, con il tuo consenso, cookie analitici per capire come viene utilizzato TripProfit. Leggi la "}
+              <a href="/privacy" className="text-[#f5a623] hover:underline">
+                {ro ? "politica de confidențialitate" : "informativa sulla privacy"}
+              </a>
+              {"."}
+            </p>
+            <div className="flex items-center gap-3 flex-wrap">
               <button
-                onClick={() => {
-                  setAnalyticsToggle(false);
-                  setModalOpen(true);
-                }}
-                className="text-sm text-gray-400 hover:text-white transition-colors whitespace-nowrap"
+                onClick={rejectAll}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 bg-[#2a2a2a] hover:bg-[#333] transition-colors"
               >
-                Manage Settings
+                {ro ? "Respinge toate" : "Rifiuta tutti"}
+              </button>
+              <button
+                onClick={openModal}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 bg-[#2a2a2a] hover:bg-[#333] transition-colors"
+              >
+                {ro ? "Alege preferințele" : "Gestisci preferenze"}
               </button>
               <button
                 onClick={acceptAll}
-                className="bg-[#f5a623] hover:bg-[#e09520] text-black text-sm font-semibold px-5 py-2 rounded-lg transition-colors whitespace-nowrap"
+                className="px-4 py-2 rounded-xl text-sm font-semibold text-black bg-[#f5a623] hover:bg-[#e09520] transition-colors"
               >
-                Accept All
+                {ro ? "Acceptă toate" : "Accetta tutti"}
               </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Modal Manage Settings */}
+      {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center px-4">
-          {/* Overlay */}
-          <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={() => setModalOpen(false)}
-          />
+        <div className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-          {/* Modal */}
-          <div className="relative bg-[#141414] border border-[#2a2a2a] rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="relative bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl w-full max-w-lg shadow-2xl">
+
             {/* Header */}
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#1e1e1e]">
-              <h2 className="text-base font-semibold text-white">Setări cookie-uri</h2>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="text-gray-500 hover:text-white transition-colors"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
+            <div className="px-6 pt-6 pb-4 border-b border-[#242424]">
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">
+                {ro ? "Confidențialitate & Date" : "Privacy & Dati"}
+              </p>
+              <h2 className="text-xl font-bold text-white">
+                {ro ? "Preferințe cookie" : "Preferenze cookie"}
+              </h2>
             </div>
 
-            {/* Continut */}
-            <div className="px-6 py-5 space-y-4">
+            {/* Your Privacy */}
+            <div className="px-6 py-4 border-b border-[#242424]">
+              <h3 className="text-sm font-semibold text-white mb-1">
+                {ro ? "Confidențialitatea ta" : "La tua privacy"}
+              </h3>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                {ro
+                  ? "Poți modifica preferințele cookie oricând. "
+                  : "Puoi modificare le preferenze cookie in qualsiasi momento. "}
+                <a href="/privacy" className="text-[#f5a623] hover:underline font-medium">
+                  {ro ? "Politica de confidențialitate" : "Informativa sulla privacy"}
+                </a>
+              </p>
+            </div>
 
-              {/* Esențiale — mereu ON */}
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-white">Cookie-uri esențiale</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Necesare pentru autentificare și funcționarea platformei. Nu pot fi dezactivate.
-                  </p>
-                </div>
-                <div className="shrink-0 mt-0.5">
-                  <div className="w-10 h-5 bg-[#f5a623] rounded-full flex items-center justify-end px-0.5 cursor-not-allowed opacity-70">
-                    <div className="w-4 h-4 bg-white rounded-full" />
+            {/* Esențiale */}
+            <div className="border-b border-[#242424]">
+              <button
+                onClick={() => setEssentialOpen(!essentialOpen)}
+                className="w-full px-6 py-4 flex items-center justify-between gap-4 hover:bg-[#1f1f1f] transition-colors"
+              >
+                <div className="flex items-start gap-3 text-left">
+                  <div>
+                    <p className="text-sm font-bold text-white">
+                      {ro ? "Esențiale" : "Essenziali"}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {ro ? "Necesare pentru funcționarea platformei" : "Necessari per il funzionamento della piattaforma"}
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              <div className="border-t border-[#1e1e1e]" />
-
-              {/* Analytics — toggle */}
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-white">Cookie-uri de analiză</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Ne ajută să înțelegem cum e folosit TripProfit (Google Analytics). Datele sunt anonimizate.
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-xs text-[#f5a623] font-medium">
+                    {ro ? "Întotdeauna active" : "Sempre attivi"}
+                  </span>
+                  <ChevronIcon open={essentialOpen} />
+                </div>
+              </button>
+              {essentialOpen && (
+                <div className="px-6 pb-4">
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    {ro
+                      ? "Aceste cookie-uri sunt necesare pentru ca TripProfit să funcționeze și să îți ofere serviciile disponibile pe platformă — de exemplu, menținerea sesiunii de autentificare."
+                      : "Questi cookie sono necessari per il funzionamento di TripProfit e per fornirti i servizi disponibili sulla piattaforma — ad esempio, il mantenimento della sessione di autenticazione."}
                   </p>
                 </div>
+              )}
+            </div>
+
+            {/* Analytics */}
+            <div className="border-b border-[#242424]">
+              <div className="px-6 py-4 flex items-center justify-between gap-4">
+                <button
+                  onClick={() => setAnalyticsOpen(!analyticsOpen)}
+                  className="flex items-start gap-3 text-left flex-1 hover:opacity-80 transition-opacity"
+                >
+                  <div>
+                    <p className="text-sm font-bold text-white flex items-center gap-2">
+                      Analytics
+                      <ChevronIcon open={analyticsOpen} />
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {ro ? "Ajută la îmbunătățirea platformei" : "Aiuta a migliorare la piattaforma"}
+                    </p>
+                  </div>
+                </button>
                 <button
                   onClick={() => setAnalyticsToggle(!analyticsToggle)}
-                  className={`shrink-0 mt-0.5 w-10 h-5 rounded-full flex items-center px-0.5 transition-colors duration-200 ${
-                    analyticsToggle ? "bg-[#f5a623] justify-end" : "bg-[#2a2a2a] justify-start"
+                  className={`shrink-0 w-11 h-6 rounded-full flex items-center px-0.5 transition-colors duration-200 ${
+                    analyticsToggle ? "bg-[#f5a623] justify-end" : "bg-[#3a3a3a] justify-start"
                   }`}
+                  aria-label="Toggle analytics"
                 >
-                  <div className="w-4 h-4 bg-white rounded-full shadow" />
+                  <div className="w-5 h-5 bg-white rounded-full shadow-sm" />
                 </button>
               </div>
-
+              {analyticsOpen && (
+                <div className="px-6 pb-4">
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    {ro
+                      ? "Aceste cookie-uri colectează informații despre modul în care folosești TripProfit — ce pagini vizitezi și cum interacționezi cu platforma. Datele sunt anonimizate și agregate."
+                      : "Questi cookie raccolgono informazioni su come utilizzi TripProfit — quali pagine visiti e come interagisci con la piattaforma. I dati sono anonimizzati e aggregati."}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Footer */}
-            <div className="px-6 pb-6 flex gap-3">
+            <div className="px-6 py-4 flex items-center gap-3 flex-wrap">
+              <button
+                onClick={acceptAll}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-black bg-[#f5a623] hover:bg-[#e09520] transition-colors"
+              >
+                {ro ? "Acceptă toate" : "Accetta tutti"}
+              </button>
+              <button
+                onClick={rejectAll}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-300 bg-[#2a2a2a] hover:bg-[#333] transition-colors"
+              >
+                {ro ? "Respinge toate" : "Rifiuta tutti"}
+              </button>
               <button
                 onClick={saveSettings}
-                className="flex-1 bg-[#f5a623] hover:bg-[#e09520] text-black text-sm font-semibold py-2.5 rounded-lg transition-colors"
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-300 bg-[#2a2a2a] hover:bg-[#333] transition-colors"
               >
-                Salvează preferințele
+                {ro ? "Salvează" : "Salva"}
               </button>
             </div>
           </div>
