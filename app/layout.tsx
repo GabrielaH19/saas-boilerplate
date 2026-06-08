@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProvider } from "./lib/LanguageContext";
 import { CookieBanner } from "@/app/components/CookieBanner";
+import { PWAInstallBanner } from "@/app/components/PWAInstallBanner";
 
 export const metadata: Metadata = {
   title: "TripProfit",
@@ -47,6 +48,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
           <CookieBanner />
+          <PWAInstallBanner />
           <a href="mailto:contact@tripprofit.ro" className="fixed bottom-1 left-2 text-xs text-gray-500 hover:text-gray-300 z-50">contact@tripprofit.ro</a>
         </LanguageProvider>
       </body>
