@@ -13,10 +13,13 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "TripProfit",
   },
+  icons: {
+    apple: "/logo-icon.png",
+    icon: "/logo-icon.png",
+  },
   other: {
     "mobile-web-app-capable": "yes",
     "msapplication-TileColor": "#0d0d0d",
-    "msapplication-tap-highlight": "no",
   },
 };
 
@@ -30,7 +33,6 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#0d0d0d" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="apple-touch-startup-image" href="/logo.png" />
         <script
           dangerouslySetInnerHTML={{
