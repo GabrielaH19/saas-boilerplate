@@ -102,7 +102,7 @@ export default function PricingPage() {
 
   const remaining = founderCount !== null ? 100 - founderCount : null;
   const progressDots = 12;
-  const filledDots = founderCount !== null ? Math.round((founderCount / 100) * progressDots) : 1;
+  const filledDots = founderCount !== null ? Math.max(1, Math.round((founderCount / 100) * progressDots)) : 2;
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
@@ -129,11 +129,16 @@ export default function PricingPage() {
             <div className="flex items-center justify-center gap-2 mb-4">
               <div className="flex gap-1">
                 {Array.from({ length: progressDots }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-2 rounded-full transition-all ${i < filledDots ? "bg-[#f5a623] w-5" : "bg-[#2a2a2a] w-5"}`}
-                  />
-                ))}
+  <div
+    key={i}
+    style={{
+      backgroundColor: i < filledDots ? "#f5a623" : "#2a2a2a",
+      width: "20px",
+      height: "8px",
+      borderRadius: "9999px"
+    }}
+  />
+))}
               </div>
               <span className="text-sm text-gray-400 ml-2">
                 {remaining} {it ? "posti rimasti su 100" : "locuri rămase din 100"}
