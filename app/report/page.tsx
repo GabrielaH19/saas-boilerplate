@@ -89,7 +89,7 @@ const totalFixed = monthTrips.reduce((s, t) => s + (t.results?.truckFixedCost ||
           <h2 className="text-2xl font-bold">{tr.reportTitle}</h2>
           {limits.hasPdfExport && monthTrips.length > 0 && (
             <button onClick={handleDownloadPdf} disabled={downloading} className="bg-[#f5a623] text-black font-semibold px-4 py-2 rounded-lg hover:bg-[#e8951a] transition text-sm disabled:opacity-50">
-              {downloading ? "Se genereaza..." : "Descarca PDF"}
+              {downloading ? tr.loading : tr.downloadPdf}
             </button>
           )}
         </div>
