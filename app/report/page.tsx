@@ -19,7 +19,7 @@ export default function ReportPage() {
   const reportRef = useRef<HTMLDivElement>(null);
   const { limits, loading: planLoading } = usePlan();
   const router = useRouter();
-  const { tr } = useLang();
+  const { tr, locale } = useLang();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -32,22 +32,23 @@ export default function ReportPage() {
     return () => unsub();
   }, []);
 
-  const handleDownloadPdf = async () => {
-    if (!reportRef.current) return;
-    setDownloading(true);
-    try {
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(reportRef.current, { scale: 2, backgroundColor: "#0d0d0d", useCORS: true, logging: false });
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("tripprofit-raport-" + month + ".pdf");
-    } catch (e) { console.error(e); }
-    setDownloading(false);
-  };
+ const handleDownloadPdf = async () => {
+  setDownloading(true);
+  try {
+    const user = auth.currentUser;
+    if (!user) return;
+    const res = await fetch(`/api/report/pdf?userId=${user.uid}&month=${month}&locale=${locale}`);
+    if (!res.ok) throw new Error("Failed");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `TripProfit-${month}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) { console.error(e); }
+  setDownloading(false);
+};
 
   const monthTrips = trips.filter((t) => (t.tripDate || t.date)?.startsWith(month));
   const totalRev = monthTrips.reduce((s, t) => s + (t.inputs?.revenue || t.revenue || 0), 0);
