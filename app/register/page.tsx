@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc, collection, getCountFromServer } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/app/lib/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -34,9 +34,8 @@ function RegisterForm() {
 }
     try {
       // Verifica daca e printre primii 100
-      const usersCount = await getCountFromServer(collection(db, "users"));
-      const isFounder = usersCount.data().count < 100;
-
+      const res = await fetch("/api/users/count");
+const { count, isFounder } = await res.json();
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const trialEnd = new Date();
       trialEnd.setDate(trialEnd.getDate() + 30);
