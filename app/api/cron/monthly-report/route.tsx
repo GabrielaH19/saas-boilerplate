@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { initializeApp, cert, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { Resend } from "resend";
-import ReactPDF, { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { renderToBuffer, Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
 const firebaseAdminConfig = {
   projectId: process.env.FIREBASE_PROJECT_ID,
@@ -242,7 +242,7 @@ async function handler(request: NextRequest) {
         const monthName = lastMonth.toLocaleString(t.locale, { month: "long", year: "numeric" });
 
         const pdfDoc = buildPDF(userName, userEmail, monthName, trips, t, userLocale);
-        const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
+       const pdfBuffer = await renderToBuffer(pdfDoc);
         const pdfBase64 = pdfBuffer.toString("base64");
 
         const truckProfits: Record<string, number> = {};
