@@ -47,7 +47,7 @@ const { count, isFounder } = await res.json();
         trialEnd: trialEnd.toISOString().slice(0, 10),
         onboardingCompleted: false,
         founderPricing: isFounder,
-        founderNumber: isFounder ? usersCount.data().count + 1 : null,
+        founderNumber: isFounder ? count + 1 : null,
         referredBy: refCode || null,
         referralEarnings: 0,
         referralCount: 0,
