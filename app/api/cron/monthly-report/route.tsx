@@ -205,16 +205,21 @@ async function handler(request: NextRequest) {
       return NextResponse.json({ message: "No users found" });
     }
 
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    const monthStr = lastMonth.toISOString().slice(0, 7);
+    const { searchParams } = new URL(request.url);
+const testEmail = searchParams.get("email");
 
-    const results = [];
+const lastMonth = new Date();
+lastMonth.setMonth(lastMonth.getMonth() - 1);
+const monthStr = lastMonth.toISOString().slice(0, 7);
 
+const results = [];
+    
     for (const userDoc of usersSnap.docs) {
       const userId = userDoc.id;
       const userData = userDoc.data() as any;
       const userEmail = userData.email;
+if (testEmail && userEmail !== testEmail) continue;
+       if (testEmail && userEmail !== testEmail) continue;
       const userName = userData.name || userEmail;
       const userPlan = userData.plan;
       const trialEnd = userData.trialEnd;
