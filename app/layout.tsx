@@ -3,7 +3,8 @@ import "./globals.css";
 import { LanguageProvider } from "./lib/LanguageContext";
 import { CookieBanner } from "@/app/components/CookieBanner";
 import { PWAInstallBanner } from "@/app/components/PWAInstallBanner";
-
+<Analytics />
+import { Analytics } from "@vercel/analytics/react";
 export const metadata: Metadata = {
   title: "TripProfit",
   description: "Calculator profit curse TIR pentru firme mici de transport",
