@@ -20,7 +20,7 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const refCode = searchParams.get("ref");
-  const { tr } = useLang();
+  const { tr, locale } = useLang();
   const [gdprAccepted, setGdprAccepted] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -52,6 +52,7 @@ function RegisterForm() {
         referredBy: refCode || null,
         referralEarnings: 0,
         referralCount: 0,
+        locale: locale || "ro",
       });
 
       await fetch("/api/email/welcome", {

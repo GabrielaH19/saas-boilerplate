@@ -17,6 +17,37 @@ const db = getFirestore(app);
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const translations = {
+  ro: {
+    title: "Raport lunar",
+    greeting: (name: string) => `Buna ${name},`,
+    intro: "Iata rezumatul performantei tale pentru luna trecuta:",
+    tripsCount: "Curse efectuate",
+    totalProfit: "Profit total",
+    bestTruck: "Cel mai bun camion",
+    bestClient: "Cel mai bun client",
+    profit: "Profit",
+    viewReport: "Vezi raportul complet",
+    rights: "2026 TripProfit. Toate drepturile rezervate.",
+    subject: (month: string) => `TripProfit - Raport lunar ${month}`,
+    locale: "ro-RO",
+  },
+  it: {
+    title: "Report mensile",
+    greeting: (name: string) => `Ciao ${name},`,
+    intro: "Ecco il riepilogo delle tue performance del mese scorso:",
+    tripsCount: "Viaggi effettuati",
+    totalProfit: "Profitto totale",
+    bestTruck: "Miglior camion",
+    bestClient: "Miglior cliente",
+    profit: "Profitto",
+    viewReport: "Vedi il report completo",
+    rights: "2026 TripProfit. Tutti i diritti riservati.",
+    subject: (month: string) => `TripProfit - Report mensile ${month}`,
+    locale: "it-IT",
+  },
+};
+
 async function handler(request: NextRequest) {
   if (request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,7 +57,7 @@ async function handler(request: NextRequest) {
     const usersSnap = await db.collection("users").get();
 
     if (usersSnap.empty) {
-      return NextResponse.json({ message: "No premium users found" });
+      return NextResponse.json({ message: "No users found" });
     }
 
     const lastMonth = new Date();
@@ -42,6 +73,8 @@ async function handler(request: NextRequest) {
       const userName = userData.name || userEmail;
       const userPlan = userData.plan;
       const trialEnd = userData.trialEnd;
+      const userLocale = userData.locale === "it" ? "it" : "ro";
+      const t = translations[userLocale];
       const isOnTrial = userPlan === "free" && trialEnd && new Date(trialEnd) > new Date();
       if (userPlan !== "premium" && userPlan !== "pro" && !isOnTrial) continue;
 
@@ -64,20 +97,20 @@ async function handler(request: NextRequest) {
         const tripsCount = trips.length;
 
         const truckProfits: Record<string, number> = {};
-        trips.forEach((t: any) => {
-          const name = t.snapshots?.truckName || "Unknown";
-          truckProfits[name] = (truckProfits[name] || 0) + (t.results?.profit || 0);
+        trips.forEach((trip: any) => {
+          const name = trip.snapshots?.truckName || "Unknown";
+          truckProfits[name] = (truckProfits[name] || 0) + (trip.results?.profit || 0);
         });
         const bestTruck = Object.entries(truckProfits).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
 
         const clientProfits: Record<string, number> = {};
-        trips.forEach((t: any) => {
-          const name = t.snapshots?.clientName || "No client";
-          clientProfits[name] = (clientProfits[name] || 0) + (t.results?.profit || 0);
+        trips.forEach((trip: any) => {
+          const name = trip.snapshots?.clientName || (userLocale === "it" ? "Nessun cliente" : "Fara client");
+          clientProfits[name] = (clientProfits[name] || 0) + (trip.results?.profit || 0);
         });
         const bestClient = Object.entries(clientProfits).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
 
-        const monthName = lastMonth.toLocaleString("ro-RO", { month: "long", year: "numeric" });
+        const monthName = lastMonth.toLocaleString(t.locale, { month: "long", year: "numeric" });
 
         const htmlContent = `<!DOCTYPE html>
 <html>
@@ -102,34 +135,34 @@ async function handler(request: NextRequest) {
     <div class="container">
       <div class="header">
         <div class="logo">Trip<span>Profit</span></div>
-        <div style="font-size:18px;color:#333;">Raport lunar</div>
+        <div style="font-size:18px;color:#333;">${t.title}</div>
         <div style="color:#666;font-size:14px;">${monthName}</div>
       </div>
-      <p>Buna ${userName},</p>
-      <p>Iata rezumatul performantei tale pentru luna trecuta:</p>
+      <p>${t.greeting(userName)}</p>
+      <p>${t.intro}</p>
       <div class="card">
-        <div class="card-label">Curse efectuate</div>
+        <div class="card-label">${t.tripsCount}</div>
         <div class="card-value">${tripsCount}</div>
       </div>
       <div class="card">
-        <div class="card-label">Profit total</div>
-        <div class="card-value">${totalProfit >= 0 ? "+" : ""}${totalProfit.toLocaleString("ro-RO", { minimumFractionDigits: 0 })} EUR</div>
+        <div class="card-label">${t.totalProfit}</div>
+        <div class="card-value">${totalProfit >= 0 ? "+" : ""}${totalProfit.toLocaleString(t.locale, { minimumFractionDigits: 0 })} EUR</div>
       </div>
       <div class="card">
-        <div class="card-label">Cel mai bun camion</div>
+        <div class="card-label">${t.bestTruck}</div>
         <div class="card-value">${bestTruck[0]}</div>
-        <div class="card-subtext">Profit: +${(bestTruck[1] as number).toLocaleString("ro-RO", { minimumFractionDigits: 0 })} EUR</div>
+        <div class="card-subtext">${t.profit}: +${(bestTruck[1] as number).toLocaleString(t.locale, { minimumFractionDigits: 0 })} EUR</div>
       </div>
       <div class="card">
-        <div class="card-label">Cel mai bun client</div>
+        <div class="card-label">${t.bestClient}</div>
         <div class="card-value">${bestClient[0]}</div>
-        <div class="card-subtext">Profit: +${(bestClient[1] as number).toLocaleString("ro-RO", { minimumFractionDigits: 0 })} EUR</div>
+        <div class="card-subtext">${t.profit}: +${(bestClient[1] as number).toLocaleString(t.locale, { minimumFractionDigits: 0 })} EUR</div>
       </div>
       <div style="text-align:center;">
-        <a href="https://tripprofit.ro/report" class="btn">Vezi raportul complet</a>
+        <a href="https://tripprofit.ro/report" class="btn">${t.viewReport}</a>
       </div>
       <div class="footer">
-        <p>2026 TripProfit. Toate drepturile rezervate.</p>
+        <p>${t.rights}</p>
         <p><a href="https://tripprofit.ro">tripprofit.ro</a> | <a href="mailto:contact@tripprofit.ro">contact@tripprofit.ro</a></p>
       </div>
     </div>
@@ -139,11 +172,11 @@ async function handler(request: NextRequest) {
         await resend.emails.send({
           from: "contact@tripprofit.ro",
           to: userEmail,
-          subject: `TripProfit - Raport lunar ${monthName}`,
+          subject: t.subject(monthName),
           html: htmlContent,
         });
 
-        results.push({ userId, status: "sent", email: userEmail, tripsCount, totalProfit });
+        results.push({ userId, status: "sent", email: userEmail, tripsCount, totalProfit, locale: userLocale });
       } catch (userError) {
         console.error(`Error processing user ${userId}:`, userError);
         results.push({ userId, status: "error", error: (userError as Error).message });
