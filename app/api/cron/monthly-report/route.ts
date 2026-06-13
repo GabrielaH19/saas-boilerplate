@@ -19,6 +19,8 @@ const db = getFirestore(app);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
+  return POST(req); // sau mută logica în GET
+}
   // Verify cron secret
   if (request.headers.get("authorization") !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
