@@ -1,7 +1,7 @@
 {
-  "name": "TripProfit",
-  "short_name": "TripProfit",
-  "description": "Calculator profit curse TIR pentru firme mici de transport",
+  "name": "YourApp",
+  "short_name": "YourApp",
+  "description": "Your app description here",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0d0d0d",
@@ -21,7 +21,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "finance", "productivity"],
-  "lang": "ro",
+  "categories": ["business", "productivity"],
+  "lang": "en",
   "scope": "/"
 }

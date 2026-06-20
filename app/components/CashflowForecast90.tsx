@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/app/lib/firebase";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 interface ForecastData {
   expectedRevenue: number;
@@ -11,11 +11,7 @@ interface ForecastData {
   dailyBreakdown: { date: string; revenue: number; expenses: number; balance: number }[];
 }
 
-interface CashflowForecast90Props {
-  userId: string;
-}
-
-export default function CashflowForecast90({ userId }: CashflowForecast90Props) {
+export default function CashflowForecast90({ userId }: { userId: string }) {
   const [data, setData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,17 +19,11 @@ export default function CashflowForecast90({ userId }: CashflowForecast90Props) 
   useEffect(() => {
     const fetchForecastData = async () => {
       try {
-        // Get all invoices for user
+        // TODO: Replace "invoices" and "items" with your own Firestore collections
         const invoicesSnap = await getDocs(
           query(collection(db, "invoices"), where("userId", "==", userId))
         );
 
-        // Get all trucks for user
-        const trucksSnap = await getDocs(
-          query(collection(db, "trucks"), where("userId", "==", userId))
-        );
-
-        // Calculate expected revenue (next 90 days)
         const now = new Date();
         const ninetyDaysLater = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
 
@@ -43,30 +33,17 @@ export default function CashflowForecast90({ userId }: CashflowForecast90Props) 
         invoices.forEach(invoice => {
           const dueDate = new Date(invoice.dueDate);
           if (dueDate >= now && dueDate <= ninetyDaysLater) {
-            // Include unpaid, partial, and overdue
             if (invoice.status === "unpaid" || invoice.status === "partial" || invoice.status === "overdue") {
               expectedRevenue += invoice.amount || 0;
             }
           }
         });
 
-        // Calculate total daily fixed costs
-        let totalDailyFixedCosts = 0;
-        const trucks = trucksSnap.docs.map(d => ({ id: d.id, ...d.data() } as any));
-
-        trucks.forEach(truck => {
-          const fc = truck.fixedCosts || {};
-          const total = (fc.leasing || 0) + (fc.insurance || 0) + (fc.maintenance || 0) + (fc.salary || 0) + (fc.other || 0);
-          totalDailyFixedCosts += total / 30; // Daily cost
-        });
-
-        // Calculate 90-day expenses
+        // TODO: Replace with your own fixed cost logic
+        const totalDailyFixedCosts = 0;
         const estimatedExpenses = totalDailyFixedCosts * 90;
-
-        // Calculate forecasted balance
         const forecastedBalance = expectedRevenue - estimatedExpenses;
 
-        // Build daily breakdown
         const dailyBreakdown = [];
         let cumulativeBalance = 0;
         let revenueByDay: Record<string, number> = {};
@@ -82,26 +59,14 @@ export default function CashflowForecast90({ userId }: CashflowForecast90Props) 
           const date = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
           const dateStr = date.toISOString().split("T")[0];
           const dayRevenue = revenueByDay[dateStr] || 0;
-          const dayExpenses = totalDailyFixedCosts;
-          cumulativeBalance += dayRevenue - dayExpenses;
-
-          dailyBreakdown.push({
-            date: dateStr,
-            revenue: dayRevenue,
-            expenses: dayExpenses,
-            balance: cumulativeBalance,
-          });
+          cumulativeBalance += dayRevenue - totalDailyFixedCosts;
+          dailyBreakdown.push({ date: dateStr, revenue: dayRevenue, expenses: totalDailyFixedCosts, balance: cumulativeBalance });
         }
 
-        setData({
-          expectedRevenue,
-          estimatedExpenses,
-          forecastedBalance,
-          dailyBreakdown,
-        });
+        setData({ expectedRevenue, estimatedExpenses, forecastedBalance, dailyBreakdown });
       } catch (err) {
         console.error("Error fetching forecast data:", err);
-        setError("A apărut o eroare la calcularea previziunii.");
+        setError("An error occurred while calculating the forecast.");
       } finally {
         setLoading(false);
       }
@@ -110,125 +75,69 @@ export default function CashflowForecast90({ userId }: CashflowForecast90Props) 
     fetchForecastData();
   }, [userId]);
 
-  if (loading) {
-    return (
-      <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
-        <p className="text-gray-400">Se încarcă previziunea...</p>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
+      <p className="text-gray-400">Loading forecast...</p>
+    </div>
+  );
 
-  if (error) {
-    return (
-      <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
+  if (error) return (
+    <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-6">
+      <p className="text-red-500">{error}</p>
+    </div>
+  );
 
-  if (!data) {
-    return null;
-  }
+  if (!data) return null;
 
   const isNegative = data.forecastedBalance < 0;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
-        <h3 className="text-lg font-bold text-white mb-2">Previziune cashflow 90 zile</h3>
-        <p className="text-sm text-gray-400">
-          Estimare pentru următoarele 90 zile pe baza facturilor și costurilor fixe.
-        </p>
+        <h3 className="text-lg font-bold text-white mb-2">90-Day Cashflow Forecast</h3>
+        <p className="text-sm text-gray-400">Estimate for the next 90 days based on invoices and fixed costs.</p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Expected Revenue */}
         <div className="bg-[#1a1a1a] border border-[#2e2e2e] rounded-lg p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Venituri așteptate</p>
-          <p className="text-2xl font-bold text-green-400">
-            +{data.expectedRevenue.toLocaleString("ro-RO", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })} €
-          </p>
-          <p className="text-xs text-gray-500 mt-2">
-            {data.dailyBreakdown.filter(d => d.revenue > 0).length} zile cu venituri
-          </p>
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Expected Revenue</p>
+          <p className="text-2xl font-bold text-green-400">+{data.expectedRevenue.toLocaleString()} €</p>
+          <p className="text-xs text-gray-500 mt-2">{data.dailyBreakdown.filter(d => d.revenue > 0).length} days with revenue</p>
         </div>
 
-        {/* Estimated Expenses */}
         <div className="bg-[#1a1a1a] border border-[#2e2e2e] rounded-lg p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Cheltuieli estimate</p>
-          <p className="text-2xl font-bold text-red-400">
-            -{data.estimatedExpenses.toLocaleString("ro-RO", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })} €
-          </p>
-          <p className="text-xs text-gray-500 mt-2">
-            {(data.estimatedExpenses / 90).toFixed(0)} € / zi
-          </p>
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Estimated Expenses</p>
+          <p className="text-2xl font-bold text-red-400">-{data.estimatedExpenses.toLocaleString()} €</p>
+          <p className="text-xs text-gray-500 mt-2">{(data.estimatedExpenses / 90).toFixed(0)} € / day</p>
         </div>
 
-        {/* Forecasted Balance */}
-        <div
-          className={`rounded-lg p-4 border ${
-            isNegative
-              ? "bg-red-900 bg-opacity-20 border-red-700"
-              : "bg-[#1a1a1a] border-[#2e2e2e]"
-          }`}
-        >
-          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Sold previzionat</p>
-          <p
-            className={`text-2xl font-bold ${
-              isNegative ? "text-red-400" : "text-green-400"
-            }`}
-          >
-            {data.forecastedBalance >= 0 ? "+" : ""}
-            {data.forecastedBalance.toLocaleString("ro-RO", {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })} €
+        <div className={`rounded-lg p-4 border ${isNegative ? "bg-red-900 bg-opacity-20 border-red-700" : "bg-[#1a1a1a] border-[#2e2e2e]"}`}>
+          <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Forecasted Balance</p>
+          <p className={`text-2xl font-bold ${isNegative ? "text-red-400" : "text-green-400"}`}>
+            {data.forecastedBalance >= 0 ? "+" : ""}{data.forecastedBalance.toLocaleString()} €
           </p>
-          {isNegative && (
-            <p className="text-xs text-red-400 mt-2">
-              ⚠️ Risc de blocaj de lichiditate
-            </p>
-          )}
+          {isNegative && <p className="text-xs text-red-400 mt-2">⚠️ Risk of cash flow blockage</p>}
         </div>
       </div>
 
-      {/* Chart Alternative: Daily Balance Line (simplified text view) */}
       <div className="bg-[#1a1a1a] border border-[#2e2e2e] rounded-lg p-4">
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-4">Evoluție zilnică (selecție)</p>
+        <p className="text-xs text-gray-500 uppercase tracking-wider mb-4">Daily Balance (every 10 days)</p>
         <div className="space-y-2">
           {data.dailyBreakdown
-            .filter((_, i) => i % 10 === 0 || i === data.dailyBreakdown.length - 1) // Every 10 days + last day
-            .map((day, idx) => {
+            .filter((_, i) => i % 10 === 0 || i === data.dailyBreakdown.length - 1)
+            .map(day => {
               const maxBalance = Math.max(...data.dailyBreakdown.map(d => d.balance));
               const minBalance = Math.min(...data.dailyBreakdown.map(d => d.balance));
               const range = maxBalance - minBalance || 1;
               const percent = ((day.balance - minBalance) / range) * 100;
-
               return (
                 <div key={day.date} className="flex items-center gap-3">
                   <div className="w-20 text-xs text-gray-500">{day.date}</div>
-                  <div className="flex-1 bg-[#0d0d0d] rounded h-6 overflow-hidden relative">
-                    <div
-                      className={`h-full ${
-                        day.balance >= 0 ? "bg-green-600" : "bg-red-600"
-                      }`}
-                      style={{ width: `${Math.max(1, percent)}%` }}
-                    />
+                  <div className="flex-1 bg-[#0d0d0d] rounded h-6 overflow-hidden">
+                    <div className={`h-full ${day.balance >= 0 ? "bg-green-600" : "bg-red-600"}`} style={{ width: `${Math.max(1, percent)}%` }} />
                   </div>
                   <div className="w-24 text-right text-xs font-mono text-white">
-                    {day.balance >= 0 ? "+" : ""}
-                    {day.balance.toLocaleString("ro-RO", {
-                      minimumFractionDigits: 0,
-                      maximumFractionDigits: 0,
-                    })} €
+                    {day.balance >= 0 ? "+" : ""}{day.balance.toLocaleString()} €
                   </div>
                 </div>
               );
@@ -236,11 +145,9 @@ export default function CashflowForecast90({ userId }: CashflowForecast90Props) 
         </div>
       </div>
 
-      {/* Info */}
       <div className="bg-blue-900 bg-opacity-20 border border-blue-700 rounded-lg p-4">
         <p className="text-xs text-blue-400">
-          <strong>ℹ️ Info:</strong> Previziunea se calculează pe baza facturilor cu dueDate în următoarele 90
-          zile și costurilor fixe zilnice din profilul camioanelor.
+          <strong>ℹ️ Info:</strong> Forecast is calculated based on invoices due in the next 90 days and daily fixed costs. Replace the Firestore collections with your own data structure.
         </p>
       </div>
     </div>

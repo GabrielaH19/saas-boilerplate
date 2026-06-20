@@ -8,14 +8,15 @@ import {
   paymentFailedEmail,
   subscriptionCancelledEmail,
 } from "@/app/lib/email-templates";
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-03-25.dahlia",
 });
 
 const planAmounts: Record<string, number> = {
-  basic: 30,
-  pro: 49,
-  premium: 79,
+  basic: 9,
+  pro: 19,
+  premium: 39,
 };
 
 async function getUserData(userId: string) {
@@ -30,34 +31,27 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err: any) {
     console.error("Webhook error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
 
-  // ✅ Plată reușită
+  // Payment successful
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session.metadata?.userId;
     const plan = session.metadata?.plan;
 
     if (userId && plan) {
-      await setDoc(
-        doc(db, "users", userId),
-        {
-          plan,
-          stripeCustomerId: session.customer,
-          stripeSubscriptionId: session.subscription,
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
-// Logica referral
+      await setDoc(doc(db, "users", userId), {
+        plan,
+        stripeCustomerId: session.customer,
+        stripeSubscriptionId: session.subscription,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      // Referral logic
       const newUser = await getUserData(userId);
       if (newUser?.referredBy) {
         const { getDocs, collection, query, where } = await import("firebase/firestore");
@@ -73,20 +67,18 @@ export async function POST(req: NextRequest) {
             await setDoc(doc(db, "users", referrerDoc.id), {
               referralEarnings: (referrerData.referralEarnings || 0) + 10,
               referralCount: (referrerData.referralCount || 0) + 1,
-              referralMonthly: {
-                ...(referrerData.referralMonthly || {}),
-                [monthKey]: monthlyCount + 1,
-              },
+              referralMonthly: { ...(referrerData.referralMonthly || {}), [monthKey]: monthlyCount + 1 },
               updatedAt: serverTimestamp(),
             }, { merge: true });
           }
         }
       }
-      // Email confirmare plată
+
+      // Payment confirmation email
       const user = await getUserData(userId);
       if (user?.email) {
         const { subject, html } = paymentSuccessEmail(
-          user.name || "transportator",
+          user.name || "user",
           plan.charAt(0).toUpperCase() + plan.slice(1),
           planAmounts[plan] ?? 0
         );
@@ -95,45 +87,38 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ❌ Plată eșuată
+  // Payment failed
   if (event.type === "invoice.payment_failed") {
     const invoice = event.data.object as Stripe.Invoice;
     const customerId = invoice.customer as string;
 
-    // Găsim userul după stripeCustomerId
     const { getDocs, collection, query, where } = await import("firebase/firestore");
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("stripeCustomerId", "==", customerId));
+    const q = query(collection(db, "users"), where("stripeCustomerId", "==", customerId));
     const snapshot = await getDocs(q);
 
     if (!snapshot.empty) {
       const user = snapshot.docs[0].data();
       if (user.email) {
-        const { subject, html } = paymentFailedEmail(user.name || "transportator");
+        const { subject, html } = paymentFailedEmail(user.name || "user");
         await sendEmail({ to: user.email, subject, html });
       }
     }
   }
 
-  // 🚫 Abonament anulat
+  // Subscription cancelled
   if (event.type === "customer.subscription.deleted") {
     const subscription = event.data.object as Stripe.Subscription;
     const userId = subscription.metadata?.userId;
 
     if (userId) {
-      await setDoc(
-        doc(db, "users", userId),
-        {
-          plan: "free",
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
+      await setDoc(doc(db, "users", userId), {
+        plan: "free",
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
 
-      // Email anulare
       const user = await getUserData(userId);
       if (user?.email) {
-        const { subject, html } = subscriptionCancelledEmail(user.name || "transportator");
+        const { subject, html } = subscriptionCancelledEmail(user.name || "user");
         await sendEmail({ to: user.email, subject, html });
       }
     }

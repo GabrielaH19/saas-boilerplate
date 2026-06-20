@@ -10,10 +10,10 @@ export async function sendEmail({
   html: string;
 }) {
   const resend = new Resend(process.env.RESEND_API_KEY);
-  
+
   try {
     const { data, error } = await resend.emails.send({
-      from: 'TripProfit <contact@tripprofit.ro>',
+      from: 'YourApp <contact@yourapp.com>',
       to,
       subject,
       html,

@@ -9,8 +9,7 @@ import { getPlanLimits } from "@/app/lib/planLimits";
 export function usePlan() {
   const [plan, setPlan] = useState<string>("free");
   const [limits, setLimits] = useState(getPlanLimits("free"));
-  const [tripsThisMonth, setTripsThisMonth] = useState(0);
-  const [trucksCount, setTrucksCount] = useState(0);
+  const [itemsThisMonth, setItemsThisMonth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isTrialing, setIsTrialing] = useState(false);
 
@@ -21,40 +20,37 @@ export function usePlan() {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const data = userDoc.data();
       const userPlan = data?.plan || "free";
-     const createdAtRaw = data?.createdAt;
-const createdAt = createdAtRaw?.toDate
-  ? createdAtRaw.toDate()
-  : createdAtRaw
-  ? new Date(createdAtRaw)
-  : new Date(user.metadata.creationTime || Date.now());
-const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
-const onTrial = userPlan === "free" && daysSinceCreation <= 30;
+
+      const createdAtRaw = data?.createdAt;
+      const createdAt = createdAtRaw?.toDate
+        ? createdAtRaw.toDate()
+        : createdAtRaw
+        ? new Date(createdAtRaw)
+        : new Date(user.metadata.creationTime || Date.now());
+      const daysSinceCreation = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24);
+      const onTrial = userPlan === "free" && daysSinceCreation <= 30;
+
       setPlan(userPlan);
       setIsTrialing(onTrial);
       setLimits(getPlanLimits(onTrial ? "premium" : userPlan));
 
+      // TODO: Replace "items" with your own Firestore collection
       const now = new Date();
       const monthStr = now.toISOString().slice(0, 7);
-      const tripsSnap = await getDocs(
-        query(collection(db, "trips"),
+      const itemsSnap = await getDocs(
+        query(collection(db, "items"),
           where("userId", "==", user.uid),
-          where("tripDate", ">=", monthStr + "-01")
+          where("createdAt", ">=", monthStr + "-01")
         )
       );
-      setTripsThisMonth(tripsSnap.size);
-
-      const trucksSnap = await getDocs(
-        query(collection(db, "trucks"), where("userId", "==", user.uid))
-      );
-      setTrucksCount(trucksSnap.size);
+      setItemsThisMonth(itemsSnap.size);
 
       setLoading(false);
     });
     return () => unsub();
   }, []);
 
-  const canAddTrip = limits.maxTripsPerMonth === Infinity || tripsThisMonth < limits.maxTripsPerMonth;
-  const canAddTruck = limits.maxTrucks === Infinity || trucksCount < limits.maxTrucks;
+  const canAddItem = limits.maxItemsPerMonth === Infinity || itemsThisMonth < limits.maxItemsPerMonth;
 
-  return { plan, limits, tripsThisMonth, trucksCount, canAddTrip, canAddTruck, loading, isTrialing };
+  return { plan, limits, itemsThisMonth, canAddItem, loading, isTrialing };
 }

@@ -20,26 +20,16 @@ function ResetPasswordForm() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (!oobCode) {
-      setError("Link invalid sau expirat.");
-      setChecking(false);
-      return;
-    }
+    if (!oobCode) { setError("Invalid or expired link."); setChecking(false); return; }
     verifyPasswordResetCode(auth, oobCode)
       .then(() => { setValidCode(true); setChecking(false); })
-      .catch(() => { setError("Link invalid sau expirat."); setChecking(false); });
+      .catch(() => { setError("Invalid or expired link."); setChecking(false); });
   }, [oobCode]);
 
   const handleReset = async () => {
     setError("");
-    if (newPassword !== confirmPassword) {
-      setError("Parolele nu coincid.");
-      return;
-    }
-    if (newPassword.length < 6) {
-      setError("Parola trebuie sa aiba minim 6 caractere.");
-      return;
-    }
+    if (newPassword !== confirmPassword) { setError("Passwords do not match."); return; }
+    if (newPassword.length < 6) { setError("Password must be at least 6 characters."); return; }
     if (!oobCode) return;
     setLoading(true);
     try {
@@ -47,7 +37,7 @@ function ResetPasswordForm() {
       setDone(true);
       setTimeout(() => router.push("/login"), 3000);
     } catch {
-      setError("A aparut o eroare. Linkul poate fi expirat.");
+      setError("An error occurred. The link may have expired.");
     } finally {
       setLoading(false);
     }
@@ -55,19 +45,17 @@ function ResetPasswordForm() {
 
   const inp = "w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f5a623]";
 
-  if (checking) return (
-    <div className="text-center text-gray-400">Se verifica linkul...</div>
-  );
+  if (checking) return <div className="text-center text-gray-400">Verifying link...</div>;
 
   return (
     <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-8">
       {done ? (
         <div className="text-center">
           <div className="text-4xl mb-4">✅</div>
-          <h3 className="text-white font-semibold mb-2">Parola a fost resetata!</h3>
-          <p className="text-gray-400 text-sm mb-6">Vei fi redirectionat la login in cateva secunde.</p>
+          <h3 className="text-white font-semibold mb-2">Password reset successfully!</h3>
+          <p className="text-gray-400 text-sm mb-6">You will be redirected to login in a few seconds.</p>
           <Link href="/login" className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition block text-center">
-            Mergi la login
+            Go to login
           </Link>
         </div>
       ) : !validCode ? (
@@ -75,38 +63,23 @@ function ResetPasswordForm() {
           <div className="text-4xl mb-4">❌</div>
           <p className="text-red-400 text-sm mb-4">{error}</p>
           <Link href="/forgot-password" className="text-[#f5a623] hover:underline text-sm">
-            Cere un nou link
+            Request a new link
           </Link>
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-gray-400 text-sm">Introdu noua parola pentru contul tau.</p>
-          <input
-            type="password"
-            placeholder="Parola noua"
-            value={newPassword}
-            onChange={e => setNewPassword(e.target.value)}
-            className={inp}
-          />
-          <input
-            type="password"
-            placeholder="Confirma parola noua"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            className={inp}
-          />
+          <p className="text-gray-400 text-sm">Enter your new password.</p>
+          <input type="password" placeholder="New password" value={newPassword}
+            onChange={e => setNewPassword(e.target.value)} className={inp} />
+          <input type="password" placeholder="Confirm new password" value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)} className={inp} />
           {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button
-            onClick={handleReset}
-            disabled={loading || !newPassword || !confirmPassword}
-            className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50"
-          >
-            {loading ? "Se salveaza..." : "Reseteaza parola"}
+          <button onClick={handleReset} disabled={loading || !newPassword || !confirmPassword}
+            className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50">
+            {loading ? "Saving..." : "Reset password"}
           </button>
           <p className="text-center text-gray-400 text-sm">
-            <Link href="/login" className="text-[#f5a623] hover:underline">
-              Inapoi la login
-            </Link>
+            <Link href="/login" className="text-[#f5a623] hover:underline">Back to login</Link>
           </p>
         </div>
       )}
@@ -120,11 +93,11 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-white">
-            Trip<span className="text-[#f5a623]">Profit</span>
+            Your<span className="text-[#f5a623]">App</span>
           </h1>
-          <p className="text-gray-400 mt-2">Reseteaza parola</p>
+          <p className="text-gray-400 mt-2">Reset your password</p>
         </div>
-        <Suspense fallback={<div className="text-center text-gray-400">Se incarca...</div>}>
+        <Suspense fallback={<div className="text-center text-gray-400">Loading...</div>}>
           <ResetPasswordForm />
         </Suspense>
       </div>

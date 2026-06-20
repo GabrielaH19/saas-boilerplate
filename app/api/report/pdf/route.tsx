@@ -5,13 +5,11 @@ import { renderToBuffer, Document, Page, Text, View, StyleSheet } from "@react-p
 
 const app =
   getApps().length === 0
-    ? initializeApp({
-        credential: cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-        } as any),
-      })
+    ? initializeApp({ credential: cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      } as any) })
     : getApps()[0];
 
 const db = getFirestore(app);
@@ -39,28 +37,18 @@ const pdfStyles = StyleSheet.create({
   tdPos: { fontSize: 8, color: "#3B6D11", fontFamily: "Helvetica-Bold" },
   tdNeg: { fontSize: 8, color: "#A32D2D", fontFamily: "Helvetica-Bold" },
   tdTotal: { fontSize: 8, color: "#333333", fontFamily: "Helvetica-Bold" },
-  col1: { width: "9%" },
-  col2: { width: "22%" },
-  col3: { width: "16%" },
-  col4: { width: "16%" },
-  col5: { width: "12%" },
-  col6: { width: "12%" },
-  col7: { width: "13%" },
+  col1: { width: "15%" },
+  col2: { width: "45%" },
+  col3: { width: "20%" },
+  col4: { width: "20%" },
   footer: { marginTop: 20, paddingTop: 10, borderTop: "0.5px solid #e0e0e0", alignItems: "center" },
   footerText: { fontSize: 7, color: "#999999" },
 });
-
-const tr = {
-  ro: { title: "Raport lunar", tripsCount: "Curse efectuate", totalRevenue: "Venit total", totalCosts: "Costuri totale", totalProfit: "Profit net", tripDetail: "Detaliu curse", date: "Data", route: "Ruta", truck: "Camion", client: "Client", revenue: "Venit", costs: "Costuri", profit: "Profit", total: "Total", rights: "2026 TripProfit. Toate drepturile rezervate.", noClient: "Fara client", locale: "ro-RO" },
-  it: { title: "Report mensile", tripsCount: "Viaggi effettuati", totalRevenue: "Ricavo totale", totalCosts: "Costi totali", totalProfit: "Profitto netto", tripDetail: "Dettaglio viaggi", date: "Data", route: "Percorso", truck: "Camion", client: "Cliente", revenue: "Ricavo", costs: "Costi", profit: "Profitto", total: "Totale", rights: "2026 TripProfit. Tutti i diritti riservati.", noClient: "Nessun cliente", locale: "it-IT" },
-};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
   const month = searchParams.get("month");
-  const locale = searchParams.get("locale") === "it" ? "it" : "ro";
-  const t = tr[locale];
 
   if (!userId || !month) {
     return NextResponse.json({ error: "Missing params" }, { status: 400 });
@@ -71,78 +59,74 @@ export async function GET(request: NextRequest) {
   const userName = userData?.name || userData?.email || "User";
   const userEmail = userData?.email || "";
 
-  const tripsSnap = await db
-    .collection("trips")
+  // TODO: Replace "items" with your own Firestore collection
+  const itemsSnap = await db.collection("items")
     .where("userId", "==", userId)
-    .where("tripDate", ">=", `${month}-01`)
-    .where("tripDate", "<", `${month}-32`)
+    .where("date", ">=", `${month}-01`)
+    .where("date", "<", `${month}-32`)
     .get();
 
-  const trips = tripsSnap.docs.map((d) => ({ id: d.id, ...d.data() } as any));
+  const items = itemsSnap.docs.map(d => ({ id: d.id, ...d.data() } as any));
 
-  if (trips.length === 0) {
-    return NextResponse.json({ error: "No trips" }, { status: 404 });
+  if (items.length === 0) {
+    return NextResponse.json({ error: "No items" }, { status: 404 });
   }
 
-  const totalRevenue = trips.reduce((s, tr) => s + (tr.results?.revenue || tr.revenue || 0), 0);
-  const totalCosts = trips.reduce((s, tr) => s + (tr.results?.totalCosts || tr.totalCosts || 0), 0);
-  const totalProfit = trips.reduce((s, tr) => s + (tr.results?.profit || 0), 0);
-  const monthName = new Date(month + "-01").toLocaleString(t.locale, { month: "long", year: "numeric" });
-  const fmt = (n: number) => n.toLocaleString(t.locale, { minimumFractionDigits: 0 }) + " EUR";
+  const totalRevenue = items.reduce((s, item) => s + (item.revenue || 0), 0);
+  const totalCosts = items.reduce((s, item) => s + (item.costs || 0), 0);
+  const totalProfit = items.reduce((s, item) => s + (item.profit || 0), 0);
+  const monthName = new Date(month + "-01").toLocaleString("en-US", { month: "long", year: "numeric" });
+  const fmt = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 0 }) + " EUR";
 
   const pdf = (
     <Document>
       <Page size="A4" style={pdfStyles.page}>
         <View style={pdfStyles.header}>
-          <Text style={pdfStyles.logo}>TripProfit</Text>
-          <Text style={pdfStyles.logoSub}>{t.title} — {monthName}</Text>
+          <Text style={pdfStyles.logo}>YourApp</Text>
+          <Text style={pdfStyles.logoSub}>Monthly Report — {monthName}</Text>
           <Text style={pdfStyles.userLine}>{userName} · {userEmail}</Text>
         </View>
+
         <View style={pdfStyles.cards}>
-          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>{t.tripsCount}</Text><Text style={pdfStyles.cardValue}>{trips.length}</Text></View>
-          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>{t.totalRevenue}</Text><Text style={pdfStyles.cardValue}>{fmt(totalRevenue)}</Text></View>
-          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>{t.totalCosts}</Text><Text style={pdfStyles.cardValue}>{fmt(totalCosts)}</Text></View>
-          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>{t.totalProfit}</Text><Text style={totalProfit >= 0 ? pdfStyles.cardValuePos : pdfStyles.cardValueNeg}>{totalProfit >= 0 ? "+" : ""}{fmt(totalProfit)}</Text></View>
+          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>Items</Text><Text style={pdfStyles.cardValue}>{items.length}</Text></View>
+          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>Total Revenue</Text><Text style={pdfStyles.cardValue}>{fmt(totalRevenue)}</Text></View>
+          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>Total Costs</Text><Text style={pdfStyles.cardValue}>{fmt(totalCosts)}</Text></View>
+          <View style={pdfStyles.card}><Text style={pdfStyles.cardLabel}>Net Profit</Text><Text style={totalProfit >= 0 ? pdfStyles.cardValuePos : pdfStyles.cardValueNeg}>{totalProfit >= 0 ? "+" : ""}{fmt(totalProfit)}</Text></View>
         </View>
-        <Text style={pdfStyles.sectionTitle}>{t.tripDetail}</Text>
+
+        <Text style={pdfStyles.sectionTitle}>Item Details</Text>
         <View style={pdfStyles.table}>
           <View style={pdfStyles.tableHeader}>
-            <Text style={[pdfStyles.th, pdfStyles.col1]}>{t.date}</Text>
-            <Text style={[pdfStyles.th, pdfStyles.col2]}>{t.route}</Text>
-            <Text style={[pdfStyles.th, pdfStyles.col3]}>{t.truck}</Text>
-            <Text style={[pdfStyles.th, pdfStyles.col4]}>{t.client}</Text>
-            <Text style={[pdfStyles.th, pdfStyles.col5]}>{t.revenue}</Text>
-            <Text style={[pdfStyles.th, pdfStyles.col6]}>{t.costs}</Text>
-            <Text style={[pdfStyles.th, pdfStyles.col7]}>{t.profit}</Text>
+            <Text style={[pdfStyles.th, pdfStyles.col1]}>Date</Text>
+            <Text style={[pdfStyles.th, pdfStyles.col2]}>Description</Text>
+            <Text style={[pdfStyles.th, pdfStyles.col3]}>Revenue</Text>
+            <Text style={[pdfStyles.th, pdfStyles.col4]}>Profit</Text>
           </View>
-          {trips.map((trip: any, i: number) => {
-            const profit = trip.results?.profit || 0;
-            const revenue = trip.results?.revenue || trip.revenue || 0;
-            const costs = trip.results?.totalCosts || trip.totalCosts || 0;
-            const isLast = i === trips.length - 1;
+
+          {items.map((item: any, i: number) => {
+            const profit = item.profit || 0;
+            const isLast = i === items.length - 1;
             const profitStyle = profit > 0 ? pdfStyles.tdPos : profit < 0 ? pdfStyles.tdNeg : pdfStyles.td;
             return (
-              <View key={trip.id} style={isLast ? pdfStyles.tableRowLast : pdfStyles.tableRow}>
-                <Text style={[pdfStyles.td, pdfStyles.col1]}>{trip.tripDate || "-"}</Text>
-                <Text style={[pdfStyles.td, pdfStyles.col2]}>{trip.snapshots?.fromCity || trip.fromCity || "-"} — {trip.snapshots?.toCity || trip.toCity || "-"}</Text>
-                <Text style={[pdfStyles.td, pdfStyles.col3]}>{trip.snapshots?.truckName || "-"}</Text>
-                <Text style={[pdfStyles.td, pdfStyles.col4]}>{trip.snapshots?.clientName || t.noClient}</Text>
-                <Text style={[pdfStyles.td, pdfStyles.col5]}>{fmt(revenue)}</Text>
-                <Text style={[pdfStyles.td, pdfStyles.col6]}>{fmt(costs)}</Text>
-                <Text style={[profitStyle, pdfStyles.col7]}>{profit >= 0 ? "+" : ""}{fmt(profit)}</Text>
+              <View key={item.id} style={isLast ? pdfStyles.tableRowLast : pdfStyles.tableRow}>
+                <Text style={[pdfStyles.td, pdfStyles.col1]}>{item.date || "-"}</Text>
+                <Text style={[pdfStyles.td, pdfStyles.col2]}>{item.description || "-"}</Text>
+                <Text style={[pdfStyles.td, pdfStyles.col3]}>{fmt(item.revenue || 0)}</Text>
+                <Text style={[profitStyle, pdfStyles.col4]}>{profit >= 0 ? "+" : ""}{fmt(profit)}</Text>
               </View>
             );
           })}
+
           <View style={pdfStyles.tableRowTotal}>
-            <Text style={[pdfStyles.tdTotal, { width: "63%" }]}>{t.total}</Text>
-            <Text style={[pdfStyles.tdTotal, pdfStyles.col5]}>{fmt(totalRevenue)}</Text>
-            <Text style={[pdfStyles.tdTotal, pdfStyles.col6]}>{fmt(totalCosts)}</Text>
-            <Text style={[totalProfit >= 0 ? pdfStyles.tdPos : pdfStyles.tdNeg, pdfStyles.col7]}>{totalProfit >= 0 ? "+" : ""}{fmt(totalProfit)}</Text>
+            <Text style={[pdfStyles.tdTotal, { width: "60%" }]}>Total</Text>
+            <Text style={[pdfStyles.tdTotal, pdfStyles.col3]}>{fmt(totalRevenue)}</Text>
+            <Text style={[totalProfit >= 0 ? pdfStyles.tdPos : pdfStyles.tdNeg, pdfStyles.col4]}>{totalProfit >= 0 ? "+" : ""}{fmt(totalProfit)}</Text>
           </View>
         </View>
+
         <View style={pdfStyles.footer}>
-          <Text style={pdfStyles.footerText}>tripprofit.ro · contact@tripprofit.ro</Text>
-          <Text style={pdfStyles.footerText}>{t.rights}</Text>
+          <Text style={pdfStyles.footerText}>yourapp.com · contact@yourapp.com</Text>
+          <Text style={pdfStyles.footerText}>© 2026 YourApp. All rights reserved.</Text>
         </View>
       </Page>
     </Document>
@@ -153,7 +137,7 @@ export async function GET(request: NextRequest) {
   return new NextResponse(buffer, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="TripProfit-${month}.pdf"`,
+      "Content-Disposition": `attachment; filename="YourApp-Report-${month}.pdf"`,
     },
   });
 }

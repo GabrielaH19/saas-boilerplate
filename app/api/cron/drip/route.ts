@@ -34,16 +34,13 @@ export async function GET(req: NextRequest) {
   for (const doc of usersSnap.docs) {
     const user = doc.data();
     const email = user.email;
-    const name = user.name || "transportator";
+    const name = user.name || "user";
     const plan = user.plan || "free";
 
     if (!email) continue;
-    if (plan !== "free") continue; // emailurile astea sunt doar pentru useri in trial/free
+    if (plan !== "free") continue; // drip emails only for trial/free users
 
-    const createdAt = user.createdAt
-      ? new Date(user.createdAt)
-      : null;
-
+    const createdAt = user.createdAt ? new Date(user.createdAt) : null;
     if (!createdAt) continue;
 
     const daysSince = Math.floor(

@@ -22,13 +22,13 @@ export async function POST(req: NextRequest) {
     const { plan, userId, email, createdAt, founderPricing } = await req.json();
 
     if (!plan || !PRICE_IDS[plan]) {
-      return NextResponse.json({ error: "Plan invalid" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
-    // Foloseste pretul fondator daca e eligibil
+    // Use founder price if eligible
     const priceId = founderPricing ? PRICE_IDS_FOUNDER[plan] : PRICE_IDS[plan];
 
-    // Calculeaza zilele ramase din trial
+    // Calculate remaining trial days
     const daysSince = createdAt
       ? Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24))
       : 30;
@@ -38,21 +38,10 @@ export async function POST(req: NextRequest) {
       mode: "subscription",
       payment_method_types: ["card"],
       customer_email: email,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        userId,
-        plan,
-      },
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { userId, plan },
       subscription_data: {
-        metadata: {
-          userId,
-          plan,
-        },
+        metadata: { userId, plan },
         ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
       },
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true&plan=${plan}`,
@@ -60,7 +49,6 @@ export async function POST(req: NextRequest) {
     };
 
     const session = await stripe.checkout.sessions.create(sessionConfig);
-
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error("Stripe error:", error);

@@ -1,4 +1,4 @@
-const CACHE_NAME = "tripprofit-v1";
+const CACHE_NAME = "yourapp-v1";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
@@ -26,7 +26,6 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Nu interceptam request-uri API sau Firebase
   if (
     event.request.url.includes("/api/") ||
     event.request.url.includes("firebase") ||
@@ -36,7 +35,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Network first pentru pagini, cache fallback
   event.respondWith(
     fetch(event.request)
       .then((response) => {

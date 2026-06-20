@@ -1,39 +1,34 @@
-export type Plan = "free" | "pro" | "fleet";
+export type Plan = "free" | "basic" | "pro" | "premium";
 
 export const PLANS = {
   free: {
     name: "Free",
     price: 0,
-    tripsPerMonth: 5,
-    features: ["5 calcule / lună", "Verdict de bază", "Istoric curse"],
+    itemsPerMonth: 3,
+    features: ["3 items / month", "Basic features", "30-day history"],
+  },
+  basic: {
+    name: "Basic",
+    price: 9,
+    itemsPerMonth: 15,
+    features: ["15 items / month", "Core features", "60-day history", "Referral program"],
   },
   pro: {
     name: "Pro",
-    price: 7,
-    tripsPerMonth: Infinity,
-    features: [
-      "Calcule nelimitate",
-      "Verdict complet",
-      "Istoric curse",
-      "Raport lunar",
-      "Profil camion",
-      "Invită șoferi — câștigă 3€",
-    ],
+    price: 19,
+    itemsPerMonth: Infinity,
+    features: ["Unlimited items", "All features", "365-day history", "Reports", "Referral program"],
   },
-  fleet: {
-    name: "Flotă",
-    price: 29,
-    tripsPerMonth: Infinity,
-    features: [
-      "Tot din Pro",
-      "Până la 10 șoferi",
-      "Dashboard flotă",
-      "Suport prioritar",
-    ],
+  premium: {
+    name: "Premium",
+    price: 39,
+    itemsPerMonth: Infinity,
+    features: ["Everything in Pro", "Unlimited users", "PDF export", "Priority support"],
   },
 };
 
-export function canAddTrip(plan: Plan, tripsThisMonth: number): boolean {
-  if (plan === "pro" || plan === "fleet") return true;
-  return tripsThisMonth < PLANS.free.tripsPerMonth;
+export function canAddItem(plan: Plan, itemsThisMonth: number): boolean {
+  if (plan === "pro" || plan === "premium") return true;
+  if (plan === "basic") return itemsThisMonth < PLANS.basic.itemsPerMonth;
+  return itemsThisMonth < PLANS.free.itemsPerMonth;
 }

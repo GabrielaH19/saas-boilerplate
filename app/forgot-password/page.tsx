@@ -20,9 +20,9 @@ export default function ForgotPasswordPage() {
       setSent(true);
     } catch (err: any) {
       if (err.code === "auth/user-not-found") {
-        setError("Nu există niciun cont cu acest email.");
+        setError("No account found with this email.");
       } else {
-        setError("A apărut o eroare. Încearcă din nou.");
+        setError("An error occurred. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -34,31 +34,28 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-white">
-            Trip<span className="text-[#f5a623]">Profit</span>
+            Your<span className="text-[#f5a623]">App</span>
           </h1>
-          <p className="text-gray-400 mt-2">Resetează parola</p>
+          <p className="text-gray-400 mt-2">Reset your password</p>
         </div>
 
         <div className="bg-[#161616] border border-[#2e2e2e] rounded-xl p-8">
           {sent ? (
             <div className="text-center">
               <div className="text-4xl mb-4">✉️</div>
-              <h3 className="text-white font-semibold mb-2">Email trimis!</h3>
+              <h3 className="text-white font-semibold mb-2">Email sent!</h3>
               <p className="text-gray-400 text-sm mb-6">
-                Am trimis un link de resetare la <span className="text-white">{email}</span>.
-                Verifică și folderul Spam dacă nu îl găsești.
+                We sent a reset link to <span className="text-white">{email}</span>.
+                Check your spam folder if you don't see it.
               </p>
-              <Link
-                href="/login"
-                className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition block text-center"
-              >
-                Înapoi la login
+              <Link href="/login" className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition block text-center">
+                Back to login
               </Link>
             </div>
           ) : (
             <form onSubmit={handleReset} className="space-y-4">
               <p className="text-gray-400 text-sm mb-4">
-                Introdu emailul contului tău și îți trimitem un link de resetare a parolei.
+                Enter your account email and we'll send you a password reset link.
               </p>
               <div>
                 <label className="block text-xs text-gray-400 uppercase tracking-wider mb-2">
@@ -69,7 +66,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   className="w-full bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#f5a623]"
-                  placeholder="email@tau.com"
+                  placeholder="you@example.com"
                   required
                 />
               </div>
@@ -79,11 +76,11 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="w-full bg-[#f5a623] text-black font-semibold py-3 rounded-lg hover:bg-[#e8951a] transition disabled:opacity-50"
               >
-                {loading ? "Se trimite..." : "Trimite link resetare"}
+                {loading ? "Sending..." : "Send reset link"}
               </button>
               <p className="text-center text-gray-400 text-sm">
                 <Link href="/login" className="text-[#f5a623] hover:underline">
-                  Înapoi la login
+                  Back to login
                 </Link>
               </p>
             </form>

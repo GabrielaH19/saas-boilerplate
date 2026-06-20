@@ -3,45 +3,33 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useLang } from "./lib/LanguageContext";
-import LangSwitcher from "./lib/LangSwitcher";
 
-function FounderCounter({ locale }: { locale: string }) {
+function FounderCounter() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        const res = await fetch("/api/founder-count");
-        const data = await res.json();
-        setCount(data.count || 0);
-      } catch {
-        setCount(0);
-      }
-    };
-    fetchCount();
+    fetch("/api/founder-count")
+      .then(r => r.json())
+      .then(d => setCount(d.count || 0))
+      .catch(() => setCount(0));
   }, []);
 
   const remaining = Math.max(0, 100 - count);
-  const it = locale === "it";
   if (remaining <= 0) return null;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 justify-center">
       <div className="flex gap-1">
         {Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className={`h-3 w-8 rounded-full ${i < Math.ceil(count / 10) ? "bg-[#f5a623]" : "bg-[#2e2e2e]"}`} />
         ))}
       </div>
-      <span className="text-sm text-gray-300">
-        {it ? `${remaining} posti rimasti su 100` : `${remaining} locuri rămase din 100`}
-      </span>
+      <span className="text-sm text-gray-300">{remaining} spots remaining out of 100</span>
     </div>
   );
 }
 
 export default function LandingPage() {
-  const { locale } = useLang();
   const router = useRouter();
 
   useEffect(() => {
@@ -55,104 +43,63 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
+
       {/* NAV */}
-      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-lg font-semibold">Trip<span className="text-[#f5a623]">Profit</span></div>
-        <div className="hidden md:flex items-center gap-6">
-          <a href="#functii" className="text-sm text-gray-400 hover:text-white transition">{locale === "it" ? "Funzioni" : "Functii"}</a>
-          <a href="#preturi" className="text-sm text-gray-400 hover:text-white transition">{locale === "it" ? "Prezzi" : "Preturi"}</a>
-          <Link href="/login" className="text-sm text-gray-400 hover:text-white">{locale === "it" ? "Accedi" : "Intra in cont"}</Link>
-          <LangSwitcher />
+      <nav className="sticky top-0 z-50 bg-[#0d0d0d] border-b border-[#1e1e1e] px-6 py-4 flex items-center justify-between">
+        <div className="text-lg font-semibold">Your<span className="text-[#f5a623]">App</span></div>
+        <div className="flex items-center gap-4">
+          <a href="#features" className="text-sm text-gray-400 hover:text-white transition">Features</a>
+          <a href="#pricing" className="text-sm text-gray-400 hover:text-white transition">Pricing</a>
+          <Link href="/login" className="text-sm text-gray-400 hover:text-white">Sign in</Link>
           <Link href="/register" className="bg-[#f5a623] text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#e8951a] transition">
-            {locale === "it" ? "Prova gratis" : "Incearca gratuit"}
-          </Link>
-        </div>
-        <div className="flex md:hidden items-center gap-3">
-          <LangSwitcher />
-          <Link href="/register" className="bg-[#f5a623] text-black text-xs font-semibold px-3 py-2 rounded-lg hover:bg-[#e8951a] transition">
-            {locale === "it" ? "Prova gratis" : "Incearca gratuit"}
+            Try for free
           </Link>
         </div>
       </nav>
 
       {/* HERO */}
-      <div className="max-w-7xl mx-auto px-6 pt-24 pb-14">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
-              {locale === "it" ? "Per piccole aziende di trasporto · 1-20 camion" : "Pentru firme mici de transport · 1-20 camioane"}
-            </div>
-            <h1 className="text-3xl sm:text-5xl font-semibold leading-tight mb-6 text-white">
-              {locale === "it" ? <>In 10 secondi sai se<br />un viaggio <span className="text-[#f5a623]">vale o no.</span></> : <>În 10 secunde știi dacă<br />o cursă <span className="text-[#f5a623]">merită sau nu.</span></>}
-            </h1>
-            <p className="text-base md:text-xl text-gray-300 mb-4">
-              {locale === "it" ? "Inserisci i dati del viaggio. TripProfit calcola tutto e ti dice subito: ACCETTA, NEGOZIA o RIFIUTA." : "Introduci datele cursei. TripProfit calculează tot și îți spune direct: ACCEPTĂ, NEGOCIAZĂ sau REFUZĂ."}
-            </p>
-            <p className="text-sm text-gray-500 mb-10">
-              {locale === "it" ? "Non è un software complesso. È uno strumento che calcola la redditività reale di ogni viaggio." : "Nu este un software complex. Este un instrument care calculează profitabilitatea reală a fiecărei curse."}
-            </p>
-            <div className="flex items-center gap-4 mb-4">
-              <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-8 py-4 rounded-lg hover:bg-[#e8951a] transition text-base">
-                {locale === "it" ? "Prova 30 giorni gratis" : "Încearcă 30 zile gratuit"}
-              </Link>
-              <Link href="/login" className="border border-[#3a3a3a] text-gray-300 px-8 py-4 rounded-lg hover:text-white hover:border-[#555] transition text-base">
-                {locale === "it" ? "Accedi" : "Intră în cont"}
-              </Link>
-            </div>
-            <p className="text-xs text-gray-600">{locale === "it" ? "Senza carta di credito. Senza impegni." : "Fără card bancar. Fără angajamente."}</p>
-          </div>
-
-          <div className="bg-[#0a1f0a] border border-green-900 rounded-2xl p-8">
-            <div className="text-sm text-gray-500 mb-4">{locale === "it" ? "Viaggio București → München · 1.200 km · 1.850€" : "Cursă București → München · 1.200 km · 1.850€"}</div>
-            <div className="text-6xl font-bold text-green-400 mb-2">+482 €</div>
-            <div className="text-3xl font-bold text-green-400 mb-6">{locale === "it" ? "ACCETTA" : "ACCEPTĂ"}</div>
-            <div className="border-t border-green-900 pt-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{locale === "it" ? "Costo carburante" : "Cost combustibil"}</span>
-                <span className="text-white">753 €</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{locale === "it" ? "Taxe + indemnizatie" : "Taxe + diurna"}</span>
-                <span className="text-white">315 €</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{locale === "it" ? "Costo fisso camion" : "Cost fix camion"}</span>
-                <span className="text-white">300 €</span>
-              </div>
-              <div className="flex justify-between text-sm font-semibold border-t border-green-900 pt-2 mt-2">
-                <span className="text-gray-300">{locale === "it" ? "Costo totale" : "Cost total"}</span>
-                <span className="text-white">1.368 €</span>
-              </div>
-            </div>
-            <div className="mt-4 text-xs text-gray-600 text-center">1.54 €/km · {locale === "it" ? "sopra la soglia minima" : "peste pragul minim setat de tine"}</div>
-          </div>
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-14 text-center">
+        <div className="inline-block bg-[#1a1a00] text-[#f5a623] border border-[#3a3000] text-xs px-4 py-2 rounded-full mb-8">
+          Your tagline or niche here
         </div>
+        <h1 className="text-4xl sm:text-6xl font-semibold leading-tight mb-6 text-white">
+          Your main headline <span className="text-[#f5a623]">goes here.</span>
+        </h1>
+        <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
+          Describe your product value proposition in one or two sentences. What does it do and why does it matter?
+        </p>
+        <p className="text-sm text-gray-500 mb-10">No complicated setup. Just results.</p>
+        <div className="flex items-center gap-4 justify-center mb-4">
+          <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-8 py-4 rounded-lg hover:bg-[#e8951a] transition text-base">
+            Try 30 days free
+          </Link>
+          <Link href="/login" className="border border-[#3a3a3a] text-gray-300 px-8 py-4 rounded-lg hover:text-white hover:border-[#555] transition text-base">
+            Sign in
+          </Link>
+        </div>
+        <p className="text-xs text-gray-600">No credit card required. No commitments.</p>
       </div>
 
-      {/* CREDIBILITATE */}
+      {/* SOCIAL PROOF */}
       <div className="border-t border-b border-[#1e1e1e] bg-[#111] py-7 px-6 text-center mb-24">
         <p className="text-base text-gray-300 max-w-lg mx-auto">
-          {locale === "it" ? <>Costruito per le piccole aziende di trasporto che gestiscono viaggi internazionali e hanno bisogno di chiarezza finanziaria rapida.{" "}<strong className="text-white">TripProfit calcola prima che appaiano le perdite.</strong></> : <>Construit pentru firmele mici de transport care gestionează curse internaționale și au nevoie de claritate financiară rapidă.{" "}<strong className="text-white">TripProfit calculează înainte să apară pierderile.</strong></>}
+          Built for [your target audience] who need [your core benefit].{" "}
+          <strong className="text-white">YourApp solves [the problem] before it becomes expensive.</strong>
         </p>
       </div>
 
-      {/* PROBLEMA */}
+      {/* PROBLEM */}
       <div className="max-w-6xl mx-auto px-6 mb-24 text-center">
-        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Il problema" : "Problema"}</div>
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Perché le piccole aziende di trasporto perdono soldi?" : "De ce pierd bani firmele mici de transport?"}</h2>
-        <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Non per mancanza di lavoro. Ma per mancanza di una visione chiara sui costi reali." : "Nu din lipsă de muncă. Ci din lipsa unei imagini clare asupra costurilor reale."}</p>
+        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">The Problem</div>
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">Why does [your audience] struggle with [problem]?</h2>
+        <p className="text-lg text-gray-400 mb-14">Not for lack of effort. But for lack of the right tools.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {(locale === "it" ? [
-            { t: "Viaggi accettati sotto il costo reale", d: "Il prezzo negoziato copre il carburante, ma non include leasing, assicurazione e stipendio dell'autista. Senza un calcolo completo, la decisione viene presa senza tutte le informazioni." },
-            { t: "Impossibile sapere quale camion perde", d: "Se hai tre camion e uno è in perdita da due mesi, non saprai esattamente quale sia il problema senza un registro chiaro per ogni unità." },
-            { t: "Clienti con margine basso e lunghi tempi di pagamento", d: "Alcuni clienti portano grandi volumi di viaggi, ma a prezzi bassi e con termini di pagamento di 60-90 giorni. L'impatto reale sulla liquidità diventa visibile solo dopo alcuni mesi." },
-            { t: "Blocchi di liquidità difficili da anticipare", d: "Le fatture emesse non si trasformano automaticamente in denaro disponibile. Tra il momento della prestazione e quello dell'incasso, i costi fissi continuano a scorrere." },
-          ] : [
-            { t: "Curse acceptate sub costul real", d: "Prețul negociat acoperă combustibilul, dar nu include leasing-ul, asigurarea și salariul șoferului. Fără un calcul complet, decizia este luată fără toate informațiile necesare." },
-            { t: "Imposibil de știut care camion produce pierderi", d: "Dacă ai trei camioane și unul funcționează în pierdere de două luni, nu vei ști exact care este problema fără o evidență clară pe fiecare unitate." },
-            { t: "Clienți cu marjă mică și termene lungi de plată", d: "Unii clienți aduc volume mari de curse, dar la prețuri mici și cu termene de plată de 60-90 zile. Impactul real asupra lichidității firmei devine vizibil abia după câteva luni." },
-            { t: "Blocaje de lichiditate greu de anticipat", d: "Facturile emise nu se transformă automat în bani disponibili. Între momentul prestării serviciului și cel al încasării, costurile fixe continuă să curgă." },
-          ]).map((item, i) => (
+          {[
+            { t: "Problem 1", d: "Describe the first pain point your target audience faces. Be specific and empathetic." },
+            { t: "Problem 2", d: "Describe the second pain point. Use the language your customers use." },
+            { t: "Problem 3", d: "Describe the third pain point. Focus on the emotional and financial cost." },
+            { t: "Problem 4", d: "Describe the fourth pain point. This builds the case for your solution." },
+          ].map((item, i) => (
             <div key={i} className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-7 text-left">
               <div className="text-lg font-semibold text-white mb-3">{item.t}</div>
               <div className="text-sm text-gray-400 leading-relaxed">{item.d}</div>
@@ -161,28 +108,21 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* SOLUTIA */}
-      <div id="functii" className="bg-[#0a0a0a] border-t border-b border-[#1e1e1e] py-24 px-6 mb-24">
+      {/* FEATURES */}
+      <div id="features" className="bg-[#0a0a0a] border-t border-b border-[#1e1e1e] py-24 px-6 mb-24">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Funzionalità" : "Funcționalități"}</div>
-          <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Cosa fa TripProfit per la tua azienda" : "Ce face TripProfit pentru firma ta"}</h2>
-          <p className="text-lg text-gray-400 mb-14">{locale === "it" ? "Tutte le informazioni rilevanti, disponibili immediatamente, senza cercarle tu." : "Toate informațiile relevante, disponibile imediat, fără să le cauți tu."}</p>
+          <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">Features</div>
+          <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">What YourApp does for you</h2>
+          <p className="text-lg text-gray-400 mb-14">All the tools you need, available instantly.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {(locale === "it" ? [
-              { n: "01", t: "Verdetto istantaneo per viaggio", d: "Inserisci i dati del viaggio e ricevi subito il verdetto: ACCETTA, NEGOZIA o RIFIUTA, basato sui costi reali del tuo camion." },
-              { n: "02", t: "Report per camion", d: "Visualizzi il profitto, il costo per km e il numero di viaggi per ogni camion della flotta. Identifichi subito le unità con prestazioni scarse." },
-              { n: "03", t: "Punteggio di rischio per cliente", d: "Ogni cliente riceve un punteggio calcolato automaticamente in base al profitto generato, al prezzo medio per km e ai tempi di pagamento rispettati." },
-              { n: "04", t: "Avviso prima del blocco finanziario", d: "Quando la somma delle fatture in scadenza non copre gli obblighi del mese, ricevi una notifica nell'app. Hai tempo per agire prima che appaia il problema." },
-              { n: "05", t: "Costo reale per km", d: "Calcolato automaticamente in base ai dati inseriti da te: leasing, assicurazione, stipendio, carburante. Ogni viaggio viene valutato rispetto a questo costo." },
-              { n: "06", t: "Notifiche automatiche", d: "L'app ti invia avvisi direttamente nella dashboard quando un camion registra perdite o quando un cliente supera il termine di pagamento." },
-            ] : [
-              { n: "01", t: "Verdict instant per cursă", d: "Introduci datele cursei și primești imediat verdictul: ACCEPTĂ, NEGOCIAZĂ sau REFUZĂ, bazat pe costurile reale ale camionului tău." },
-              { n: "02", t: "Raport per camion", d: "Vizualizezi profitul, costul per km și numărul de curse pentru fiecare camion din flotă. Identifici imediat unitățile cu performanță slabă." },
-              { n: "03", t: "Scor de risc per client", d: "Fiecare client primește un scor calculat automat pe baza profitului generat, a prețului mediu per km și a termenelor de plată respectate." },
-              { n: "04", t: "Alertă înainte de blocaj financiar", d: "Când suma facturilor scadente nu acoperă obligațiile lunii, primești o notificare în aplicație. Ai timp să acționezi înainte să apară problema." },
-              { n: "05", t: "Cost real per km", d: "Calculat automat pe baza datelor introduse de tine: leasing, asigurare, salariu, combustibil. Fiecare cursă este evaluată față de acest cost." },
-              { n: "06", t: "Notificări automate", d: "Aplicația îți transmite alerte direct în dashboard când un camion înregistrează pierderi sau când un client depășește termenul de plată." },
-            ]).map((f, i) => (
+            {[
+              { n: "01", t: "Feature One", d: "Describe what this feature does and why it matters to your user." },
+              { n: "02", t: "Feature Two", d: "Describe what this feature does and why it matters to your user." },
+              { n: "03", t: "Feature Three", d: "Describe what this feature does and why it matters to your user." },
+              { n: "04", t: "Feature Four", d: "Describe what this feature does and why it matters to your user." },
+              { n: "05", t: "Feature Five", d: "Describe what this feature does and why it matters to your user." },
+              { n: "06", t: "Feature Six", d: "Describe what this feature does and why it matters to your user." },
+            ].map((f, i) => (
               <div key={i} className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-6 text-left">
                 <div className="text-xs text-[#f5a623] mb-3">{f.n}</div>
                 <div className="text-base font-semibold text-white mb-2">{f.t}</div>
@@ -190,154 +130,74 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-7 max-w-xl mx-auto mt-12 text-left">
-            <div className="text-base text-gray-300 mb-3 italic">{locale === "it" ? '"Un altro software complicato che non ho tempo di imparare?"' : '"Încă un software complicat pe care nu am timp să îl învăț?"'}</div>
-            <div className="text-sm text-gray-400 leading-relaxed">
-              {locale === "it" ? "La configurazione richiede circa due minuti. Inserisci i costi dell'azienda una sola volta, e da lì ogni viaggio viene calcolato automaticamente. Non è richiesta esperienza tecnica." : "Configurarea durează aproximativ două minute. Introduci costurile firmei o singură dată, iar de acolo fiecare cursă este calculată automat. Nu este necesară experiență tehnică."}
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* PRETURI */}
-      <div id="preturi" className="max-w-6xl mx-auto px-6 mb-24 text-center">
-        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">{locale === "it" ? "Prezzi" : "Prețuri"}</div>
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">{locale === "it" ? "Chiaro e prevedibile." : "Clar și previzibil."}</h2>
-        <div className="mb-6 text-center flex flex-col items-center gap-3">
-          <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-6 py-3 rounded-full whitespace-nowrap">
-            {locale === "it" ? "🔥 Primi 100 · Prezzo fisso per sempre" : "🔥 Primii 100 abonați · Preț redus pe viață"}
+      {/* PRICING */}
+      <div id="pricing" className="max-w-6xl mx-auto px-6 mb-24 text-center">
+        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5">Pricing</div>
+        <h2 className="text-3xl md:text-4xl font-semibold mb-4 text-white">Simple and transparent.</h2>
+        <div className="mb-6 flex flex-col items-center gap-3">
+          <span className="bg-[#1f0a00] border border-[#f5a623] text-[#f5a623] text-sm font-semibold px-6 py-3 rounded-full">
+            🔥 First 100 subscribers · Founder pricing for life
           </span>
-          <FounderCounter locale={locale} />
+          <FounderCounter />
         </div>
-        <p className="text-lg text-gray-400 mb-4">{locale === "it" ? "30 giorni gratis per qualsiasi piano. Senza carta di credito alla registrazione." : "30 de zile gratuit pentru orice plan. Fără card bancar la înregistrare."}</p>
-        <p className="text-sm text-gray-600 mb-14">
-          {locale === "it" ? "Dopo il periodo di prova, scegli il piano adatto alla tua azienda e lo attivi direttamente dall'app, nella sezione Prezzi." : "După perioada de test, alegi planul potrivit firmei tale și îl activezi direct din aplicație, din secțiunea Prețuri."}
-        </p>
+        <p className="text-lg text-gray-400 mb-14">30 days free for any plan. No credit card at registration.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-
-          {/* BASIC */}
-          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl overflow-hidden text-left">
-            <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
-              <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-              <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-144€/anno" : "-144€/an"}</span>
-            </div>
-            <div className="p-8">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Basic</div>
-              <div className="text-sm text-gray-500 line-through decoration-red-500 mb-1">30€/{locale === "it" ? "mese" : "lună"}</div>
-              <div className="text-5xl font-bold text-[#f5a623] mb-1">€18</div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
-                <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-40%</span>
+          {[
+            { id: "basic", name: "Basic", founder: 9, normal: 19, savings: 120, discount: 40, highlight: false, features: ["Feature one", "Feature two", "1 user", "60-day history"], missing: ["Advanced analytics", "Priority support", "Export PDF"] },
+            { id: "pro", name: "Pro", founder: 19, normal: 39, savings: 240, discount: 41, highlight: true, features: ["Everything in Basic", "10 users", "365-day history", "Advanced analytics"], missing: ["Export PDF", "Priority support"] },
+            { id: "premium", name: "Premium", founder: 39, normal: 79, savings: 480, discount: 41, highlight: false, features: ["Everything in Pro", "Unlimited users", "Unlimited history", "Export PDF", "Priority support"], missing: [] },
+          ].map(plan => (
+            <div key={plan.id} className={`rounded-xl overflow-hidden text-left ${plan.highlight ? "bg-[#16143a] border-2 border-[#4f46e5] relative" : "bg-[#161616] border border-[#2a2a2a]"}`}>
+              {plan.highlight && (
+                <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-[#f5a623] text-black text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap z-10">
+                  Most popular
+                </div>
+              )}
+              <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
+                <span className="text-xs font-bold text-white">🔥 Founder price</span>
+                <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">-€{plan.savings}/yr</span>
               </div>
-              <div className="text-sm text-gray-400 mb-6">{locale === "it" ? "Per le aziende che vogliono eliminare i viaggi non redditizi" : "Pentru firmele care vor să elimine cursele neprofitabile"}</div>
-              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-                {(locale === "it" ? ["Calcolatore viaggio con verdetto istantaneo", "Costo reale per km", "1 camion", "Storico 60 giorni"] : ["Calculator cursă cu verdict instant", "Cost real per km", "1 camion", "Istoric 60 zile"]).map(f => (
-                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
-                ))}
-                {(locale === "it" ? ["Clienti + scoring", "Report mensile email", "Cashflow", "Simulazioni", "Export PDF", "Supporto prioritario"] : ["Clienți + scoring", "Raport lunar email", "Cashflow", "Simulări", "Export PDF", "Suport prioritar"]).map(f => (
-                  <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
-                ))}
+              <div className={`p-8 ${plan.highlight ? "pt-12" : ""}`}>
+                <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">{plan.name}</div>
+                <div className="text-sm text-gray-500 line-through mb-1">€{plan.normal}/mo</div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-5xl font-bold text-[#f5a623]">€{plan.founder}</div>
+                  <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-{plan.discount}%</span>
+                </div>
+                <div className="text-xs text-gray-600 mb-6">/mo · founder price for life</div>
+                <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
+                  {plan.features.map(f => (
+                    <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
+                  ))}
+                  {plan.missing.map(f => (
+                    <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
+                  ))}
+                </div>
+                <Link href="/register" className={`block text-center py-3 rounded-lg text-sm font-semibold transition ${plan.highlight ? "bg-[#4f46e5] text-white hover:bg-[#4338ca]" : "border border-[#333] text-white hover:bg-[#1e1e1e]"}`}>
+                  Start free
+                </Link>
               </div>
-              <Link href="/register" className="block text-center border border-[#333] text-white py-3 rounded-lg text-sm hover:bg-[#1e1e1e] transition">
-                {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
-              </Link>
             </div>
-          </div>
-
-          {/* PRO */}
-          <div className="bg-[#16143a] border-2 border-[#4f46e5] rounded-xl overflow-hidden text-left relative">
-            <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-[#f5a623] text-black text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap z-10">
-              {locale === "it" ? "Il più scelto" : "Cel mai ales"}
-            </div>
-            <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
-              <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-              <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-240€/anno" : "-240€/an"}</span>
-            </div>
-            <div className="p-8 pt-12">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Pro</div>
-              <div className="text-sm text-gray-500 line-through decoration-red-500 mb-1">49€/{locale === "it" ? "mese" : "lună"}</div>
-              <div className="text-5xl font-bold text-[#f5a623] mb-1">€29</div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
-                <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
-              </div>
-              <div className="text-sm text-gray-400 mb-6">{locale === "it" ? "Per le aziende che vogliono visibilità completa sulle finanze" : "Pentru firmele care vor vizibilitate completă asupra finanțelor"}</div>
-              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-                {(locale === "it" ? ["Tutto di Basic", "10 camion", "Storico 365 giorni", "Clienti + scoring", "Report mensile email", "Simulazioni"] : ["Tot ce include Basic", "10 camioane", "Istoric 365 zile", "Clienți + scoring", "Raport lunar email", "Simulări"]).map(f => (
-                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
-                ))}
-                {(locale === "it" ? ["Cashflow", "Export PDF", "Supporto prioritario"] : ["Cashflow", "Export PDF", "Suport prioritar"]).map(f => (
-                  <div key={f} className="flex gap-2 text-sm text-gray-600"><span>✗</span>{f}</div>
-                ))}
-              </div>
-              <Link href="/register" className="block text-center bg-[#4f46e5] text-white py-3 rounded-lg text-sm hover:bg-[#4338ca] transition font-semibold">
-                {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
-              </Link>
-            </div>
-          </div>
-
-          {/* PREMIUM */}
-          <div className="bg-[#161616] border border-[#2a2a2a] rounded-xl overflow-hidden text-left">
-            <div className="bg-red-500 px-5 py-2.5 flex items-center justify-between">
-              <span className="text-xs font-bold text-white">🔥 {locale === "it" ? "Prezzo fondatore" : "Preț fondator"}</span>
-              <span className="text-xs font-bold text-white bg-black/20 px-2 py-0.5 rounded">{locale === "it" ? "-384€/anno" : "-384€/an"}</span>
-            </div>
-            <div className="p-8">
-              <div className="text-xs text-gray-500 uppercase tracking-wider mb-4">Premium</div>
-              <div className="text-sm text-gray-500 line-through decoration-red-500 mb-1">79€/{locale === "it" ? "mese" : "lună"}</div>
-              <div className="text-5xl font-bold text-[#f5a623] mb-1">€47</div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs text-gray-600">/{locale === "it" ? "mese · prezzo a vita" : "lună · preț pe viață"}</span>
-                <span className="bg-red-500 text-white text-sm font-bold px-2.5 py-1 rounded-lg">-41%</span>
-              </div>
-              <div className="text-sm text-gray-400 mb-6">{locale === "it" ? "Per le aziende che vogliono il controllo finanziario completo" : "Pentru firmele care vor control financiar complet"}</div>
-              <div className="border-t border-[#2a2a2a] pt-5 mb-7 space-y-2.5">
-                {(locale === "it" ? ["Tutto di Pro", "Camion illimitati", "Storico illimitato", "Cashflow tracking", "Export PDF report", "Supporto prioritario"] : ["Tot ce include Pro", "Camioane nelimitate", "Istoric nelimitat", "Cashflow", "Export PDF raport", "Suport prioritar"]).map(f => (
-                  <div key={f} className="flex gap-2 text-sm text-gray-300"><span className="text-green-400">✓</span>{f}</div>
-                ))}
-              </div>
-              <Link href="/register" className="block text-center border border-[#333] text-white py-3 rounded-lg text-sm hover:bg-[#1e1e1e] transition">
-                {locale === "it" ? "Inizia gratis" : "Începe gratuit"}
-              </Link>
-            </div>
-          </div>
-
-        </div>
-
-        <div className="mt-8 bg-[#161616] border border-[#2a2a2a] rounded-xl p-5 max-w-xl mx-auto text-left">
-          <div className="text-sm font-semibold text-white mb-2">{locale === "it" ? "Come attivi il piano dopo il periodo di prova?" : "Cum activezi planul după perioada de test?"}</div>
-          <div className="text-sm text-gray-400 leading-relaxed">
-            {locale === "it" ? <>Alla fine dei 30 giorni gratuiti, entri nell'app nella sezione <strong className="text-white">Prezzi</strong> e selezioni il piano adatto. L'attivazione richiede meno di un minuto. I tuoi dati rimangono intatti indipendentemente dal piano scelto.</> : <>La finalul celor 30 de zile gratuite, intri în aplicație la secțiunea <strong className="text-white">Prețuri</strong> și selectezi planul potrivit. Activarea durează mai puțin de un minut. Datele tale rămân intacte indiferent de planul ales.</>}
-          </div>
+          ))}
         </div>
       </div>
 
       {/* FAQ */}
       <div className="max-w-5xl mx-auto px-6 mb-24">
-        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5 text-center">{locale === "it" ? "Domande frequenti" : "Întrebări frecvente"}</div>
-        <h2 className="text-3xl font-semibold mb-10 text-center text-white">{locale === "it" ? "Hai domande?" : "Ai întrebări?"}</h2>
+        <div className="text-xs text-[#f5a623] uppercase tracking-widest mb-5 text-center">FAQ</div>
+        <h2 className="text-3xl font-semibold mb-10 text-center text-white">Got questions?</h2>
         <div className="space-y-4">
-          {(locale === "it" ? [
-            { q: "Devo inserire la carta di credito per registrarmi?", a: "No. Hai 30 giorni gratis senza carta di credito. Inserisci i dati solo se decidi di continuare dopo il periodo di prova." },
-            { q: "Quanto tempo richiede la configurazione?", a: "Circa 2 minuti. Inserisci i costi della tua azienda una sola volta e da quel momento ogni viaggio viene calcolato automaticamente." },
-            { q: "Funziona anche sul telefono?", a: "Sì, funziona su qualsiasi dispositivo — telefono, tablet o computer." },
-            { q: "I miei dati sono al sicuro?", a: "Sì. I dati sono archiviati in modo sicuro nel cloud e non vengono condivisi con nessuno." },
-            { q: "Posso cancellare in qualsiasi momento?", a: "Sì, senza penali e senza dover spiegare nulla." },
-            { q: "Cosa succede dopo i 30 giorni?", a: "Scegli un piano dall'app. I tuoi dati rimangono intatti indipendentemente dal piano scelto." },
-            { q: "I calcoli sono precisi?", a: "Sono basati sui dati che inserisci tu — carburante, leasing, stipendio. Più i dati sono precisi, più il verdetto è affidabile." },
-            { q: "Posso aggiungere più camion?", a: "Sì, in base al piano — Basic 1 camion, Pro 10 camion, Premium illimitati." },
-            { q: "Funziona per i viaggi internazionali?", a: "Sì, per qualsiasi percorso — Italia, Romania, Germania, ovunque." },
-          ] : [
-            { q: "Trebuie să introduc cardul la înregistrare?", a: "Nu. Ai 30 de zile gratuit fără card bancar. Introduci datele doar dacă decizi să continui după perioada de test." },
-            { q: "Cât durează configurarea?", a: "Aproximativ 2 minute. Introduci costurile firmei o singură dată și de acolo fiecare cursă e calculată automat." },
-            { q: "Funcționează și pe telefon?", a: "Da, funcționează pe orice dispozitiv — telefon, tabletă sau calculator." },
-            { q: "Datele mele sunt în siguranță?", a: "Da. Datele sunt stocate securizat în cloud și nu sunt partajate cu nimeni." },
-            { q: "Pot anula oricând?", a: "Da, fără penalități și fără să explici nimic." },
-            { q: "Ce se întâmplă după 30 de zile?", a: "Alegi un plan din aplicație. Datele tale rămân intacte indiferent de planul ales." },
-            { q: "Calculele sunt exacte?", a: "Sunt bazate pe datele introduse de tine — combustibil, leasing, salariu. Cu cât datele sunt mai precise, cu atât verdictul e mai precis." },
-            { q: "Pot adăuga mai multe camioane?", a: "Da, în funcție de plan — Basic 1 camion, Pro 10 camioane, Premium nelimitat." },
-            { q: "Funcționează pentru curse internaționale?", a: "Da, pentru orice rută — România, Italia, Germania, oriunde." },
-          ]).map((item, i) => (
+          {[
+            { q: "Do I need a credit card to sign up?", a: "No. You get 30 days free without a credit card. You only add payment details if you decide to continue." },
+            { q: "How long does setup take?", a: "About 2 minutes. Enter your details once and everything works automatically from there." },
+            { q: "Does it work on mobile?", a: "Yes, it works on any device — phone, tablet, or computer." },
+            { q: "Is my data safe?", a: "Yes. Data is stored securely in the cloud and is never shared with anyone." },
+            { q: "Can I cancel anytime?", a: "Yes, no penalties and no explanation needed." },
+            { q: "What happens after 30 days?", a: "Choose a plan from the app. Your data stays intact regardless of the plan you choose." },
+          ].map((item, i) => (
             <div key={i} className="bg-[#161616] border border-[#2a2a2a] rounded-xl p-6">
               <div className="font-semibold text-white mb-2">{item.q}</div>
               <div className="text-sm text-gray-400 leading-relaxed">{item.a}</div>
@@ -348,23 +208,21 @@ export default function LandingPage() {
 
       {/* CTA */}
       <div className="bg-[#0a0a0a] border-t border-[#1e1e1e] py-24 px-6 text-center">
-        <h2 className="text-4xl font-semibold mb-5 text-white">
-          {locale === "it" ? <>Pronto ad avere il controllo<br />della tua azienda?</> : <>Gata să ai control<br />asupra firmei tale?</>}
-        </h2>
-        <p className="text-lg text-gray-400 mb-10">{locale === "it" ? "Configuri l'azienda in due minuti. Il primo viaggio calcolato subito." : "Configurezi firma în două minute. Prima cursă calculată imediat."}</p>
-        <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-4 md:px-10 py-4 rounded-lg hover:bg-[#e8951a] transition text-base inline-block">
-          {locale === "it" ? "Prova 30 giorni gratis" : "Încearcă 30 zile gratuit"}
+        <h2 className="text-4xl font-semibold mb-5 text-white">Ready to get started?</h2>
+        <p className="text-lg text-gray-400 mb-10">Set up in two minutes. First result immediately.</p>
+        <Link href="/register" className="bg-[#f5a623] text-black font-semibold px-10 py-4 rounded-lg hover:bg-[#e8951a] transition text-base inline-block">
+          Try 30 days free
         </Link>
-        <p className="text-sm text-gray-600 mt-5">{locale === "it" ? "Senza carta di credito. Senza impegni. Puoi annullare in qualsiasi momento." : "Fără card bancar. Fără angajamente. Poți anula oricând."}</p>
+        <p className="text-sm text-gray-600 mt-5">No credit card. No commitments. Cancel anytime.</p>
       </div>
 
       {/* FOOTER */}
       <footer className="border-t border-[#1e1e1e] py-6 px-10 flex items-center justify-between">
-        <div className="text-sm font-semibold">Trip<span className="text-[#f5a623]">Profit</span></div>
-        <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-          <Link href="/terms" className="hover:text-gray-400">{locale === "it" ? "Termini e condizioni" : "Termeni și condiții"}</Link>
-          <Link href="/privacy" className="hover:text-gray-400">{locale === "it" ? "Politica sulla privacy" : "Politica de confidențialitate"}</Link>
-          <span>contact@tripprofit.ro</span>
+        <div className="text-sm font-semibold">Your<span className="text-[#f5a623]">App</span></div>
+        <div className="flex gap-4 text-sm text-gray-600">
+          <Link href="/terms" className="hover:text-gray-400">Terms</Link>
+          <Link href="/privacy" className="hover:text-gray-400">Privacy</Link>
+          <span>contact@yourapp.com</span>
         </div>
       </footer>
 

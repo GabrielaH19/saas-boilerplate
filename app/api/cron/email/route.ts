@@ -11,16 +11,15 @@ export async function GET(req: NextRequest) {
   }
 
   const now = new Date();
-  const usersRef = collection(db, "users");
-  const snapshot = await getDocs(usersRef);
+  const snapshot = await getDocs(collection(db, "users"));
 
   for (const doc of snapshot.docs) {
     const user = doc.data();
     const createdAt: Date = user.createdAt?.toDate?.() ?? new Date(user.createdAt);
     const daysSinceCreation = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
-    const name = user.name || "transportator";
+    const name = user.name || "user";
     const email = user.email;
-    const plan = user.plan || "trial";
+    const plan = user.plan || "free";
 
     if (!email) continue;
 

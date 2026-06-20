@@ -4,16 +4,12 @@ import { useEffect, useState } from "react";
 import { auth, db } from "@/app/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useLang } from "@/app/lib/LanguageContext";
 
 export default function ReferralBanner() {
   const [referralLink, setReferralLink] = useState("");
   const [copied, setCopied] = useState(false);
   const [earnings, setEarnings] = useState(0);
   const [referralCount, setReferralCount] = useState(0);
-  const { locale } = useLang();
-
-  const it = locale === "it";
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -25,7 +21,7 @@ export default function ReferralBanner() {
         code = user.uid.slice(0, 8).toUpperCase();
         await updateDoc(doc(db, "users", user.uid), { referralCode: code });
       }
-      setReferralLink("https://tripprofit.ro/register?ref=" + code);
+      setReferralLink("https://yourapp.com/register?ref=" + code);
       setEarnings(data?.referralEarnings || 0);
       setReferralCount(data?.referralCount || 0);
     });
@@ -34,10 +30,7 @@ export default function ReferralBanner() {
 
   if (!referralLink) return null;
 
-  const shareText = it
-    ? "Uso TripProfit per calcolare il profitto dei miei viaggi. Provalo anche tu: "
-    : "Folosesc TripProfit sa calculez profitul curselor mele. Incearca si tu: ";
-
+  const shareText = "Check out this app: ";
   const shareWhatsApp = () => window.open("https://wa.me/?text=" + encodeURIComponent(shareText + referralLink), "_blank");
   const shareFacebook = () => window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(referralLink), "_blank");
   const handleCopy = () => {
@@ -50,17 +43,13 @@ export default function ReferralBanner() {
     <div className="bg-[#1a1a1a] border border-[#f5a623] border-opacity-30 rounded-xl p-4">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-sm font-semibold text-[#f5a623]">
-            {it ? "Invita un collega, guadagna 10€" : "Invita un coleg, castiga 10€"}
-          </p>
+          <p className="text-sm font-semibold text-[#f5a623]">Invite a friend, earn €10</p>
           <p className="text-xs text-gray-400 mt-0.5">
-            {it ? "Per ogni abbonamento attivato tramite il tuo link ricevi 10€ (max 4/mese)." : "Pentru fiecare abonament activat prin linkul tau primesti 10€ (max 4/luna)."}
+            For every subscription activated through your link you get €10 (max 4/month).
           </p>
           {referralCount > 0 && (
             <p className="text-xs text-green-400 mt-1">
-              {it
-                ? `${referralCount} ${referralCount === 1 ? "invitato convertito" : "invitati convertiti"} · ${earnings}€ guadagnati`
-                : `${referralCount} ${referralCount === 1 ? "invitat convertit" : "invitati convertiti"} · ${earnings}€ castigati`}
+              {referralCount} {referralCount === 1 ? "referral converted" : "referrals converted"} · €{earnings} earned
             </p>
           )}
         </div>
@@ -72,7 +61,7 @@ export default function ReferralBanner() {
             Facebook
           </button>
           <button onClick={handleCopy} className="bg-[#2e2e2e] text-white font-bold py-1.5 px-3 rounded-lg hover:bg-[#3a3a3a] transition text-xs">
-            {copied ? (it ? "Copiato!" : "Copiat!") : (it ? "Copia link" : "Copiaza link")}
+            {copied ? "Copied!" : "Copy link"}
           </button>
         </div>
       </div>

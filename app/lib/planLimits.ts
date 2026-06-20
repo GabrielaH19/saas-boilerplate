@@ -1,10 +1,10 @@
 ﻿export type Plan = "free" | "basic" | "pro" | "premium";
 
 export const PLAN_LIMITS = {
-  free:    { maxTripsPerMonth: 3, maxTrucks: 1, historyDays: 30, hasReport: false, hasCashflow: false, hasSimulations: false, hasClients: false, hasReferral: false, hasPdfExport: false },
-  basic:   { maxTripsPerMonth: 15, maxTrucks: 1, historyDays: 60, hasReport: false, hasCashflow: false, hasSimulations: false, hasClients: false, hasReferral: true, hasPdfExport: false },
-  pro:     { maxTripsPerMonth: Infinity, maxTrucks: 10, historyDays: 365, hasReport: true, hasCashflow: false, hasSimulations: true, hasClients: true, hasReferral: true, hasPdfExport: false },
-  premium: { maxTripsPerMonth: Infinity, maxTrucks: Infinity, historyDays: Infinity, hasReport: true, hasCashflow: true, hasSimulations: true, hasClients: true, hasReferral: true, hasPdfExport: true },
+  free:    { maxItemsPerMonth: 3, maxUsers: 1, historyDays: 30, hasReports: false, hasExport: false, hasAdvancedFeatures: false, hasReferral: false },
+  basic:   { maxItemsPerMonth: 15, maxUsers: 1, historyDays: 60, hasReports: false, hasExport: false, hasAdvancedFeatures: false, hasReferral: true },
+  pro:     { maxItemsPerMonth: Infinity, maxUsers: 10, historyDays: 365, hasReports: true, hasExport: false, hasAdvancedFeatures: true, hasReferral: true },
+  premium: { maxItemsPerMonth: Infinity, maxUsers: Infinity, historyDays: Infinity, hasReports: true, hasExport: true, hasAdvancedFeatures: true, hasReferral: true },
 };
 
 export function getPlanLimits(plan: string) {
